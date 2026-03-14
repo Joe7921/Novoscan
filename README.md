@@ -26,7 +26,7 @@
 
 <p align="center">
   <!-- TODO: Replace with a recorded GIF demo -->
-  <img src="https://via.placeholder.com/800x450?text=🎬+Demo+GIF+Coming+Soon" width="80%" alt="Novoscan Demo" />
+  <img src="https://placehold.co/800x450/24292e/ffffff.svg?text=Demo+GIF+Coming+Soon" width="80%" alt="Novoscan Demo" />
 </p>
 
 ---

@@ -32,7 +32,7 @@
 
 ## 执行
 
-可以通过 [contact@novoscan.cn](mailto:contact@novoscan.cn) 向项目团队报告不可接受行为的实例。
+可以通过 [zhouhaoyu6666@gmail.com](mailto:zhouhaoyu6666@gmail.com) 向项目团队报告不可接受行为的实例。
 
 所有投诉都将被审查和调查，并将产生被认为对情况必要和适当的回应。项目团队有义务对事件报告者保密。
 

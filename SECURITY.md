@@ -12,7 +12,7 @@
 
 请通过以下方式联系我们：
 
-📧 **邮件**：[contact@novoscan.cn](mailto:contact@novoscan.cn)
+📧 **邮件**：[zhouhaoyu6666@gmail.com](mailto:zhouhaoyu6666@gmail.com)
 
 请在报告中包含以下信息：
 
