@@ -1,0 +1,83 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+node_modules/
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# build
+/.next/
+.next/
+/out/
+/build
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# local env files
+.env*.local
+.env.local
+.env
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Gemini
+.gemini/
+
+# admin-cli
+admin-cli/.alerts.json
+admin-cli/node_modules/
+
+# 调试和构建产物
+build_*.txt
+tsc_*.txt
+eslint_*.log
+*_output.txt
+
+# 数据库 Schema 导出（含敏感表结构信息）
+sb_openapi.json
+
+# 临时脚本
+check_db.*
+fix_components.js
+replace.js
+replace-icons.cjs
+
+# 临时脚本输出
+scripts/*.txt
+scripts/*.json
+
+# 站点验证文件（自部署用户请自行添加）
+baidu_verify_*.html
+
+# Docker 数据卷
+docker/data/
+
+# Mock AI 录制数据（含真实 AI 响应，不应提交）
+.mock-recordings/

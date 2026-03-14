@@ -1,0 +1,19 @@
+{
+  "name": "novoscan-admin-cli",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Novoscan 本地管理工具 — 零云端攻击面",
+  "scripts": {
+    "cli": "tsx index.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "chalk": "^5.4.1",
+    "cli-table3": "^0.6.5",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

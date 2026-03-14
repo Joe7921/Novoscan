@@ -1,0 +1,118 @@
+# ============================================================
+# Novoscan — Docker Compose 一键启动
+#
+# 用法：
+#   1. 复制 .env.docker 为 .env  →  cp .env.docker .env
+#   2. 编辑 .env 填入你的 API 密钥
+#   3. 启动服务              →  docker compose up -d
+#   4. 查看日志              →  docker compose logs -f
+#   5. 停止服务              →  docker compose down
+#   6. 停止并清除数据卷       →  docker compose down -v
+#
+# 服务访问：
+#   - Novoscan UI:  http://localhost:3000
+#   - PostgreSQL:   localhost:5432 (用户名/密码见 .env)
+#   - Redis:        localhost:6379
+# ============================================================
+
+services:
+  # ────────────────── PostgreSQL 16 ──────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: novoscan-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-novoscan}
+      POSTGRES_USER: ${POSTGRES_USER:-novoscan}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-novoscan_secret_2026}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # 初始化脚本（首次启动时自动执行，按文件名排序）
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+      # 数据持久化
+      - novoscan-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-novoscan}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ────────────────── Redis 7 ──────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: novoscan-redis
+    restart: unless-stopped
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ./docker/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - novoscan-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ────────────────── Novoscan 应用 ──────────────────
+  novoscan:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # 构建时注入 NEXT_PUBLIC_* 变量（嵌入客户端 bundle）
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+    container_name: novoscan-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      # ── 站点配置 ──
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      # ── Supabase（可选：指向外部 Supabase 云或留空使用 IndexedDB）──
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      # ── AI 模型密钥 ──
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      MINIMAX_API_KEY: ${MINIMAX_API_KEY:-}
+      MINIMAX_BASE_URL: ${MINIMAX_BASE_URL:-https://api.minimax.chat}
+      MINIMAX_MODEL: ${MINIMAX_MODEL:-minimax-text-01}
+      MOONSHOT_API_KEY: ${MOONSHOT_API_KEY:-}
+      # ── 搜索数据源 ──
+      BRAVE_API_KEY: ${BRAVE_API_KEY:-}
+      SERPAPI_KEY: ${SERPAPI_KEY:-}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      # ── 学术数据源 ──
+      CORE_API_KEY: ${CORE_API_KEY:-}
+      OPENALEX_EMAIL: ${OPENALEX_EMAIL:-}
+      CROSSREF_EMAIL: ${CROSSREF_EMAIL:-}
+      # ── Redis（指向 Docker 内部 Redis）──
+      UPSTASH_REDIS_REST_URL: ${UPSTASH_REDIS_REST_URL:-}
+      UPSTASH_REDIS_REST_TOKEN: ${UPSTASH_REDIS_REST_TOKEN:-}
+      # ── 其他可选配置 ──
+      CRON_SECRET: ${CRON_SECRET:-}
+      CRON_WEBHOOK_URL: ${CRON_WEBHOOK_URL:-}
+      MCP_API_KEYS: ${MCP_API_KEYS:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      ADMIN_SECRET: ${ADMIN_SECRET:-}
+      FINOPS_PRICING: ${FINOPS_PRICING:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+# ────────────────── 持久化数据卷 ──────────────────
+volumes:
+  novoscan-pgdata:
+    driver: local
+  novoscan-redis-data:
+    driver: local

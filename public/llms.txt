@@ -1,0 +1,25 @@
+# Novoscan
+
+> 全网首个多智能体 AI 创新评估引擎，数十秒穿透 2.5 亿学术论文 + 全球产业信号。
+
+## 关于 Novoscan
+
+Novoscan 是一个基于多智能体（Multi-Agent）协作架构的 AI 创新情报平台。用户输入一个创新想法或研究方向，6 名 AI 专家在数十秒内交叉验证，输出量化创新评分和深度分析报告。
+
+- 官网: https://novoscan.cn
+- 类型: Web 应用（Next.js）
+- 语言: 中文 / English
+- 免费体验: 未登录用户 3 次免费分析，Flash 极速模式 10 秒出结果
+
+## 产品矩阵
+
+- [Novoscan 创新深度分析](https://novoscan.cn): 核心产品，6 Agent 协作的创新性评估
+- [Bizscan 商业分析](https://novoscan.cn/bizscan): AI 商业可行性分析，BII 指数 + S/A/B/C/D 评级
+- [Clawscan 创新查重](https://novoscan.cn/skill-check): 接入 OpenClaw ClawHub Registry，Skill 查重与评估
+- [创新趋势洞察](https://novoscan.cn/trends): AI 实时追踪全球创新动态
+- [NovoTracker 趋势监控](https://novoscan.cn/tracker): 创新趋势自定义监控
+- [技术文档](https://novoscan.cn/docs): 完整架构与 API 说明
+
+## 详细信息
+
+详见 [llms-full.txt](https://novoscan.cn/llms-full.txt)

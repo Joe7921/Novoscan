@@ -1,0 +1,20 @@
+{
+    "crons": [
+        {
+            "path": "/api/tracker/cron?secret=${CRON_SECRET}",
+            "schedule": "0 2,14 * * *"
+        },
+        {
+            "path": "/api/casevault/cron?secret=${CRON_SECRET}",
+            "schedule": "0 8 * * *"
+        },
+        {
+            "path": "/api/innovation-dna/cron?secret=${CRON_SECRET}",
+            "schedule": "0 3 * * 1"
+        },
+        {
+            "path": "/api/trends/cron?secret=${CRON_SECRET}",
+            "schedule": "0 6 * * *"
+        }
+    ]
+}

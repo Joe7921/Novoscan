@@ -1,0 +1,89 @@
+{
+  "name": "novoscan",
+  "version": "1.0.0",
+  "description": "Novoscan — Next Gen. Innovation Evaluate Engine. 下一代多智能体驱动的创新评估引擎。",
+  "license": "Apache-2.0",
+  "author": "Halfsense (半直觉)",
+  "homepage": "https://novoscan.cn",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Joe7921/novoscan.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Joe7921/novoscan/issues"
+  },
+  "keywords": [
+    "novoscan",
+    "innovation",
+    "multi-agent",
+    "ai",
+    "evaluation",
+    "search-engine",
+    "academic",
+    "nextjs",
+    "typescript",
+    "deepseek",
+    "open-source"
+  ],
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "cli": "tsx admin-cli/index.ts",
+    "prepare": "husky",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@google/genai": "^1.42.0",
+    "@modelcontextprotocol/sdk": "^1.25.2",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.97.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
+    "dexie": "^4.3.0",
+    "framer-motion": "^12.34.3",
+    "lodash": "^4.17.23",
+    "lucide-react": "^0.575.0",
+    "mammoth": "^1.12.0",
+    "mcp-handler": "^1.0.7",
+    "next": "14.2.35",
+    "node-fetch": "^3.3.2",
+    "pdf-parse": "^2.4.5",
+    "qrcode": "^1.5.4",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-markdown": "^10.1.0",
+    "recharts": "^3.7.0",
+    "resend": "^6.9.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.4",
+    "@commitlint/config-conventional": "^20.4.4",
+    "@types/dexie": "^1.3.32",
+    "@types/lodash": "^4.17.23",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@vitejs/plugin-react-swc": "^4.3.0",
+    "@vitest/coverage-v8": "^4.1.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.35",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.3",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "unplugin-swc": "^1.5.9",
+    "vitest": "^4.1.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --max-warnings=0"
+    ]
+  }
+}

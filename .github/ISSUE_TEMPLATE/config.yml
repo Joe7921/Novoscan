@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Community Discussion
+    url: https://discord.gg/novoscan
+    about: Join our Discord community for questions, discussions, and support.
+  - name: 📖 Documentation
+    url: https://novoscan.cn/docs
+    about: Check out the official documentation for guides and API references.

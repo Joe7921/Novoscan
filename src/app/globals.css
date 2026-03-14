@@ -1,0 +1,287 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+  =========================================
+      ANTIGRAVITY DESIGN SYSTEM CSS
+  =========================================
+*/
+:root {
+  --background: #ffffff;
+  --foreground: #111111;
+  /* Brand colors exposed for CSS use if needed */
+  --google-blue: #4285F4;
+  --google-red: #EA4335;
+  --google-yellow: #FBBC05;
+  --google-green: #34A853;
+}
+
+/* ============ 旗舰级暗色模式 ============ */
+/* 仅当用户通过 ThemeToggle 手动切换时生效（html.dark），
+   不修改任何现有亮色主题变量和样式。
+   
+   设计语言：深海蓝三层表面系统
+   Base:     #0B1120 — 页面背景
+   Surface:  #131B2E — 卡片/容器
+   Elevated: #1A2540 — 悬浮/弹窗 */
+html.dark {
+  --background: #0B1120;
+  --foreground: #F1F5F9;
+  --card-bg: #131B2E;
+  --card-border: #1E293B;
+  --elevated-bg: #1A2540;
+  --elevated-border: #334155;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  color-scheme: dark;
+}
+
+html.dark body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* 暗色模式下 selection 高亮 */
+html.dark ::selection {
+  background: rgba(96, 165, 250, 0.3);
+  color: #F1F5F9;
+}
+
+/* 暗色模式下滚动条 */
+html.dark ::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* 暗色模式平滑过渡 — 切换时不闪烁 */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+html body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  /* Extreme white space: remove any default margins that might interfere */
+  margin: 0;
+  padding: 0;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* 隐藏滚动条（跨浏览器兼容） */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* 移动端安全区域适配（刘海屏、底部横条） */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+@layer utilities {
+
+  /* Premium Aesthetics: Glassmorphism（性能优化：移除 backdrop-blur，用高不透明度替代） */
+  .glassmorphism {
+    @apply bg-white/95 border border-white/40 shadow-sm;
+  }
+
+  .glassmorphism-dark {
+    @apply bg-gray-900/95 border border-gray-700/50 shadow-sm text-white;
+  }
+
+  /* Premium Shadow */
+  .premium-shadow {
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 0 3px rgba(0, 0, 0, 0.02);
+  }
+
+  .premium-shadow-hover {
+    box-shadow: 0 10px 40px -5px rgba(0, 0, 0, 0.08), 0 0 5px rgba(0, 0, 0, 0.02);
+  }
+
+  /* Smooth transitions */
+  .transition-premium {
+    @apply transition-all duration-300 ease-out;
+  }
+}
+
+/* 渐变文字兼容性回退 — 安卓/鸿蒙部分浏览器不支持 background-clip: text */
+.gradient-text-brand {
+  color: #2563eb;
+  /* 回退纯色 blue-600 */
+}
+
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .gradient-text-brand {
+    background: linear-gradient(to right, #2563eb, #7c3aed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
+/* 通用渐变文字裁剪 — 配合 Tailwind bg-gradient-to-* 使用
+   不支持 background-clip: text 的浏览器将忽略裁剪，文字以 Tailwind 的 text-* 色显示 */
+.gradient-text-clip {
+  /* 默认不做任何事，文字保持原色 */
+}
+
+@supports (-webkit-background-clip: text) or (background-clip: text) {
+  .gradient-text-clip {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
+/* ============ 页面过渡动画 ============ */
+/* 替代 framer-motion 的全局过渡，避免 ~50KB JS 体积 */
+/* 注意：不使用 filter: blur() — 在 iOS Safari 中 filter 会创建新的 containing block，
+   导致内部 sticky/overflow 失效，页面无法滚动。 */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-page-enter {
+  animation: page-enter 0.4s cubic-bezier(0.22, 0.68, 0.35, 1.0) both;
+}
+
+/* ============ 页面过渡 ============ */
+/* 性能优化：移除了全屏 backdrop-filter: blur(6px) 覆盖层，
+   该效果每次路由切换都对整个视口执行模糊运算，是路由切换掉帧的直接原因。
+   现在仅保留 opacity + transform 过渡，零 GPU 开销。 */
+
+/* ============ 加载进度条动画 ============ */
+@keyframes loading-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  50% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+/* ============ 替代 framer-motion 的通用 CSS 动画 ============ */
+/* 从下方淡入上移 — 替代 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s cubic-bezier(0.22, 0.68, 0.35, 1.0) both;
+}
+
+/* 纯淡入 — 替代 initial={{ opacity: 0 }} animate={{ opacity: 1 }} */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out both;
+}
+
+/* 缩放淡入 — 替代 initial={{ scale: 0.9, opacity: 0 }} */
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.6s cubic-bezier(0.22, 0.68, 0.35, 1.0) both;
+}
+
+/* 交错入场 — 替代 framer-motion stagger + spring */
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-stagger-in {
+  animation: stagger-in 0.5s cubic-bezier(0.22, 0.68, 0.35, 1.0) both;
+}
+
+/* ============ 系统动效削弱支持 ============ */
+/* 当用户在系统设置中开启"减少动效"时，禁用所有无限循环动画和过渡，释放 GPU */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-slow,
+  .animate-float-medium,
+  .animate-float-fast,
+  .animate-page-enter,
+  .animate-fade-in-up,
+  .animate-fade-in,
+  .animate-scale-in,
+  .animate-stagger-in {
+    animation: none !important;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}

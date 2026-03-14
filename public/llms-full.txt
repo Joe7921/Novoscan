@@ -1,0 +1,87 @@
+# Novoscan — 完整产品介绍
+
+> 全网首个多智能体 AI 创新评估引擎。数十秒穿透 2.5 亿学术论文 + 全球产业动态，6 名 AI 专家交叉验证，输出量化创新评分。
+
+## 公司与愿景
+
+Novoscan 致力于用 AI 多智能体协作技术，降低创新评估的门槛。我们相信每一个好想法都值得被科学验证，而不是凭直觉拍板。
+
+## 核心技术架构
+
+- **多智能体协作**: 6 名专业 AI Agent（学术审查员、产业分析师、竞品侦探、创新评估官、辩论引擎、仲裁官）独立分析、交叉验证
+- **双轨数据采集**: 学术层（OpenAlex 2.5 亿论文）+ 产业层（Google/Bing 实时搜索）
+- **多模型支持**: Gemini、DeepSeek、Minimax、Moonshot 可自选
+
+---
+
+## 产品详情
+
+### 1. Novoscan 创新深度分析（核心产品）
+
+**URL**: https://novoscan.cn
+
+用户输入创新想法，系统自动完成：
+1. 双轨搜索（学术 + 产业）
+2. 6 Agent 独立分析
+3. AI 仲裁综合评分（0-100 分）
+4. 输出创新性等级（High/Medium/Low）
+5. 生成完整报告（含引用来源、竞品分析、改进建议）
+
+**适用场景**: 研究选题验证、创业想法评估、专利申请前调研、毕业论文查新
+
+### 2. Bizscan 商业可行性分析
+
+**URL**: https://novoscan.cn/bizscan
+
+5 层 7 Agent 工业级架构，专注商业想法评估：
+- BII 商业创新指数
+- S/A/B/C/D 五档评级
+- 竞品拆解与市场规模估算
+- 商业模式可行性评分
+
+**适用场景**: 创业者验证想法、投资人快速评估、创业大赛备赛、MBA 商业分析
+
+### 3. Clawscan 创新查重
+
+**URL**: https://novoscan.cn/skill-check
+
+专为 OpenClaw 生态打造的 AI 创新查重工具：
+- 接入 ClawHub Registry 全量 Skill 数据
+- 三路并行采集（Registry + GitHub + 学术论文）
+- 4 Agent 协作评估创新独创性
+- 输出 Skill 匹配清单和实战案例
+
+**与论文查重的区别**: 传统查重（知网、维普、万方）检测文字重复率；Clawscan 检测想法创新性。两者互补。
+
+### 4. 创新趋势洞察
+
+**URL**: https://novoscan.cn/trends
+
+AI 实时追踪全球创新动态，覆盖工程、计算机科学、生物医学、材料科学等主流领域。
+
+### 5. NovoTracker 趋势监控
+
+**URL**: https://novoscan.cn/tracker
+
+自定义创新趋势监控仪表盘，设置关键词自动跟踪行业动态。
+
+---
+
+## 定价
+
+- **免费体验**: 未登录用户 3 次免费分析
+- **Flash 极速模式**: 登录后无限免费使用，10 秒出结果
+- **深度分析**: 登录用户按使用次数消耗点数
+
+## 技术栈
+
+- 前端: Next.js + TypeScript + Tailwind CSS
+- AI: Gemini / DeepSeek / Minimax / Moonshot（多模型切换）
+- 数据: OpenAlex（2.5 亿学术论文）+ 实时搜索引擎
+- 部署: Vercel Edge Runtime
+- 数据库: Supabase (PostgreSQL)
+
+## 联系方式
+
+- 官网: https://novoscan.cn
+- 技术文档: https://novoscan.cn/docs

@@ -1,0 +1,50 @@
+# 依赖和构建产物
+node_modules
+.next
+out
+build
+
+# Docker 数据卷
+docker/data
+
+# 版本控制
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# 环境变量（安全）
+.env
+.env*.local
+
+# 文档和非构建必要文件
+docs
+tests
+*.md
+LICENSE
+CHANGELOG.md
+.github
+.husky
+
+# 构建日志
+*.log
+build_*.txt
+tsc_*.txt
+eslint_*.log
+*_output.txt
+
+# Gemini
+.gemini
+
+# Vercel
+.vercel
+vercel.json
+
+# 杂项
+.DS_Store
+*.pem
+sb_openapi.json

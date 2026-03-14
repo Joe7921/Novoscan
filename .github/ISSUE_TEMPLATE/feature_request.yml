@@ -1,0 +1,60 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for Novoscan
+title: "[Feature]: "
+labels: ["enhancement"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Help us understand your idea by filling out the fields below.
+
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of the feature you'd like to see.
+      placeholder: Describe the feature...
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Describe the scenario or problem this feature would solve. Why is it needed?
+      placeholder: |
+        As a [type of user], I want to [do something] so that [benefit/goal].
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: Describe any alternatives you've considered...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: willing-to-contribute
+    attributes:
+      label: Willing to Contribute
+      description: Would you be willing to submit a PR to implement this feature?
+      options:
+        - "Yes, I'd love to!"
+        - "Yes, but I need guidance"
+        - "No, but I can help with testing"
+        - "No"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, mockups, or screenshots about the feature request here.
+    validations:
+      required: false
