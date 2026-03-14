@@ -14,7 +14,7 @@ export const metadata: Metadata = {
         '深入了解 Novoscan 的多代理架构、七源双轨检索引擎、NovoStarchart 评分体系、NovoDNA 基因图谱等核心技术。覆盖 Novoscan、Clawscan、Bizscan 三大业务线的完整产品文档。',
     keywords: [
         'Novoscan文档', '多智能体架构', 'AI创新评估', 'NovoStarchart',
-        'NovoDNA', 'NovoDebate', 'Bizscan', 'Clawscan', 'NovoTracker',
+        'NovoDNA', 'NovoDebate', 'Bizscan', 'Clawscan',
         'AI查重', '创新性分析', '技术评估文档',
     ],
     openGraph: {
@@ -70,7 +70,7 @@ const faqJsonLd = {
             name: 'Novoscan 是免费的吗？',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: '未登录用户享有 3 次免费体验（默认 Flash 模式）。登录后 Flash 模式无限次使用（0 NovoCredits），标准模式消耗 15 点积分。',
+                text: 'Novoscan 开源版所有功能完全免费使用，包括标准模式和 Flash 极速模式，无需任何积分或付费。',
             },
         },
     ],

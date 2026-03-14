@@ -39,8 +39,8 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
     const pdfParse = (await import('pdf-parse')).default;
     const data = await pdfParse(buffer);
     return data.text || '';
-  } catch (err: any) {
-    console.warn('[Upload] PDF 解析失败:', err.message);
+  } catch (err: unknown) {
+    console.warn('[Upload] PDF 解析失败:', (err instanceof Error ? err.message : String(err)));
     return '[PDF 内容提取失败]';
   }
 }
@@ -51,8 +51,8 @@ async function extractDocxText(buffer: Buffer): Promise<string> {
     const mammoth = await import('mammoth');
     const result = await mammoth.extractRawText({ buffer });
     return result.value || '';
-  } catch (err: any) {
-    console.warn('[Upload] DOCX 解析失败:', err.message);
+  } catch (err: unknown) {
+    console.warn('[Upload] DOCX 解析失败:', (err instanceof Error ? err.message : String(err)));
     return '[DOCX 内容提取失败]';
   }
 }
@@ -136,10 +136,10 @@ export async function POST(request: Request) {
         charCount: textContent?.length || 0,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[Upload] 处理失败:', error);
     return NextResponse.json(
-      { success: false, error: error.message || '文件处理失败' },
+      { success: false, error: (error instanceof Error ? error.message : String(error)) || '文件处理失败' },
       { status: 500 }
     );
   }

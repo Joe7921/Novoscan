@@ -66,7 +66,7 @@ export async function GET() {
                 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
             },
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[Platform Stats API] 查询失败:', error);
         return NextResponse.json(
             { totalAnalyses: 0, totalDebates: 0, totalDNA: 0 },

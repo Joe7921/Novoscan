@@ -17,7 +17,7 @@ interface ShareButtonProps {
     /** 用户的想法描述 */
     query: string;
     /** 报告数据（用于传给后端） */
-    report: any;
+    report: unknown;
     /** 双轨结果数据 */
     dualResult?: any;
     /** 报告类型 */

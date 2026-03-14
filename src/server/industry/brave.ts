@@ -8,7 +8,7 @@
  */
 
 
-import { checkCostLimit } from '@/lib/services/costLimiter';
+import { checkCostLimit } from '@/lib/stubs';
 
 const BRAVE_API_KEY = process.env.BRAVE_API_KEY || '';
 const BRAVE_API = process.env.BRAVE_API_BASE_URL || 'https://api.search.brave.com/res/v1/web/search';

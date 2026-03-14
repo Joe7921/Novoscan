@@ -425,21 +425,21 @@ export const DualTrackReport: React.FC<Props> = ({ result, query, loading }) => 
                     GitHub）交叉验证
                 </p>
                 {/* AI 引擎选择器信息 */}
-                {(result as any).engineSelection && (
+                {(result as unknown).engineSelection && (
                     <div className="mt-3 flex flex-wrap items-center gap-2">
                         <span className="text-xs text-slate-400 flex items-center gap-1">
                             <span>🧠</span>
-                            {(result as any).engineSelection.method === 'ai' ? 'AI 智能选择' : '规则引擎'}:
+                            {(result as unknown).engineSelection.method === 'ai' ? 'AI 智能选择' : '规则引擎'}:
                         </span>
-                        {((result as any).engineSelection.serpEngines || []).map((engine: string, i: number) => (
+                        {((result as unknown).engineSelection.serpEngines || []).map((engine: string, i: number) => (
                             <span key={i} className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
                                 {engine === 'google' ? '🌐 Google' : engine === 'baidu' ? '🔍 百度' : engine === 'bing' ? '💻 Bing' : engine === 'duckduckgo' ? '🦆 DDG' : engine}
                             </span>
                         ))}
-                        {(result as any).engineSelection.useScholar && (
+                        {(result as unknown).engineSelection.useScholar && (
                             <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">🎓 Scholar</span>
                         )}
-                        {(result as any).engineSelection.useTrends && (
+                        {(result as unknown).engineSelection.useTrends && (
                             <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">📈 Trends</span>
                         )}
                     </div>
@@ -462,16 +462,16 @@ export const DualTrackReport: React.FC<Props> = ({ result, query, loading }) => 
             <CrossValidationSection validation={crossValidation} />
 
             {/* AI 执行摘要 */}
-            {((result as any).sections || (result as any).keyPoints) ? (
+            {((result as unknown).sections || (result as unknown).keyPoints) ? (
                 <div className="space-y-6">
                     {/* 学术审查报告 */}
-                    {(result as any).sections?.academic && (
+                    {(result as unknown).sections?.academic && (
                         <section className="bg-white/95 rounded-2xl shadow-sm border border-slate-200 p-6">
                             <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                <span>🎓</span>{(result as any).sections.academic.title || '学术审查报告'}
+                                <span>🎓</span>{(result as unknown).sections.academic.title || '学术审查报告'}
                             </h2>
                             <div className="space-y-4">
-                                {((result as any).sections.academic.subsections || []).map((sub: any, i: number) => (
+                                {((result as unknown).sections.academic.subsections || []).map((sub: unknown, i: number) => (
                                     <div key={i} className="bg-slate-50 rounded-xl p-4">
                                         <h3 className="text-md font-semibold text-slate-700 mb-2">{sub.title}</h3>
                                         <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">{sub.content}</p>
@@ -482,13 +482,13 @@ export const DualTrackReport: React.FC<Props> = ({ result, query, loading }) => 
                     )}
 
                     {/* 产业审查报告 */}
-                    {(result as any).sections?.internet && (
+                    {(result as unknown).sections?.internet && (
                         <section className="bg-white/95 rounded-2xl shadow-sm border border-slate-200 p-6">
                             <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                <span>🌐</span>{(result as any).sections.internet.title || '产业审查报告'}
+                                <span>🌐</span>{(result as unknown).sections.internet.title || '产业审查报告'}
                             </h2>
                             <div className="space-y-4">
-                                {((result as any).sections.internet.subsections || []).map((sub: any, i: number) => (
+                                {((result as unknown).sections.internet.subsections || []).map((sub: unknown, i: number) => (
                                     <div key={i} className="bg-slate-50 rounded-xl p-4">
                                         <h3 className="text-md font-semibold text-slate-700 mb-2">{sub.title}</h3>
                                         <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">{sub.content}</p>
@@ -499,13 +499,13 @@ export const DualTrackReport: React.FC<Props> = ({ result, query, loading }) => 
                     )}
 
                     {/* 关键点总结 */}
-                    {(result as any).keyPoints && (result as any).keyPoints.length > 0 && (
+                    {(result as unknown).keyPoints && (result as unknown).keyPoints.length > 0 && (
                         <section className="bg-white/95 rounded-2xl shadow-sm border border-slate-200 p-6">
                             <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                                 <span>🔑</span>关键点总结
                             </h2>
                             <ul className="list-disc pl-5 space-y-2">
-                                {((result as any).keyPoints as string[]).map((point, i) => (
+                                {((result as unknown).keyPoints as string[]).map((point, i) => (
                                     <li key={i} className="text-slate-600 text-sm">{point}</li>
                                 ))}
                             </ul>

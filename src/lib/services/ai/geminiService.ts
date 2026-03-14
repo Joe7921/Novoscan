@@ -1,7 +1,7 @@
 // geminiService - Gemini AI 分析服务（仅服务端使用）
 import { GoogleGenAI, GenerateContentResponse, Chat } from "@google/genai";
-import { AnalysisReport, Language } from "@/types";
-import { checkCostLimit } from '../costLimiter';
+import { AnalysisReport, Language, SimilarPaper, InternetSource, GroundingChunk } from "@/types";
+import { checkCostLimit } from '@/lib/stubs';
 
 // 仅使用服务端环境变量，避免通过 NEXT_PUBLIC_ 泄漏到客户端
 const API_KEY = process.env.GEMINI_API_KEY || '';
@@ -14,7 +14,8 @@ if (!API_KEY) {
 
 /** 根据 API Key 创建 GoogleGenAI 客户端 */
 function createGeminiClient(apiKey: string): GoogleGenAI {
-  const config: any = { apiKey: apiKey || 'MISSING_API_KEY' };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- GoogleGenAI 构造器类型不含 baseURL/baseUrl，但运行时支持
+  const config: Record<string, string> = { apiKey: apiKey || 'MISSING_API_KEY' };
   if (BASE_URL) {
     config.baseURL = BASE_URL;
     config.baseUrl = BASE_URL;
@@ -241,8 +242,8 @@ export const analyzeResearchIdea = async (idea: string, language: Language): Pro
     let summary: string | undefined;
     let keyDifferentiators: string | undefined;
     let improvementSuggestions: string | undefined;
-    let similarPapers: any[] = [];
-    let internetSources: any[] = [];
+    let similarPapers: SimilarPaper[] = [];
+    let internetSources: InternetSource[] = [];
 
     if (jsonStr) {
       try {
@@ -281,7 +282,7 @@ export const analyzeResearchIdea = async (idea: string, language: Language): Pro
       summary,
       keyDifferentiators,
       improvementSuggestions,
-      groundingChunks: groundingChunks as any[],
+      groundingChunks: groundingChunks as GroundingChunk[],
       similarPapers,
       internetSources
     };
@@ -290,17 +291,18 @@ export const analyzeResearchIdea = async (idea: string, language: Language): Pro
   return trackApiCall('gemini', async () => {
     try {
       return await doAnalyze(ai);
-    } catch (primaryErr: any) {
+    } catch (primaryErr: unknown) {
       // 主 Key 失败且有备用 Key 时，自动切换重试
       if (BACKUP_API_KEY) {
-        console.warn(`[Gemini Failover] 主 Key 调用失败 (${primaryErr.message})，切换备用 Key 重试...`);
+        const errMsg = primaryErr instanceof Error ? primaryErr.message : String(primaryErr);
+        console.warn(`[Gemini Failover] 主 Key 调用失败 (${errMsg})，切换备用 Key 重试...`);
         const backupAi = createGeminiClient(BACKUP_API_KEY);
         const result = await doAnalyze(backupAi);
         // 异步记录 failover 事件，供巡检脚本检测
         import('@/lib/supabase').then(async ({ supabaseAdmin }) => {
           await supabaseAdmin.from('api_call_logs').insert({
             provider: 'gemini-failover', is_success: true,
-            call_type: 'analyze', error_message: `主Key失败: ${primaryErr.message}`,
+            call_type: 'analyze', error_message: `主Key失败: ${errMsg}`,
             called_at: new Date().toISOString(),
           });
         }).catch(() => {});
@@ -347,10 +349,11 @@ export const sendMessageToChat = async (message: string, history: { role: 'user'
 
   try {
     return await doChat(ai);
-  } catch (primaryErr: any) {
+  } catch (primaryErr: unknown) {
     // 主 Key 失败且有备用 Key 时，自动切换重试
     if (BACKUP_API_KEY) {
-      console.warn(`[Gemini Failover] 聊天主 Key 失败 (${primaryErr.message})，切换备用 Key 重试...`);
+      const errMsg = primaryErr instanceof Error ? primaryErr.message : String(primaryErr);
+      console.warn(`[Gemini Failover] 聊天主 Key 失败 (${errMsg})，切换备用 Key 重试...`);
       chatSession = null; // 重置 session，让备用客户端重建
       const backupAi = createGeminiClient(BACKUP_API_KEY);
       const result = await doChat(backupAi);
@@ -358,7 +361,7 @@ export const sendMessageToChat = async (message: string, history: { role: 'user'
       import('@/lib/supabase').then(async ({ supabaseAdmin }) => {
         await supabaseAdmin.from('api_call_logs').insert({
           provider: 'gemini-failover', is_success: true,
-          call_type: 'chat', error_message: `主Key失败: ${primaryErr.message}`,
+          call_type: 'chat', error_message: `主Key失败: ${errMsg}`,
           called_at: new Date().toISOString(),
         });
       }).catch(() => {});

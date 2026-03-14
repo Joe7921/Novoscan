@@ -9,7 +9,7 @@
  * 使用 PostgreSQL tsvector + ts_rank 做全文检索 RAG，零外部依赖。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 import type { FinalReport } from '@/agents/types';
 
 // ==================== 上下文管理配置 ====================
@@ -263,7 +263,7 @@ export async function saveExperience(
             ...(report.qualityCheck?.warnings || []),
         ].slice(0, 10);
 
-        const { error } = await supabaseAdmin.from('agent_experiences').upsert({
+        const { error } = await adminDb.from('agent_experiences').upsert({
             query: safeTruncate(query, MEMORY_CONTEXT_CONFIG.maxQueryChars),
             query_hash: queryHash,
             domain_id: domainId || null,
@@ -287,8 +287,8 @@ export async function saveExperience(
         } else {
             console.log(`[AgentMemory] ✅ 经验已保存 (tags: ${tags.slice(0, 5).join(', ')})`);
         }
-    } catch (e: any) {
-        console.error('[AgentMemory] 经验保存异常:', e.message);
+    } catch (e: unknown) {
+        console.error('[AgentMemory] 经验保存异常:', (e instanceof Error ? e.message : String(e)));
     }
 }
 
@@ -328,7 +328,7 @@ export async function retrieveRelevantExperiences(
         const tsQuery = searchTokens.join(' | ');
 
         // 构建查询：全文检索 + 排名
-        let queryBuilder = supabaseAdmin
+        let queryBuilder = adminDb
             .from('agent_experiences')
             .select('query,final_score,recommendation,lessons_learned,tags,debate_summary,query_hash,created_at,domain_id')
             .textSearch('search_vector', tsQuery, { type: 'plain' })
@@ -408,8 +408,8 @@ export async function retrieveRelevantExperiences(
             context,
             experiences: experiences.slice(0, contextParts.length),
         };
-    } catch (e: any) {
-        console.error('[AgentMemory] RAG 检索异常:', e.message);
+    } catch (e: unknown) {
+        console.error('[AgentMemory] RAG 检索异常:', (e instanceof Error ? e.message : String(e)));
         return emptyResult;
     }
 }
@@ -419,11 +419,11 @@ export async function retrieveRelevantExperiences(
  */
 export async function getMemoryStats(): Promise<MemoryStats> {
     try {
-        const { count } = await supabaseAdmin
+        const { count } = await adminDb
             .from('agent_experiences')
             .select('*', { count: 'exact', head: true });
 
-        const { data: domainData } = await supabaseAdmin
+        const { data: domainData } = await adminDb
             .from('agent_experiences')
             .select('domain_id');
 
@@ -433,7 +433,7 @@ export async function getMemoryStats(): Promise<MemoryStats> {
             domainDistribution[key] = (domainDistribution[key] || 0) + 1;
         });
 
-        const { data: scoreData } = await supabaseAdmin
+        const { data: scoreData } = await adminDb
             .from('agent_experiences')
             .select('final_score');
 
@@ -444,7 +444,7 @@ export async function getMemoryStats(): Promise<MemoryStats> {
 
         // 最近 7 天的经验数量
         const weekAgo = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString();
-        const { count: recentCount } = await supabaseAdmin
+        const { count: recentCount } = await adminDb
             .from('agent_experiences')
             .select('*', { count: 'exact', head: true })
             .gte('created_at', weekAgo);
@@ -455,8 +455,8 @@ export async function getMemoryStats(): Promise<MemoryStats> {
             avgScore,
             recentCount: recentCount || 0,
         };
-    } catch (e: any) {
-        console.error('[AgentMemory] 统计查询异常:', e.message);
+    } catch (e: unknown) {
+        console.error('[AgentMemory] 统计查询异常:', (e instanceof Error ? e.message : String(e)));
         return {
             totalExperiences: 0,
             domainDistribution: {},

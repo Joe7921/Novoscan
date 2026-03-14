@@ -81,3 +81,9 @@ docker/data/
 
 # Mock AI 录制数据（含真实 AI 响应，不应提交）
 .mock-recordings/
+
+# Playwright 测试产物
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

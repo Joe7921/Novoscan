@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { RegisterSW } from "@/components/pwa/register-sw";
 import dynamic from "next/dynamic";
+import { AuthSessionProvider } from "@/components/auth/AuthSessionProvider";
 // ParticleBackground 已从全局移至首页组件内，减少非首页的 Canvas 开销
 
 
@@ -293,7 +294,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-900 dark:text-slate-100 dark:bg-dark-base selection:bg-google-blue selection:text-white relative min-h-screen overflow-x-hidden`}
       >
-        {children}
+        <AuthSessionProvider>
+          {children}
+        </AuthSessionProvider>
         <RouteProgress />
         <RegisterSW />
 

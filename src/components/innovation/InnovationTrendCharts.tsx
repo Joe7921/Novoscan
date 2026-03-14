@@ -83,7 +83,7 @@ const ChartTooltip = ({ active, payload, label }: any) => {
     return (
         <div className="bg-gray-900/98 rounded-xl px-4 py-3 shadow-2xl border border-white/10 min-w-[160px]">
             <p className="text-[11px] font-bold text-gray-400 mb-1.5">{label}</p>
-            {payload.map((entry: any, i: number) => (
+            {payload.map((entry: unknown, i: number) => (
                 <div key={i} className="flex items-center justify-between gap-4 py-0.5">
                     <div className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: entry.color }} />
@@ -98,7 +98,7 @@ const ChartTooltip = ({ active, payload, label }: any) => {
 
 // ==================== 缓存 ====================
 const FE_CACHE_TTL = 120_000;
-let feCache: { data: any; ts: number } | null = null;
+let feCache: { data: unknown; ts: number } | null = null;
 
 // ==================== 主组件 ====================
 const InnovationTrendCharts: React.FC<InnovationTrendChartsProps> = ({ language }) => {

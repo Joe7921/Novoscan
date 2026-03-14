@@ -35,8 +35,8 @@ async function testWithTimeout<T>(
       ),
     ]);
     return { result, durationMs: Date.now() - start };
-  } catch (e: any) {
-    return { error: e.message || String(e), durationMs: Date.now() - start };
+  } catch (e: unknown) {
+    return { error: (e instanceof Error ? e.message : String(e)) || String(e), durationMs: Date.now() - start };
   }
 }
 

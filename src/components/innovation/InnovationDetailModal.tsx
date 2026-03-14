@@ -19,7 +19,7 @@ interface InnovationDetailModalProps {
     isOpen: boolean;
     onClose: () => void;
     innovation: InnovationDetail | null;
-    relatedInnovations?: any[];
+    relatedInnovations?: unknown[];
     onSearch?: (keyword: string) => void;
 }
 

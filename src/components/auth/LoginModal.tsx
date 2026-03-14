@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { X, LogIn, Github, Mail, CheckCircle, Loader2, ArrowLeft } from 'lucide-react';
-import { createClient } from '@/utils/supabase/client';
+import { useAuthSession } from '@/components/auth/AuthSessionProvider';
 import { motion, AnimatePresence } from 'framer-motion';
 import ModalPortal from '@/components/ui/ModalPortal';
 
@@ -20,9 +20,14 @@ interface LoginModalProps {
     language?: 'zh' | 'en';
 }
 
+/**
+ * 登录弹窗组件。
+ * 通过 useAuthSession() hook 自动适配 NextAuth / Supabase 认证模式。
+ * 视觉风格完全保持不变。
+ */
 export default function LoginModal({ isOpen, onClose, language = 'zh' }: LoginModalProps) {
     const isZh = language === 'zh';
-    const supabase = createClient();
+    const { oauthSignIn, magicLinkSignIn } = useAuthSession();
     const inWebView = useMemo(() => isWebView(), []);
 
     // 邮箱登录状态
@@ -48,23 +53,18 @@ export default function LoginModal({ isOpen, onClose, language = 'zh' }: LoginMo
         setEmailSending(true);
         setEmailError('');
 
-        const { error } = await supabase.auth.signInWithOtp({
-            email: email.trim(),
-            options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback`,
-            },
-        });
+        const result = await magicLinkSignIn(email.trim());
 
         setEmailSending(false);
 
-        if (error) {
-            console.error('邮箱登录失败:', error.message);
+        if (result.error) {
+            console.error('邮箱登录失败:', result.error);
             setEmailError(isZh ? '发送失败，请稍后重试' : 'Failed to send. Please try again.');
         } else {
             setEmailSent(true);
             setCooldown(60); // 60 秒冷却
         }
-    }, [email, cooldown, isZh, supabase]);
+    }, [email, cooldown, isZh, magicLinkSignIn]);
 
     // 重置邮箱表单状态
     const resetEmailState = useCallback(() => {
@@ -75,27 +75,11 @@ export default function LoginModal({ isOpen, onClose, language = 'zh' }: LoginMo
     }, []);
 
     const handleGoogleLogin = async () => {
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
-            },
-        });
-        if (error) {
-            console.error('Google 登录失败:', error.message);
-        }
+        await oauthSignIn('google');
     };
 
     const handleGitHubLogin = async () => {
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'github',
-            options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
-            },
-        });
-        if (error) {
-            console.error('GitHub 登录失败:', error.message);
-        }
+        await oauthSignIn('github');
     };
 
     // 关闭弹窗时重置状态
@@ -151,10 +135,10 @@ export default function LoginModal({ isOpen, onClose, language = 'zh' }: LoginMo
                                 </p>
                                 <div className="space-y-1.5">
                                     {[
-                                        isZh ? '🎁 获得 100 NovoCredits（约 10 次深度分析）' : '🎁 100 NovoCredits (≈10 deep analyses)',
+                                        isZh ? '🎁 注册即享完整功能，所有分析免费使用' : '🎁 Sign up to unlock all features for free',
                                         isZh ? '⚡ 无限次 Flash 极速分析' : '⚡ Unlimited Flash analyses',
                                         isZh ? '📤 分享报告到社交平台' : '📤 Share reports to social media',
-                                        isZh ? '👥 邀请好友双方各获 50 NovoCredits' : '👥 Invite friends: both get 50 NovoCredits',
+                                        isZh ? '👥 邀请好友一起使用 Novoscan' : '👥 Invite friends to use Novoscan',
                                     ].map((item, i) => (
                                         <p key={i} className="text-xs text-gray-600">{item}</p>
                                     ))}

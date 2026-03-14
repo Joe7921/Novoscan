@@ -109,7 +109,7 @@ export function computeQualityTier(
  * 当超过半数 Agent 为 low 置信度 且 全部为 fallback 时返回不可信
  * 用于 handleSearchComplete 中的前置过滤
  */
-export function computeConfidenceGate(analysisResult: any): {
+export function computeConfidenceGate(analysisResult: Record<string, unknown>): {
     passed: boolean;
     reason: string;
     lowCount: number;
@@ -120,7 +120,7 @@ export function computeConfidenceGate(analysisResult: any): {
     const agents: Array<{ confidence: string; isFallback: boolean }> = [];
 
     for (const key of agentKeys) {
-        const agent = analysisResult?.[key];
+        const agent = analysisResult?.[key] as Record<string, unknown> | undefined;
         if (agent && typeof agent.confidence === 'string') {
             agents.push({
                 confidence: agent.confidence,

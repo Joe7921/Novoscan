@@ -11,8 +11,8 @@ export async function GET(request: Request) {
     try {
         const data = await listUsers();
         return NextResponse.json(data);
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }
 
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
         }
 
         return NextResponse.json(result, { status: result.success ? 200 : 400 });
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

@@ -26,7 +26,7 @@ const RadarChart = dynamic(() => import('./RadarChart'), { ssr: false });
 const ScoreGauge = dynamic(() => import('./ScoreGauge'), { ssr: false });
 
 interface FlashReportProps {
-    report: any;
+    report: unknown;
     onReset: () => void;
     language: Language;
     query?: string;
@@ -301,7 +301,7 @@ function FlashReport({ report, onReset, language, query, dualResult }: FlashRepo
                         {isZh ? '相关论文' : 'Similar Papers'}
                     </h3>
                     <div className="space-y-3">
-                        {similarPapers.slice(0, 4).map((paper: any, idx: number) => (
+                        {similarPapers.slice(0, 4).map((paper: unknown, idx: number) => (
                             <div key={idx} className="flex items-start justify-between gap-4 py-2 border-b border-gray-100 last:border-0">
                                 <div className="min-w-0 flex-grow">
                                     <p className="text-sm font-medium text-gray-800 truncate">

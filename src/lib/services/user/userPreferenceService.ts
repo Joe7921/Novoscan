@@ -60,9 +60,9 @@ export async function recordSearchEvent(input: SearchEventInput): Promise<void> 
         }
 
         console.log(`[UserPref] 搜索事件已记录: user=${input.userId || input.anonymousId}, domain=${input.domainId}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
         // 偏好记录失败不应影响主流程
-        console.error('[UserPref] recordSearchEvent 异常:', err.message);
+        console.error('[UserPref] recordSearchEvent 异常:', (err instanceof Error ? err.message : String(err)));
     }
 }
 

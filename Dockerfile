@@ -9,7 +9,8 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+# 安装全部依赖（构建阶段需要 TypeScript / PostCSS / Tailwind 等 devDependencies）
+RUN npm ci
 
 # ────────────────────── Stage 2: 构建应用 ──────────────────────
 FROM node:18-alpine AS builder

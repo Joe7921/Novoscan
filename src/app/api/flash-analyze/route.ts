@@ -7,7 +7,7 @@ import { analyzeFlash } from '@/agents/flashOrchestrator';
 import { recordSearchEvent } from '@/lib/services/user/userPreferenceService';
 import { createClient } from '@/utils/supabase/server';
 import { checkRateLimit, sanitizeInput, isValidModelProvider, safeErrorResponse } from '@/lib/security/apiSecurity';
-import { chargeForFeature } from '@/lib/featureCosts';
+
 
 // ==================== 辅助函数 ====================
 
@@ -27,18 +27,18 @@ function inferAuthorityLevel(citationCount: number, venue: string): 'high' | 'me
     return 'low';
 }
 
-function buildSimilarPapers(academicReview: any, dualTrackResult: any): any[] {
+function buildSimilarPapers(academicReview: unknown, dualTrackResult: unknown): unknown[] {
     if (academicReview?.similarPapers?.length > 0) {
         return academicReview.similarPapers
-            .filter((p: any) => p.title && typeof p.similarityScore === 'number')
-            .sort((a: any, b: any) => (b.similarityScore || 0) - (a.similarityScore || 0))
+            .filter((p: unknown) => p.title && typeof p.similarityScore === 'number')
+            .sort((a: unknown, b: unknown) => (b.similarityScore || 0) - (a.similarityScore || 0))
             .slice(0, 4); // Flash：只取前 4 篇
     }
 
     const papers = dualTrackResult?.academic?.results || [];
     if (papers.length === 0) return [];
 
-    return papers.slice(0, 4).map((p: any) => ({
+    return papers.slice(0, 4).map((p: unknown) => ({
         title: p.title || '',
         year: p.year || 0,
         similarityScore: Math.max(30, 65 - papers.indexOf(p) * 5),
@@ -95,26 +95,13 @@ export async function POST(request: Request) {
 
         const safeModelProvider = isValidModelProvider(modelProvider) ? modelProvider : 'minimax';
 
-        // 💰 点数扣费：Flash 需要登录
-        if (!currentUserId) {
-            return NextResponse.json(
-                { success: false, error: '请登录后使用 Flash 模式', requireLogin: true },
-                { status: 401 }
-            );
-        }
-        const charge = await chargeForFeature(currentUserId, 'novoscan-flash');
-        if (!charge.success) {
-            return NextResponse.json(
-                { success: false, error: charge.error, currentBalance: charge.currentBalance, required: charge.required },
-                { status: 402 }
-            );
-        }
+        // 开源版所有功能免费，无需扣费
 
         const startTime = Date.now();
 
         const stream = new ReadableStream({
             async start(controller) {
-                const sendEvent = (type: string, data: any) => {
+                const sendEvent = (type: string, data: unknown) => {
                     controller.enqueue(new TextEncoder().encode(JSON.stringify({ type, data }) + '\n'));
                 };
 
@@ -138,8 +125,8 @@ export async function POST(request: Request) {
                         controller.close();
                         return;
                     }
-                } catch (e: any) {
-                    console.warn('[Flash API] 缓存读取提示:', e.message);
+                } catch (e: unknown) {
+                    console.warn('[Flash API] 缓存读取提示:', (e instanceof Error ? e.message : String(e)));
                 }
 
                 console.log(`[Flash API] ⚡ 启动 Flash 分析: "${query}"`);
@@ -148,19 +135,19 @@ export async function POST(request: Request) {
                 let dualTrackResult;
                 try {
                     sendEvent('log', '[Flash] ⚡ 启动双轨检索...');
-                    dualTrackResult = await searchDualTrack([query], domain) as any;
+                    dualTrackResult = await searchDualTrack([query], domain) as unknown;
                     if (!dualTrackResult.success) {
                         console.warn('[Flash API] 双轨检索失败:', dualTrackResult.error);
                     } else {
                         sendEvent('context_ready', {
-                            academic: dualTrackResult.academic?.results?.slice(0, 4).map((p: any) => p.title) || [],
-                            industryRepos: dualTrackResult.industry?.githubRepos?.slice(0, 3).map((r: any) => r.name) || [],
-                            industryWeb: dualTrackResult.industry?.webResults?.slice(0, 3).map((w: any) => w.title) || [],
+                            academic: dualTrackResult.academic?.results?.slice(0, 4).map((p: unknown) => p.title) || [],
+                            industryRepos: dualTrackResult.industry?.githubRepos?.slice(0, 3).map((r: unknown) => r.name) || [],
+                            industryWeb: dualTrackResult.industry?.webResults?.slice(0, 3).map((w: unknown) => w.title) || [],
                         });
                     }
-                } catch (e: any) {
-                    console.error('[Flash API] 双轨检索失败:', e.message);
-                    sendEvent('error', { message: `双轨检索失败: ${e.message}` });
+                } catch (e: unknown) {
+                    console.error('[Flash API] 双轨检索失败:', (e instanceof Error ? e.message : String(e)));
+                    sendEvent('error', { message: `双轨检索失败: ${(e instanceof Error ? e.message : String(e))}` });
                     controller.close();
                     return;
                 }
@@ -202,7 +189,7 @@ export async function POST(request: Request) {
                     academic: dualTrackResult?.academic,
                     industry: dualTrackResult?.industry,
                     crossValidation: dualTrackResult?.crossValidation,
-                    finalCredibility: (dualTrackResult as any)?.finalCredibility,
+                    finalCredibility: (dualTrackResult as unknown)?.finalCredibility,
 
                     // 兼容字段
                     noveltyScore: arbitration?.overallScore,
@@ -266,12 +253,12 @@ export async function POST(request: Request) {
                         } else {
                             console.log(`[Flash API] 🛡️ 质量门控通过, tier=${qualityTierValue}`);
                         }
-                    } catch (e: any) {
-                        console.warn('[Flash API] 质量门控模块加载失败(降级为允许入库):', e.message);
+                    } catch (e: unknown) {
+                        console.warn('[Flash API] 质量门控模块加载失败(降级为允许入库):', (e instanceof Error ? e.message : String(e)));
                     }
                 }
 
-                (finalResult as any).qualityTier = qualityTierValue;
+                (finalResult as unknown).qualityTier = qualityTierValue;
 
                 if (!finalResult.isPartial && !qualityBlocked && !privacyMode) {
                     try {
@@ -286,16 +273,16 @@ export async function POST(request: Request) {
                         });
                         if (insertError) throw insertError;
                         console.log(`[Flash API] 结果已存入数据库: "${query}"`);
-                    } catch (e: any) {
-                        console.warn('[Flash API] 保存到数据库失败:', e.message);
+                    } catch (e: unknown) {
+                        console.warn('[Flash API] 保存到数据库失败:', (e instanceof Error ? e.message : String(e)));
                     }
 
                     // 创新点提取（传递质量等级）
                     try {
                         const { handleSearchComplete } = await import('@/lib/services/innovation/innovationService');
                         await handleSearchComplete(query, finalResult, qualityTierValue);
-                    } catch (e: any) {
-                        console.warn('[Flash API] 创新点存储失败:', e.message);
+                    } catch (e: unknown) {
+                        console.warn('[Flash API] 创新点存储失败:', (e instanceof Error ? e.message : String(e)));
                     }
                 } else if (qualityBlocked) {
                     console.log(`[Flash API] 🛡️ 质量检查未通过，跳过缓存和创新点入库: "${query}"`);
@@ -333,7 +320,7 @@ export async function POST(request: Request) {
                             } else {
                                 console.log(`[Flash API] 📄 专业报告预生成完成并已存入`);
                             }
-                        }).catch((err: any) => {
+                        }).catch((err: unknown) => {
                             console.warn('[Flash API] 📄 报告预生成失败(不影响主流程):', err.message);
                         });
                     }).catch(() => { });
@@ -342,7 +329,7 @@ export async function POST(request: Request) {
                 sendEvent('done', finalResult);
                 controller.close();
 
-                } catch (fatalError: any) {
+                } catch (fatalError: unknown) {
                     // ===== Flash 全局异常兜底 =====
                     console.error('[Flash API] 💀 致命异常:', fatalError?.message || fatalError);
 
@@ -365,7 +352,7 @@ export async function POST(request: Request) {
                                 },
                             });
                             console.log(`[Flash API] 📝 致命异常记录已写入 search_history`);
-                        } catch (logErr: any) {
+                        } catch (logErr: unknown) {
                             console.warn('[Flash API] 失败记录写入数据库失败:', logErr.message);
                         }
                     }
@@ -386,7 +373,7 @@ export async function POST(request: Request) {
             },
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return safeErrorResponse(error, 'Flash 分析请求处理失败', 500, '[Flash API]');
     }
 }

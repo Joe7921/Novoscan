@@ -20,7 +20,7 @@ interface SpotlightData {
 interface SpotlightTrendProps {
     language: Language;
     /** 可选：从父组件传入已有数据列表，前端自动选取聚光项（无需额外 API） */
-    innovations?: any[];
+    innovations?: unknown[];
     onKeywordClick?: (keyword: string) => void;
 }
 

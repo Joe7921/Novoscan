@@ -15,7 +15,7 @@ import { getTrendingInnovations, getHiddenGems } from '@/lib/services/innovation
 
 // 60 秒内存缓存
 const CACHE_TTL_MS = 60_000;
-const cache = new Map<string, { data: any[]; ts: number }>();
+const cache = new Map<string, { data: unknown[]; ts: number }>();
 
 export async function GET(request: Request) {
     try {
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
             return NextResponse.json({ innovations: cached.data, fromCache: true });
         }
 
-        let data: any[];
+        let data: unknown[];
 
         if (sort === 'hidden') {
             data = await getHiddenGems(limit);
@@ -40,8 +40,8 @@ export async function GET(request: Request) {
         cache.set(cacheKey, { data, ts: Date.now() });
 
         return NextResponse.json({ innovations: data });
-    } catch (error: any) {
-        console.error('[API/innovations] 错误:', error.message);
+    } catch (error: unknown) {
+        console.error('[API/innovations] 错误:', (error instanceof Error ? error.message : String(error)));
         return NextResponse.json({ innovations: [], error: '获取创新数据失败' }, { status: 500 });
     }
 }

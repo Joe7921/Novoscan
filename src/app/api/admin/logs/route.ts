@@ -29,7 +29,7 @@ export async function GET(request: Request) {
         const page = parseInt(url.searchParams.get('page') || '1') || 1;
         const data = await getExecutionLogs({ limit, page });
         return NextResponse.json(data);
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

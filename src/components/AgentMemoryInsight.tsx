@@ -1,2 +1,2 @@
 'use client';
-export default function AgentMemoryInsight(_props: any) { return null; }
+export default function AgentMemoryInsight(_props: unknown) { return null; }

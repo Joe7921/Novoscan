@@ -130,14 +130,15 @@ export async function selectSearchEngines(keywords: string[]): Promise<EngineSel
         console.log(`[EngineSelector] 🤖 AI 推荐: 引擎=${selection.serpEngines.join('+')} | Scholar=${selection.useScholar} | Trends=${selection.useTrends} | 理由: ${selection.reasoning}`);
         return selection;
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         clearTimeout(timeoutId);
-        if (err.name === 'AbortError') {
+        if (err instanceof Error && err.name === 'AbortError') {
             console.warn('[EngineSelector] AI 调用超时(3s)，使用 fallback');
         } else if (err instanceof SyntaxError) {
             console.warn('[EngineSelector] AI 返回非 JSON 格式，使用 fallback');
         } else {
-            console.warn('[EngineSelector] AI 调用异常，使用 fallback:', err.message);
+            const msg = err instanceof Error ? err.message : String(err);
+            console.warn('[EngineSelector] AI 调用异常，使用 fallback:', msg);
         }
         return fallbackEngineSelection(keywords);
     }

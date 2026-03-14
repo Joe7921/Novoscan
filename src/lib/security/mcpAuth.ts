@@ -12,7 +12,7 @@
  */
 
 import { supabaseAdmin } from '@/lib/supabase';
-import { checkFeatureAccess } from '@/lib/services/featureAccessService';
+import { checkFeatureAccess } from '@/lib/stubs';
 
 // ==================== 环境变量 Key 加载 ====================
 

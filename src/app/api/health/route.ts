@@ -144,8 +144,8 @@ async function testModel(check: ModelCheck): Promise<ModelResult> {
             catch { errMsg = res.statusText; }
         }
         return { name: check.name, status: ok ? 'healthy' : 'error', httpCode: res.status, responseMs: ms, error: errMsg };
-    } catch (e: any) {
-        return { name: check.name, status: 'unreachable', responseMs: Date.now() - start, error: e.message };
+    } catch (e: unknown) {
+        return { name: check.name, status: 'unreachable', responseMs: Date.now() - start, error: (e instanceof Error ? e.message : String(e)) };
     }
 }
 

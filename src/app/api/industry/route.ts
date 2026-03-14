@@ -25,7 +25,7 @@ export async function POST(request: Request) {
         const result = await searchIndustry(keywords)
         return NextResponse.json(result)
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return safeErrorResponse(error, '产业搜索失败', 500, '[API Industry]');
     }
 }

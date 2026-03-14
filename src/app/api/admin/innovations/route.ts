@@ -18,7 +18,7 @@ export async function GET(request: Request) {
         const domain = url.searchParams.get('domain') || null;
         const data = await getInnovationTrends({ top, domain });
         return NextResponse.json(data);
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

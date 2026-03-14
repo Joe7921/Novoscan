@@ -342,8 +342,8 @@ const ErrorOverlay = ({ isZh, errorMsg, onRetry, onDismiss }: {
    ================================================================ */
 interface ExportReportButtonProps {
     query: string;
-    report: any;
-    dualResult: any;
+    report: unknown;
+    dualResult: unknown;
     language: Language;
     modelProvider?: string;
     size?: 'sm' | 'md';

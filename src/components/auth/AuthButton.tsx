@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { createClient } from '@/utils/supabase/client';
-import type { User } from '@supabase/supabase-js';
+import { useAuthSession } from '@/components/auth/AuthSessionProvider';
 import { LogIn, LogOut, ChevronDown, Github, UserCircle, Wallet, Bell, Mail, Loader2, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
@@ -20,10 +19,11 @@ function isWebView(): boolean {
  * 检测当前用户登录状态：
  *   - 未登录时：显示统一"登录"按钮，点击展开下拉菜单选择 Google / GitHub / 邮箱
  *   - 已登录时：显示头像、名称和下拉登出菜单
+ *
+ * 通过 useAuthSession() hook 自动适配 NextAuth / Supabase 认证模式。
  */
 export default function AuthButton({ unreadCount = 0 }: { unreadCount?: number }) {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { user, loading, oauthSignIn, magicLinkSignIn, handleSignOut } = useAuthSession();
     const [menuOpen, setMenuOpen] = useState(false);
     const [points, setPoints] = useState<number | null>(null);
     const inWebView = useMemo(() => isWebView(), []);
@@ -35,27 +35,6 @@ export default function AuthButton({ unreadCount = 0 }: { unreadCount?: number }
     const [emailSent, setEmailSent] = useState(false);
     const [emailError, setEmailError] = useState('');
     const [cooldown, setCooldown] = useState(0);
-
-    const supabase = createClient();
-
-    useEffect(() => {
-        // 初始化获取用户
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
-            setLoading(false);
-        };
-        getUser();
-
-        // 监听认证状态变化
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                setUser(session?.user ?? null);
-            }
-        );
-
-        return () => subscription.unsubscribe();
-    }, []);
 
     // 获取点数余额
     useEffect(() => {
@@ -76,15 +55,7 @@ export default function AuthButton({ unreadCount = 0 }: { unreadCount?: number }
     // OAuth 登录（通用）
     const handleOAuthLogin = async (provider: 'google' | 'github') => {
         setMenuOpen(false);
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider,
-            options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
-            },
-        });
-        if (error) {
-            console.error(`${provider} 登录失败:`, error.message);
-        }
+        await oauthSignIn(provider);
     };
 
     // 邮箱 Magic Link 登录
@@ -95,17 +66,12 @@ export default function AuthButton({ unreadCount = 0 }: { unreadCount?: number }
         setEmailSending(true);
         setEmailError('');
 
-        const { error } = await supabase.auth.signInWithOtp({
-            email: email.trim(),
-            options: {
-                emailRedirectTo: `${window.location.origin}/auth/callback`,
-            },
-        });
+        const result = await magicLinkSignIn(email.trim());
 
         setEmailSending(false);
 
-        if (error) {
-            console.error('邮箱登录失败:', error.message);
+        if (result.error) {
+            console.error('邮箱登录失败:', result.error);
             setEmailError('发送失败，请稍后重试');
         } else {
             setEmailSent(true);
@@ -124,11 +90,8 @@ export default function AuthButton({ unreadCount = 0 }: { unreadCount?: number }
 
     // 登出
     const handleLogout = async () => {
-        await supabase.auth.signOut();
-        setUser(null);
         setMenuOpen(false);
-        // 刷新页面以清除所有状态
-        window.location.reload();
+        await handleSignOut();
     };
 
     // 关闭菜单时重置邮箱状态
@@ -261,8 +224,8 @@ export default function AuthButton({ unreadCount = 0 }: { unreadCount?: number }
     }
 
     // ====== 已登录状态 ======
-    const avatarUrl = user.user_metadata?.avatar_url;
-    const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || '用户';
+    const avatarUrl = user.image;
+    const displayName = user.name || user.email?.split('@')[0] || '用户';
 
     return (
         <div className="relative">

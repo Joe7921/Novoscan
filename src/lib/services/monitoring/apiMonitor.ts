@@ -80,7 +80,7 @@ export async function trackApiCall<T>(
 
         console.log(`[ApiMonitor] ✅ ${provider} | ${record.callType} | ${responseTime}ms`);
         return result;
-    } catch (error: any) {
+    } catch (error: unknown) {
         const responseTime = Math.round(performance.now() - startTime);
 
         const record: CallRecord = {
@@ -88,7 +88,7 @@ export async function trackApiCall<T>(
             callType: metadata?.callType || 'call',
             responseTimeMs: responseTime,
             isSuccess: false,
-            errorMessage: error?.message || String(error),
+            errorMessage: error instanceof Error ? error.message : String(error),
             timestamp: Date.now(),
         };
         callHistory.push(record);
@@ -196,15 +196,15 @@ export function getRecentCalls(limit = 20): CallRecord[] {
 
 // ==================== Supabase 写入 ====================
 
-async function logApiCall(data: Record<string, any>): Promise<void> {
+async function logApiCall(data: Record<string, unknown>): Promise<void> {
     try {
         const { supabaseAdmin } = await import('@/lib/supabase');
         const { error } = await supabaseAdmin.from('api_call_logs').insert(data);
         if (error) {
             console.error('[ApiMonitor] 写入 Supabase 日志失败:', error.message);
         }
-    } catch (err: any) {
+    } catch (err: unknown) {
         // 全局异常捕捉，避免弄崩主流程
-        console.error('[ApiMonitor] logApiCall 致命异常:', err.message || err);
+        console.error('[ApiMonitor] logApiCall 致命异常:', (err instanceof Error ? err.message : String(err)) || err);
     }
 }

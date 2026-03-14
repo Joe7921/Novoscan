@@ -1,4 +1,4 @@
-import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { db } from '@/lib/db/factory';
 import { matchSubDomainFromStatic, mapCategoryToDomainId } from '@/lib/constants/domains';
 
 export interface AssignedDomain {
@@ -20,7 +20,7 @@ export async function assignDomain(keyword: string, oldCategory?: string): Promi
     // 2. 尝试数据库动态匹配 (由于 aliases 使用 GIN 索引，可高效查找)
     try {
         const normalized = keyword.toLowerCase().trim();
-        const { data: dbMatch } = await supabase
+        const { data: dbMatch } = await db
             .from('sub_domains')
             .select('id, domain_id')
             .eq('is_active', true)
@@ -59,7 +59,7 @@ export async function assignDomain(keyword: string, oldCategory?: string): Promi
  */
 export async function getAllDomains() {
     try {
-        const { data } = await supabase
+        const { data } = await db
             .from('domains')
             .select('*')
             .order('sort_order', { ascending: true });

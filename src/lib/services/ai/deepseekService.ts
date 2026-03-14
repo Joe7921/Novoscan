@@ -1,5 +1,5 @@
 // deepseekService - DeepSeek AI 񣨽ʹã
-import { AnalysisReport, Language } from "@/types";
+import { AnalysisReport, Language, SimilarPaper, InternetSource } from "@/types";
 
 // ʹ÷˻ͨ NEXT_PUBLIC_ й©ͻ
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
@@ -217,8 +217,8 @@ export const parseAnalysisResponse = (text: string): AnalysisReport => {
     let summary: string | undefined;
     let keyDifferentiators: string | undefined;
     let improvementSuggestions: string | undefined;
-    let similarPapers: any[] = [];
-    let internetSources: any[] = [];
+    let similarPapers: SimilarPaper[] = [];
+    let internetSources: InternetSource[] = [];
 
     if (jsonStr) {
         try {

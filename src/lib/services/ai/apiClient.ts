@@ -19,7 +19,7 @@ export async function analyzeWithAI(
     domain: string,
     language: string,
     modelProvider: string,
-    onProgress?: (event: 'log' | 'progress' | 'agent_state' | 'agent_stream' | 'agent_thinking' | 'context_ready' | 'error', data: any) => void,
+    onProgress?: (event: 'log' | 'progress' | 'agent_state' | 'agent_stream' | 'agent_thinking' | 'context_ready' | 'error', data: unknown) => void,
     domainId?: string,
     subDomainId?: string,
     domainHint?: string,
@@ -44,7 +44,7 @@ export async function analyzeWithAI(
 
 
     if (!res.ok) {
-        let errData: any = {};
+        let errData: Record<string, string> = {};
         try { errData = await res.json(); } catch (e) { }
         throw new Error(errData.error || `Analyze API error: ${res.status}`);
     }
@@ -54,7 +54,7 @@ export async function analyzeWithAI(
 
     const decoder = new TextDecoder('utf-8');
     let buffer = '';
-    let finalData: any = null;
+    let finalData: Record<string, unknown> | null = null;
 
     while (true) {
         const { value, done } = await reader.read();
@@ -99,7 +99,7 @@ export async function analyzeWithAI(
     }
 
     // 只缓存完整（非降级）的分析结果，隐私模式下不缓存
-    if (!privacyMode && finalData.success && !finalData.fromCache && !finalData.isPartial && !finalData.arbitration?.isPartial) {
+    if (!privacyMode && finalData.success && !finalData.fromCache && !finalData.isPartial && !(finalData.arbitration as Record<string, unknown> | undefined)?.isPartial) {
         setCachedResult(query, finalData);
     }
 
@@ -115,7 +115,7 @@ export async function analyzeFlash(
     domain: string,
     language: string,
     modelProvider: string,
-    onProgress?: (event: 'log' | 'progress' | 'agent_state' | 'agent_stream' | 'agent_thinking' | 'context_ready' | 'error', data: any) => void,
+    onProgress?: (event: 'log' | 'progress' | 'agent_state' | 'agent_stream' | 'agent_thinking' | 'context_ready' | 'error', data: unknown) => void,
     domainId?: string,
     subDomainId?: string,
     domainHint?: string,
@@ -130,7 +130,7 @@ export async function analyzeFlash(
     });
 
     if (!res.ok) {
-        let errData: any = {};
+        let errData: Record<string, string> = {};
         try { errData = await res.json(); } catch (e) { }
         throw new Error(errData.error || `Flash API error: ${res.status}`);
     }
@@ -140,7 +140,7 @@ export async function analyzeFlash(
 
     const decoder = new TextDecoder('utf-8');
     let buffer = '';
-    let finalData: any = null;
+    let finalData: Record<string, unknown> | null = null;
 
     while (true) {
         const { value, done } = await reader.read();
@@ -195,7 +195,7 @@ export async function generateFollowUp(
     });
 
     if (!res.ok) {
-        let errData: any = {};
+        let errData: Record<string, string> = {};
         try { errData = await res.json(); } catch (e) { }
         throw new Error(errData.error || `Generate Followup API error: ${res.status}`);
     }
@@ -206,13 +206,13 @@ export async function generateFollowUp(
 
 export async function refineWithFollowUp(
     query: string,
-    dualTrackResult: any,
+    dualTrackResult: Record<string, unknown>,
     selectedQuestions: string[],
     userInput: string,
     previousSummary: string,
     language: string,
     modelProvider: string,
-    onProgress?: (event: 'log' | 'progress' | 'agent_state' | 'agent_stream' | 'agent_thinking' | 'context_ready' | 'refine_title' | 'error' | 'done', data: any) => void,
+    onProgress?: (event: 'log' | 'progress' | 'agent_state' | 'agent_stream' | 'agent_thinking' | 'context_ready' | 'refine_title' | 'error' | 'done', data: unknown) => void,
     domainId?: string,
     subDomainId?: string,
     domainHint?: string,
@@ -242,7 +242,7 @@ export async function refineWithFollowUp(
     });
 
     if (!res.ok) {
-        let errData: any = {};
+        let errData: Record<string, string> = {};
         try { errData = await res.json(); } catch (e) { }
         throw new Error(errData.error || `Refine Followup API error: ${res.status}`);
     }
@@ -252,7 +252,7 @@ export async function refineWithFollowUp(
 
     const decoder = new TextDecoder('utf-8');
     let buffer = '';
-    let finalData: any = null;
+    let finalData: Record<string, unknown> | null = null;
 
     while (true) {
         const { value, done } = await reader.read();
@@ -300,15 +300,15 @@ export async function refineWithFollowUp(
 export async function retryAgents(
     agentIds: string[],
     query: string,
-    academicData: any,
-    industryData: any,
+    academicData: Record<string, unknown>,
+    industryData: Record<string, unknown>,
     modelProvider: string = 'minimax',
     language: string = 'zh',
     domainHint?: string,
     domainId?: string,
     subDomainId?: string,
-    existingAgentResults?: Record<string, any>,
-): Promise<{ success: boolean; results: Record<string, any>; successCount: number; failureDetails?: Record<string, string> }> {
+    existingAgentResults?: Record<string, unknown>,
+): Promise<{ success: boolean; results: Record<string, unknown>; successCount: number; failureDetails?: Record<string, string> }> {
     const res = await fetch('/api/agent-retry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -327,7 +327,7 @@ export async function retryAgents(
     });
 
     if (!res.ok) {
-        let errData: any = {};
+        let errData: Record<string, string> = {};
         try { errData = await res.json(); } catch (e) { }
         throw new Error(errData.error || `Agent Retry API error: ${res.status}`);
     }
@@ -341,14 +341,14 @@ export async function retryAgents(
  */
 export async function fullRetryAgents(
     query: string,
-    academicData: any,
-    industryData: any,
+    academicData: Record<string, unknown>,
+    industryData: Record<string, unknown>,
     modelProvider: string = 'minimax',
     language: string = 'zh',
     domainHint?: string,
     domainId?: string,
     subDomainId?: string,
-): Promise<any> {
+): Promise<Record<string, unknown>> {
     const res = await fetch('/api/agent-retry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -366,7 +366,7 @@ export async function fullRetryAgents(
     });
 
     if (!res.ok) {
-        let errData: any = {};
+        let errData: Record<string, string> = {};
         try { errData = await res.json(); } catch (e) { }
         // 特殊处理：余额不足
         if (res.status === 402) {
@@ -390,15 +390,15 @@ export function calculatePartialRetryCost(agentCount: number): number {
 export async function partialRetryAgents(
     agentIds: string[],
     query: string,
-    academicData: any,
-    industryData: any,
+    academicData: Record<string, unknown>,
+    industryData: Record<string, unknown>,
     modelProvider: string = 'minimax',
     language: string = 'zh',
     domainHint?: string,
     domainId?: string,
     subDomainId?: string,
-    existingAgentResults?: Record<string, any>,
-): Promise<any> {
+    existingAgentResults?: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
     const res = await fetch('/api/agent-retry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -418,7 +418,7 @@ export async function partialRetryAgents(
     });
 
     if (!res.ok) {
-        let errData: any = {};
+        let errData: Record<string, string> = {};
         try { errData = await res.json(); } catch (e) { }
         if (res.status === 402) {
             throw new Error(errData.error || '余额不足');

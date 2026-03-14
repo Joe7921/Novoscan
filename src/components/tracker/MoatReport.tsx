@@ -39,7 +39,7 @@ interface MoatReportProps {
 }
 
 // ==================== 配置 ====================
-const moatStatusConfig: Record<MoatData['moatStatus'], { color: string; bg: string; border: string; icon: any; label: string; gradient: string }> = {
+const moatStatusConfig: Record<MoatData['moatStatus'], { color: string; bg: string; border: string; icon: unknown; label: string; gradient: string }> = {
     strong: { color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200', icon: Shield, label: '强劲', gradient: 'from-emerald-500 to-teal-500' },
     stable: { color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', icon: Minus, label: '稳定', gradient: 'from-blue-500 to-indigo-500' },
     weakening: { color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', icon: TrendingDown, label: '收窄', gradient: 'from-amber-500 to-orange-500' },
@@ -268,7 +268,7 @@ export default function MoatReport({ monitorId }: MoatReportProps) {
                         <div className={`w-8 h-8 ${metric.bg} rounded-lg flex items-center justify-center mb-2`}>
                             <metric.icon className={`w-4 h-4 ${metric.color}`} />
                         </div>
-                        <p className="text-xl font-black text-gray-900">{(metric as any).prefix || ''}{metric.value}</p>
+                        <p className="text-xl font-black text-gray-900">{(metric as unknown).prefix || ''}{metric.value}</p>
                         <p className="text-[10px] text-gray-400 font-medium mt-0.5">{metric.label}</p>
                     </div>
                 ))}

@@ -142,8 +142,8 @@ async function harvestPaper(
 
         console.log(`[DNAHarvester] ✅ ${query.slice(0, 50)}... [${domain.zh}] vec=[${extraction.vector.join(',')}]`);
         return 'added';
-    } catch (err: any) {
-        console.error(`[DNAHarvester] ❌ 处理失败: ${query.slice(0, 40)}... — ${err.message}`);
+    } catch (err: unknown) {
+        console.error(`[DNAHarvester] ❌ 处理失败: ${query.slice(0, 40)}... — ${(err instanceof Error ? err.message : String(err))}`);
         return 'failed';
     }
 }
@@ -214,8 +214,8 @@ export async function harvestAndStore(): Promise<HarvestResult> {
                 newlyAdded: topicNew,
             });
 
-        } catch (err: any) {
-            console.error(`[DNAHarvester] ❌ 领域搜索失败: ${topicLabel} — ${err.message}`);
+        } catch (err: unknown) {
+            console.error(`[DNAHarvester] ❌ 领域搜索失败: ${topicLabel} — ${(err instanceof Error ? err.message : String(err))}`);
             details.push({
                 topic: topicLabel,
                 papersFound: 0,

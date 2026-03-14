@@ -16,7 +16,7 @@ interface SourceItem {
 }
 
 interface DataSourceCoverageProps {
-    sources?: any[]; // For future real data integration
+    sources?: unknown[]; // For future real data integration
     totalAcademic?: number;
     totalIndustry?: number;
     language?: Language;

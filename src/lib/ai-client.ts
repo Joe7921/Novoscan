@@ -1,5 +1,5 @@
 import { ModelProvider, MODEL_OPTIONS, ModelOption } from '../types';
-import { checkCostLimit, CostProvider } from './services/costLimiter';
+import { checkCostLimit, CostProvider } from '@/lib/stubs';
 
 // ==================== AI 统一适配器 ====================
 // 架构：ProviderConfig 注册表 + callProvider 统一引擎
@@ -419,7 +419,7 @@ async function callProvider(
                 const retryDuration = Date.now() - startTime;
                 console.log(`[AI Client Failover] ${config.id} 备用 Key 成功 (${retryDuration}ms)`);
                 // 异步记录 failover 事件，供巡检脚本检测
-                import('./services/costLimiter').then(() =>
+                import('@/lib/stubs').then(() =>
                     import('../lib/supabase').then(async ({ supabaseAdmin }) => {
                         await supabaseAdmin.from('api_call_logs').insert({
                             provider: `${config.id}-failover`, is_success: true,

@@ -1,4 +1,4 @@
-import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { db, adminDb } from '@/lib/db/factory';
 import { callAIRaw, parseAgentJSON } from '@/lib/ai-client';
 import { assignDomain } from './domainService';
 
@@ -7,7 +7,7 @@ import { assignDomain } from './domainService';
  */
 export async function extractInnovationsFromAnalysis(
     idea: string,
-    analysisResult: any
+    analysisResult: Record<string, unknown>
 ): Promise<Array<{ keyword: string; category: string; noveltyScore: number }>> {
     try {
         const prompt = `
@@ -21,10 +21,10 @@ ${idea}
 ${analysisResult?.keyDifferentiators || '无'}
 
 [学术核心发现 (Academic Findings)]
-${analysisResult?.academicReview?.keyFindings?.join('\n') || '无'}
+${(analysisResult?.academicReview as Record<string, unknown> | undefined)?.keyFindings ? ((analysisResult.academicReview as Record<string, unknown>).keyFindings as string[]).join('\n') : '无'}
 
 [产业差异化 (Industry Differentiators)]
-${analysisResult?.industryAnalysis?.keyFindings?.join('\n') || '无'}
+${(analysisResult?.industryAnalysis as Record<string, unknown> | undefined)?.keyFindings ? ((analysisResult.industryAnalysis as Record<string, unknown>).keyFindings as string[]).join('\n') : '无'}
 
 请严格以 JSON 数组格式返回结果，包含 keyword, category 和 noveltyScore 字段。
 注意旧类别(category)请继续评估，仅限：'tech', 'healthcare', 'business', 'method', 或 'other'。
@@ -95,7 +95,7 @@ export async function storeInnovations(
 
         try {
             // 检查是否已存在
-            const { data: existing } = await supabase
+            const { data: existing } = await db
                 .from('innovations')
                 .select('innovation_id, search_count, domain_id, sub_domain_id')
                 .ilike('keyword_normalized', normalized)
@@ -103,7 +103,7 @@ export async function storeInnovations(
 
             if (existing) {
                 // 更新搜索次数
-                await supabaseAdmin
+                await adminDb
                     .from('innovations')
                     .update({
                         search_count: (existing.search_count || 0) + 1,
@@ -121,7 +121,7 @@ export async function storeInnovations(
                 // 插入新记录，追加关联子领域计算
                 const domainInfo = await assignDomain(inv.keyword, inv.category);
 
-                const insertPayload: Record<string, any> = {
+                const insertPayload: Record<string, unknown> = {
                     keyword: inv.keyword,
                     keyword_normalized: normalized,
                     category: inv.category,
@@ -136,7 +136,7 @@ export async function storeInnovations(
                     insertPayload.quality_tier = qualityTier;
                 }
 
-                const { data, error } = await supabaseAdmin
+                const { data, error } = await adminDb
                     .from('innovations')
                     .insert(insertPayload)
                     .select('innovation_id')
@@ -152,8 +152,8 @@ export async function storeInnovations(
                 }
                 if (error) console.warn('[InnovationService] 插入失败:', error.message);
             }
-        } catch (err: any) {
-            console.warn('[InnovationService] 存储创新点失败:', err.message);
+        } catch (err: unknown) {
+            console.warn('[InnovationService] 存储创新点失败:', (err instanceof Error ? err.message : String(err)));
         }
     }
 
@@ -168,7 +168,7 @@ export async function getTrendingInnovations(
     limit = 10,
     sortBy: 'novelty' | 'trending' = 'novelty'
 ) {
-    let query = supabase.from('innovations').select('*');
+    let query = db.from('innovations').select('*');
 
     if (sortBy === 'novelty') {
         // 创新优先：创新分高 + 有一定关注度
@@ -188,7 +188,7 @@ export async function getTrendingInnovations(
  * 获取冷门高创新（蓝海发现）
  */
 export async function getHiddenGems(limit = 10) {
-    const { data } = await supabase
+    const { data } = await db
         .from('innovations')
         .select('*')
         .lt('search_count', 5)
@@ -205,7 +205,7 @@ export async function searchInnovations(query: string, limit = 8) {
     if (!query || query.length < 2) return [];
 
     const normalized = query.toLowerCase().trim();
-    const { data } = await supabase
+    const { data } = await db
         .from('innovations')
         .select('innovation_id, keyword, category, novelty_score, search_count')
         .ilike('keyword_normalized', `%${normalized}%`)
@@ -246,7 +246,7 @@ export async function generateQueryHash(query: string): Promise<string> {
  */
 export async function handleSearchComplete(
     idea: string,
-    analysisResult: any,
+    analysisResult: Record<string, unknown>,
     qualityTier?: 'high' | 'medium' | 'low'
 ): Promise<Array<{ keyword: string; category: string; noveltyScore: number; innovationId: string }>> {
     try {
@@ -304,17 +304,17 @@ export async function handleSearchComplete(
         try {
             const { extractDNAVector, storeDNAVector } = await import('./innovationDNA');
             const analysisContext = typeof analysisResult?.summary === 'string'
-                ? analysisResult.summary
-                : typeof analysisResult?.arbitration?.summary === 'string'
-                    ? analysisResult.arbitration.summary
+                ? analysisResult.summary as string
+                : typeof (analysisResult?.arbitration as Record<string, unknown> | undefined)?.summary === 'string'
+                    ? (analysisResult.arbitration as Record<string, unknown>).summary as string
                     : '';
             extractDNAVector(idea, analysisContext).then(extraction => {
                 storeDNAVector(idea, extraction).catch(console.error);
             }).catch(err => {
                 console.warn('[InnovationService] DNA 向量提取失败(不影响主流程):', err.message);
             });
-        } catch (e: any) {
-            console.warn('[InnovationService] DNA 模块加载失败:', e.message);
+        } catch (e: unknown) {
+            console.warn('[InnovationService] DNA 模块加载失败:', (e instanceof Error ? e.message : String(e)));
         }
 
         console.log('[InnovationService] 后处理完成');

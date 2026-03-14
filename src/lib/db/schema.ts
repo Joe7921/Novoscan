@@ -85,7 +85,7 @@ export interface HistoryReportCacheRecord {
     /** 搜索关键词 */
     query: string;
     /** 完整的 result JSON */
-    result: any;
+    result: Record<string, unknown>;
     /** 缓存时间戳 */
     cachedAt: number;
 }

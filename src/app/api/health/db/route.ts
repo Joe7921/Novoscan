@@ -79,9 +79,9 @@ export async function GET() {
             }
         }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         status = 'error';
-        message = error.message || '无法连接到数据库';
+        message = (error instanceof Error ? error.message : String(error)) || '无法连接到数据库';
         checks.connection = false;
     }
 

@@ -36,10 +36,10 @@ export async function GET(request: Request) {
             success: true,
             result,
         });
-    } catch (e: any) {
-        console.error('[NovoDNA Cron] 执行失败:', e.message);
+    } catch (e: unknown) {
+        console.error('[NovoDNA Cron] 执行失败:', (e instanceof Error ? e.message : String(e)));
         return NextResponse.json(
-            { success: false, error: e.message },
+            { success: false, error: (e instanceof Error ? e.message : String(e)) },
             { status: 500 }
         );
     }

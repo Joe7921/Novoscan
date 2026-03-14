@@ -7,6 +7,79 @@
 import { callAIRaw, parseAgentJSON } from '@/lib/ai-client';
 import type { ModelProvider } from '@/types';
 
+// ==================== 辅助类型定义 ====================
+
+/** GitHub 仓库基本信息 */
+interface GithubRepoInfo {
+    name?: string;
+    stars?: number;
+    health?: string;
+}
+
+/** 单个 Agent 的分析结果结构 */
+interface AgentAnalysis {
+    score?: number;
+    confidence?: 'high' | 'medium' | 'low' | number;
+    confidenceReasoning?: string;
+    keyFindings?: string[];
+    dimensionScores?: Array<{ name: string; score: number; reasoning: string }>;
+    similarPapers?: Array<{ title: string; year: number; similarityScore: number; keyDifference: string; citationCount?: number; venue?: string }>;
+    redFlags?: string[];
+    analysis?: string;
+    innovationRadar?: Array<{ key: string; nameZh: string; nameEn: string; score: number; reasoning: string }>;
+}
+
+/** 多 Agent 仲裁结果 */
+interface Arbitration {
+    overallScore?: number;
+    consensusLevel?: string;
+    dissent?: string[];
+    conflictsResolved?: string[];
+    summary?: string;
+    weightedBreakdown?: ProfessionalReport['weightedScoreBreakdown'];
+    recommendation?: string;
+    nextSteps?: string[];
+}
+
+/** 原始报告数据（多 Agent 分析结果聚合） */
+interface RawReport {
+    arbitration?: Arbitration;
+    academicReview?: AgentAnalysis;
+    industryAnalysis?: AgentAnalysis;
+    innovationEvaluation?: AgentAnalysis;
+    competitorAnalysis?: AgentAnalysis;
+    qualityCheck?: { passed?: boolean; consistencyScore?: number; warnings?: string[] };
+    noveltyScore?: number;
+    practicalScore?: number;
+    summary?: string;
+    recommendation?: string;
+    innovationRadar?: AgentAnalysis['innovationRadar'] | null;
+}
+
+/** 七源双轨搜索结果 */
+interface DualTrackResult {
+    crossValidation?: {
+        academicSupport?: string;
+        industrySupport?: string;
+        openSourceVerified?: boolean;
+    };
+    finalCredibility?: { level?: string; score?: number };
+    credibility?: { level?: string; score?: number };
+    academic?: {
+        stats?: {
+            totalPapers?: number;
+            totalCitations?: number;
+            openAccessCount?: number;
+            avgCitation?: number;
+            bySource?: Record<string, number>;
+        };
+    };
+    industry?: {
+        webSources?: { brave?: number; serpapi?: number };
+        githubRepos?: GithubRepoInfo[];
+    };
+}
+
 /** 报告章节 */
 export interface ReportSection {
     title: string;
@@ -98,8 +171,8 @@ export interface ProfessionalReport {
  */
 function buildReportPrompt(
     query: string,
-    report: any,
-    dualResult: any,
+    report: RawReport,
+    dualResult: DualTrackResult,
     language: 'zh' | 'en',
 ): string {
     const isZh = language === 'zh';
@@ -224,8 +297,8 @@ ${JSON.stringify((academicReview?.similarPapers || []).slice(0, 5), null, 2)}
  */
 export async function generateProfessionalReport(
     query: string,
-    report: any,
-    dualResult: any,
+    report: RawReport,
+    dualResult: DualTrackResult,
     language: 'zh' | 'en',
     modelProvider: ModelProvider,
 ): Promise<ProfessionalReport> {
@@ -259,8 +332,9 @@ export async function generateProfessionalReport(
         };
         try {
             parsed = parseAgentJSON(text);
-        } catch (parseErr: any) {
-            console.error('[报告撰写Agent] JSON 解析失败:', parseErr.message);
+        } catch (parseErr: unknown) {
+            const msg = parseErr instanceof Error ? parseErr.message : String(parseErr);
+            console.error('[报告撰写Agent] JSON 解析失败:', msg);
             console.error('[报告撰写Agent] 原始文本前 500 字符:', text.slice(0, 500));
             console.error('[报告撰写Agent] 原始文本后 300 字符:', text.slice(-300));
             throw parseErr;
@@ -301,7 +375,7 @@ export async function generateProfessionalReport(
             weightedScoreBreakdown: arbitration?.weightedBreakdown,
             dimensionScores: report?.innovationEvaluation?.dimensionScores || report?.academicReview?.dimensionScores,
             topSimilarPapers: report?.academicReview?.similarPapers?.slice(0, 5) || [],
-            innovationRadar: report?.innovationEvaluation?.innovationRadar || report?.innovationRadar,
+            innovationRadar: report?.innovationEvaluation?.innovationRadar || report?.innovationRadar || undefined,
             dataProfile: {
                 totalPapers: academicStats?.totalPapers || 0,
                 totalCitations: academicStats?.totalCitations || 0,
@@ -310,9 +384,13 @@ export async function generateProfessionalReport(
                 bySource: academicStats?.bySource || {},
                 webResultsCount: (industryStats?.webSources?.brave || 0) + (industryStats?.webSources?.serpapi || 0),
                 githubReposCount: (industryStats?.githubRepos || []).length,
-                activeRepos: (industryStats?.githubRepos || []).filter((r: any) => r.health === 'active').length,
-                totalStars: (industryStats?.githubRepos || []).reduce((sum: number, r: any) => sum + (r.stars || 0), 0),
-                topGithubProjects: topProjects
+                activeRepos: (industryStats?.githubRepos || []).filter((r: GithubRepoInfo) => r.health === 'active').length,
+                totalStars: (industryStats?.githubRepos || []).reduce((sum: number, r: GithubRepoInfo) => sum + (r.stars || 0), 0),
+                topGithubProjects: topProjects.map((r: GithubRepoInfo) => ({
+                    name: r.name || '',
+                    stars: r.stars || 0,
+                    health: r.health || 'unknown',
+                }))
             },
             qualityAudit: qualityCheck ? {
                 passed: qualityCheck.passed || false,
@@ -320,8 +398,9 @@ export async function generateProfessionalReport(
                 warnings: qualityCheck.warnings || []
             } : undefined
         };
-    } catch (err: any) {
-        console.error('[报告撰写Agent] AI 调用失败，使用兜底报告:', err.message);
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error('[报告撰写Agent] AI 调用失败，使用兜底报告:', msg);
         return buildFallbackReport(query, report, dualResult, language);
     }
 }
@@ -331,8 +410,8 @@ export async function generateProfessionalReport(
  */
 function buildFallbackReport(
     query: string,
-    report: any,
-    dualResult: any,
+    report: RawReport,
+    dualResult: DualTrackResult,
     language: 'zh' | 'en',
 ): ProfessionalReport {
     const isZh = language === 'zh';

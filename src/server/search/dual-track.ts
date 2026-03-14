@@ -4,6 +4,112 @@ import { extractEnglishKeywordsAI, containsChinese } from './dual-track-utils';
 import { selectSearchEngines, type EngineSelection } from './engine-selector';
 import { searchGoogleTrends, type TrendsResult } from '@/server/industry/trends';
 
+// ==================== 内部类型定义 ====================
+
+/** 学术论文结构（基于 OpenAlex/CrossRef/CORE/arXiv 返回字段） */
+interface AcademicPaper {
+    title?: string;
+    citationCount?: number;
+    isOa?: boolean;
+    pdfUrl?: string;
+    isOpenAccess?: boolean;
+    downloadUrl?: string;
+    concepts?: string[];
+    year?: number;
+}
+
+/** 网页搜索结果 */
+interface WebResult {
+    url?: string;
+    title?: string;
+    snippet?: string;
+}
+
+/** GitHub 仓库信息 */
+interface GithubRepo {
+    name?: string;
+    fullName?: string;
+    stars?: number;
+    health?: string;
+    topics?: string[];
+}
+
+/** 微信公众号文章 */
+interface WechatArticle {
+    url?: string;
+    title?: string;
+}
+
+/** Google Scholar 论文 */
+interface ScholarPaper {
+    title?: string;
+    citedByCount?: number;
+}
+
+/** 学术搜索返回结构 */
+interface AcademicSearchResult {
+    success?: boolean;
+    results?: AcademicPaper[];
+    sources?: { openAlex?: number; crossRef?: number; core?: number; arxiv?: number };
+}
+
+/** 产业搜索返回结构 */
+interface IndustrySearchResult {
+    success?: boolean;
+    webResults?: WebResult[];
+    githubRepos?: GithubRepo[];
+    wechatArticles?: WechatArticle[];
+    scholarResults?: ScholarPaper[];
+    sources?: { brave?: number; serpapi?: number; scholar?: number };
+}
+
+/** 组装后的学术数据 */
+interface AcademicData {
+    source: string;
+    results: AcademicPaper[];
+    stats: {
+        totalPapers: number;
+        totalCitations: number;
+        openAccessCount: number;
+        avgCitation: number;
+        bySource: { openAlex: number; arxiv: number; crossref: number; core: number };
+        topCategories: string[];
+    };
+    topConcepts: string[];
+}
+
+/** 组装后的产业数据 */
+interface IndustryData {
+    source: string;
+    webResults: WebResult[];
+    webSources: { brave: number; serpapi: number };
+    githubRepos: GithubRepo[];
+    wechatArticles: WechatArticle[];
+    scholarResults: ScholarPaper[];
+    trendsResult?: TrendsResult;
+    sentiment: 'hot' | 'warm' | 'cold';
+    hasOpenSource: boolean;
+    topProjects: GithubRepo[];
+}
+
+/** 交叉验证结果 */
+interface CrossValidationResult {
+    consistencyScore: number;
+    academicSupport: string;
+    industrySupport: string;
+    openSourceVerified: boolean;
+    conceptOverlap: string[];
+    redFlags: string[];
+    insights: string[];
+}
+
+/** 可信度结果 */
+interface CredibilityResult {
+    score: number;
+    level: string;
+    reasoning: string[];
+}
+
 /**
  * 对中文 query 生成搜索关键词组：[原始中文, 英文翻译]
  * 英文 query 直接返回原样
@@ -47,13 +153,13 @@ export async function searchDualTrack(keywords: string[], domain?: string) {
     const academicPromises = keywordGroups.map(kw =>
         searchAcademic(kw, domain).catch(err => {
             console.error('[Search DualTrack] 学术检索失败:', err);
-            return { success: false, results: [] } as any;
+            return { success: false, results: [] } as AcademicSearchResult;
         })
     );
     const industryPromises = keywordGroups.map(kw =>
         searchIndustry(kw, engineSelection).catch(err => {
             console.error('[Search DualTrack] 产业检索失败:', err);
-            return { success: false, webResults: [], githubRepos: [] } as any;
+            return { success: false, webResults: [], githubRepos: [] } as IndustrySearchResult;
         })
     );
 
@@ -65,7 +171,7 @@ export async function searchDualTrack(keywords: string[], domain?: string) {
     const rawIndustryResults = allResults.slice(keywordGroups.length);
 
     // 合并多组学术结果（去重）
-    const mergedAcademicResults: any[] = [];
+    const mergedAcademicResults: AcademicPaper[] = [];
     const seenTitles = new Set<string>();
     const mergedSources = { openAlex: 0, crossRef: 0, core: 0, arxiv: 0 };
     for (const res of rawAcademicResults) {
@@ -85,14 +191,14 @@ export async function searchDualTrack(keywords: string[], domain?: string) {
     }
 
     // 合并多组产业结果（去重）
-    const mergedWebResults: any[] = [];
+    const mergedWebResults: WebResult[] = [];
     const seenUrls = new Set<string>();
-    const mergedGithub: any[] = [];
+    const mergedGithub: GithubRepo[] = [];
     const seenRepoNames = new Set<string>();
-    const mergedWechat: any[] = [];
+    const mergedWechat: WechatArticle[] = [];
     const seenWechatUrls = new Set<string>();
     const mergedIndSources = { brave: 0, serpapi: 0, scholar: 0 };
-    const mergedScholar: any[] = [];
+    const mergedScholar: ScholarPaper[] = [];
     const seenScholarTitles = new Set<string>();
 
     for (const res of rawIndustryResults) {
@@ -142,7 +248,7 @@ export async function searchDualTrack(keywords: string[], domain?: string) {
     let openAccessCount = 0;
     const topConceptsMap = new Map<string, number>();
 
-    papers.forEach((p: any) => {
+    papers.forEach((p: AcademicPaper) => {
         totalCitations += (p.citationCount || 0);
         if (p.isOa || p.pdfUrl || p.isOpenAccess || p.downloadUrl) openAccessCount++;
         if (p.concepts) {
@@ -229,7 +335,7 @@ export async function searchDualTrack(keywords: string[], domain?: string) {
 
 // ==================== 交叉验证逻辑 ====================
 
-function validateSources(academic: any, industry: any) {
+function validateSources(academic: AcademicData, industry: IndustryData): CrossValidationResult {
     const mergedCount = academic.results.length;
     const githubCount = industry.githubRepos.length;
     const webCount = industry.webResults.length;
@@ -251,27 +357,27 @@ function validateSources(academic: any, industry: any) {
         redFlags.push('产业界/媒体热度高但学术支撑不足，需警惕概念包装或炒作');
     }
 
-    const highStarRepos = industry.githubRepos.filter((r: any) => (r.stars || 0) > 5000);
+    const highStarRepos = industry.githubRepos.filter((r: GithubRepo) => (r.stars || 0) > 5000);
     if (highStarRepos.length > 0) {
         redFlags.push(`已有 ${highStarRepos.length} 个高影响开源项目（>5000⭐），需明确差异化`);
     }
 
-    if (githubCount > 0 && industry.githubRepos.every((r: any) => r.health === 'declining')) {
+    if (githubCount > 0 && industry.githubRepos.every((r: GithubRepo) => r.health === 'declining')) {
         redFlags.push('相关开源项目可能已停止维护，领域可能已经衰退');
     }
 
-    const highlyCited = academic.results.filter((p: any) => (p.citationCount || 0) > (academic.stats.avgCitation * 2));
+    const highlyCited = academic.results.filter((p: AcademicPaper) => (p.citationCount || 0) > (academic.stats.avgCitation * 2));
     if (highlyCited.length > 0) {
         insights.push(`${highlyCited.length} 篇高引论文，领域受学术界持续关注`);
     }
 
     const currentYear = new Date().getFullYear();
-    const recentPapers = academic.results.filter((p: any) => (p.year || 0) >= currentYear - 1);
+    const recentPapers = academic.results.filter((p: AcademicPaper) => (p.year || 0) >= currentYear - 1);
     if (recentPapers.length > mergedCount * 0.6 && mergedCount > 3) {
         insights.push('近两年论文占比超 60%，属于快速增长领域');
     }
 
-    const activeRepos = industry.githubRepos.filter((r: any) => r.health === 'active');
+    const activeRepos = industry.githubRepos.filter((r: GithubRepo) => r.health === 'active');
     if (activeRepos.length > 0) {
         insights.push(`[代码源] ${activeRepos.length} 个活跃开源项目，技术社区参与度高`);
     }
@@ -296,7 +402,7 @@ function validateSources(academic: any, industry: any) {
     // Google Scholar 洞察
     const scholarCount = industry.scholarResults?.length || 0;
     if (scholarCount > 0) {
-        const highCited = industry.scholarResults?.filter((p: any) => (p.citedByCount || 0) > 100) || [];
+        const highCited = industry.scholarResults?.filter((p: ScholarPaper) => (p.citedByCount || 0) > 100) || [];
         insights.push(`[Google Scholar] 检索到 ${scholarCount} 篇学术论文${highCited.length > 0 ? `，其中 ${highCited.length} 篇高引(>100次)` : ''}`);
     }
 
@@ -327,10 +433,10 @@ function validateSources(academic: any, industry: any) {
     }
 
     const academicConcepts = new Set(academic.stats.topCategories.map((c: string) => c.toLowerCase()));
-    const githubTopics = new Set(industry.githubRepos.flatMap((r: any) => (r.topics || []).map((t: string) => t.toLowerCase())));
+    const githubTopics = new Set(industry.githubRepos.flatMap((r: GithubRepo) => (r.topics || []).map((t: string) => t.toLowerCase())));
     const overlap: string[] = [];
-    Array.from(academicConcepts).forEach((c: any) => {
-        if (typeof c === 'string' && githubTopics.has(c)) overlap.push(c);
+    Array.from(academicConcepts).forEach((c: string) => {
+        if (githubTopics.has(c)) overlap.push(c);
     });
 
     let consistencyScore = 40;
@@ -361,7 +467,7 @@ function validateSources(academic: any, industry: any) {
 
 // ==================== 可信度计算 ====================
 
-function calculateCredibility(academic: any, industry: any, validation: any) {
+function calculateCredibility(academic: AcademicData, industry: IndustryData, validation: CrossValidationResult): CredibilityResult {
     let score = 0;
     const hasAcademic = academic.results.length > 0;
     const hasGithub = industry.hasOpenSource;
@@ -387,7 +493,7 @@ function calculateCredibility(academic: any, industry: any, validation: any) {
     ].filter(n => n > 0).length;
     score += sourcesWithData * 3;
 
-    const activeRepos = industry.githubRepos.filter((r: any) => r.health === 'active').length;
+    const activeRepos = industry.githubRepos.filter((r: GithubRepo) => r.health === 'active').length;
     if (activeRepos >= 3) score += 15;
     else if (activeRepos > 0) score += 10;
 
@@ -440,7 +546,7 @@ function calculateCredibility(academic: any, industry: any, validation: any) {
 
 // ==================== 建议生成 ====================
 
-function generateRecommendation(credibility: any, validation: any): string {
+function generateRecommendation(credibility: CredibilityResult, validation: CrossValidationResult): string {
     if (credibility.level === 'high') {
         if (validation.openSourceVerified) return '该方向学术基础扎实，已有开源实现验证，产业落地有据可查。建议深入调研差异化空间。';
         return '该方向学术基础扎实，理论可行性较高。建议关注工程化落地机会。';

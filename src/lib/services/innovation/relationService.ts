@@ -53,8 +53,8 @@ export async function recordCoOccurrence(
                 console.log('[RelationService] 创建新关联:', idA, '→', idB);
             }
         }
-    } catch (err: any) {
-        console.warn('[RelationService] 记录共现关系失败:', err.message);
+    } catch (err: unknown) {
+        console.warn('[RelationService] 记录共现关系失败:', (err instanceof Error ? err.message : String(err)));
     }
 }
 
@@ -82,7 +82,7 @@ export async function recordBatchCoOccurrence(innovationIds: string[]) {
 export async function getRelatedInnovations(
     innovationId: string,
     limit = 5
-): Promise<any[]> {
+): Promise<Record<string, unknown>[]> {
     try {
         const invId = String(innovationId);
 
@@ -133,8 +133,8 @@ export async function getRelatedInnovations(
             }))
             .sort((a, b) => b.co_search_count - a.co_search_count)
             .slice(0, limit);
-    } catch (err: any) {
-        console.warn('[RelationService] 获取相关推荐失败:', err.message);
+    } catch (err: unknown) {
+        console.warn('[RelationService] 获取相关推荐失败:', (err instanceof Error ? err.message : String(err)));
         return [];
     }
 }

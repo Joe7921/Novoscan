@@ -13,8 +13,8 @@ import { analyzeWithMultiAgents, AllAgentsFailedError } from '@/agents/orchestra
 import { supabaseAdmin } from '@/lib/supabase';
 import { createClient } from '@/utils/supabase/server';
 import { checkRateLimit, sanitizeInput, safeErrorResponse } from '@/lib/security/apiSecurity';
-import { chargeForFeature, FEATURE_COSTS } from '@/lib/featureCosts';
-import { addPoints } from '@/lib/services/walletService';
+
+
 import { callAIRaw, parseAgentJSON } from '@/lib/ai-client';
 import { searchDualTrack } from '@/server/search/dual-track';
 
@@ -42,16 +42,7 @@ export async function POST(request: Request) {
             );
         }
 
-        // 💰 追问生成免费；追问精化按常规分析费率扣费（合并显示）
-        if (action === 'refine') {
-            const charge = await chargeForFeature(currentUserId, 'novoscan-full');
-            if (!charge.success) {
-                return NextResponse.json(
-                    { success: false, error: charge.error, currentBalance: charge.currentBalance, required: charge.required },
-                    { status: 402 }
-                );
-            }
-        }
+        // 开源版追问精化免费，无需扣费
 
         if (action === 'generate') {
             return handleGenerate(body);
@@ -63,14 +54,14 @@ export async function POST(request: Request) {
                 { status: 400 }
             );
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         return safeErrorResponse(error, '追问请求处理失败', 500, '[API Followup]');
     }
 }
 
 // ==================== 生成追问问题 ====================
 
-async function handleGenerate(body: any) {
+async function handleGenerate(body: unknown) {
     const {
         query,
         arbitrationSummary,
@@ -108,7 +99,7 @@ async function handleGenerate(body: any) {
 
 // ==================== 精化分析（追问后重新分析） ====================
 
-async function handleRefine(body: any) {
+async function handleRefine(body: unknown) {
     const {
         query,
         dualTrackResult,
@@ -153,7 +144,7 @@ async function handleRefine(body: any) {
     // 构建 SSE 流式响应
     const stream = new ReadableStream({
         async start(controller) {
-            const sendEvent = (type: string, data: any) => {
+            const sendEvent = (type: string, data: unknown) => {
                 controller.enqueue(new TextEncoder().encode(JSON.stringify({ type, data }) + '\n'));
             };
 
@@ -232,7 +223,7 @@ ${userInput ? `用户补充说明: "${userInput}"` : ''}
                             const supplementResult = await searchDualTrack(
                                 detection.newKeywords,
                                 domainId || undefined
-                            ) as any;
+                            ) as unknown;
 
                             if (supplementResult?.success) {
                                 mergedAcademic = mergeAcademicData(dualTrackResult.academic, supplementResult.academic);
@@ -244,8 +235,8 @@ ${userInput ? `用户补充说明: "${userInput}"` : ''}
                         } else {
                             sendEvent('log', '[Orchestrator] 追问方向基于已有数据，跳过增量检索');
                         }
-                    } catch (err: any) {
-                        console.warn('[Followup] 新意检测失败，回退到复用已有数据:', err.message);
+                    } catch (err: unknown) {
+                        console.warn('[Followup] 新意检测失败，回退到复用已有数据:', (err instanceof Error ? err.message : String(err)));
                         sendEvent('log', '[Orchestrator] 新意检测跳过，使用已有检索数据');
                     }
                 }
@@ -282,7 +273,7 @@ ${userInput ? `用户补充说明: "${userInput}"` : ''}
                 {
                     const agentScore = industryAnalysis?.score;
                     const arbIndustryScore = arbitration?.weightedBreakdown?.industry?.raw;
-                    const credScore = (dualTrackResult as any)?.finalCredibility?.score;
+                    const credScore = (dualTrackResult as unknown)?.finalCredibility?.score;
 
                     const sources: { value: number; weight: number }[] = [];
                     if (typeof agentScore === 'number' && agentScore > 0) sources.push({ value: agentScore, weight: 0.50 });
@@ -306,8 +297,8 @@ ${userInput ? `用户补充说明: "${userInput}"` : ''}
                     academic: dualTrackResult?.academic,
                     industry: dualTrackResult?.industry,
                     crossValidation: dualTrackResult?.crossValidation,
-                    finalCredibility: (dualTrackResult as any)?.finalCredibility,
-                    credibility: (dualTrackResult as any)?.credibility,
+                    finalCredibility: (dualTrackResult as unknown)?.finalCredibility,
+                    credibility: (dualTrackResult as unknown)?.credibility,
 
                     // 兼容字段
                     noveltyScore: arbitration?.overallScore,
@@ -380,8 +371,8 @@ ${userInput ? `用户补充说明: "${userInput}"` : ''}
                             user_id: currentUserId || null,
                         });
                         console.log(`[API Followup] 追问会话已保存到数据库`);
-                    } catch (e: any) {
-                        console.warn('[API Followup] 保存追问会话失败(不影响主流程):', e.message);
+                    } catch (e: unknown) {
+                        console.warn('[API Followup] 保存追问会话失败(不影响主流程):', (e instanceof Error ? e.message : String(e)));
                     }
 
                     // IDEA 行为信号收集（静默、不阻塞）
@@ -401,22 +392,12 @@ ${userInput ? `用户补充说明: "${userInput}"` : ''}
 
                 sendEvent('done', refinedResult);
                 controller.close();
-            } catch (err: any) {
+            } catch (err: unknown) {
                 // 全员失败熔断：AI API 完全不可用
                 if (err instanceof AllAgentsFailedError) {
-                    console.error('[API Followup] 🚨 全员失败熔断:', err.message);
-                    // 退费
-                    if (currentUserId) {
-                        try {
-                            const cost = FEATURE_COSTS['novoscan-full'];
-                            await addPoints(currentUserId, cost, 'AI 服务不可用自动退费（追问）');
-                            console.log(`[API Followup] 💰 已为用户 ${currentUserId} 退还点数`);
-                        } catch (refundErr: any) {
-                            console.error('[API Followup] 退费失败:', refundErr.message);
-                        }
-                    }
+                    console.error('[API Followup] 🚨 全员失败熔断:', (err instanceof Error ? err.message : String(err)));
                     sendEvent('all_agents_failed', {
-                        message: err.message,
+                        message: (err instanceof Error ? err.message : String(err)),
                         failedAgents: err.failedAgents,
                         modelProvider: err.modelProvider || modelProvider,
                         refunded: !!currentUserId,
@@ -424,7 +405,7 @@ ${userInput ? `用户补充说明: "${userInput}"` : ''}
                     controller.close();
                     return;
                 }
-                console.error('[API Followup] 精化分析流程错误:', err.message);
+                console.error('[API Followup] 精化分析流程错误:', (err instanceof Error ? err.message : String(err)));
                 sendEvent('error', { message: '精化分析失败，请稍后重试' });
                 controller.close();
             }
@@ -443,12 +424,12 @@ ${userInput ? `用户补充说明: "${userInput}"` : ''}
 // ==================== 增量检索数据合并工具 ====================
 
 /** 合并学术数据，按标题去重 */
-function mergeAcademicData(original: any, supplement: any) {
+function mergeAcademicData(original: unknown, supplement: unknown) {
     const existingTitles = new Set(
-        (original.results || []).map((r: any) => (r.title || '').toLowerCase().trim())
+        (original.results || []).map((r: unknown) => (r.title || '').toLowerCase().trim())
     );
     const newResults = (supplement.results || []).filter(
-        (r: any) => !existingTitles.has((r.title || '').toLowerCase().trim())
+        (r: unknown) => !existingTitles.has((r.title || '').toLowerCase().trim())
     );
     return {
         ...original,
@@ -460,11 +441,11 @@ function mergeAcademicData(original: any, supplement: any) {
 }
 
 /** 合并产业数据，按 URL 去重 */
-function mergeIndustryData(original: any, supplement: any) {
-    const existingUrls = new Set((original.webResults || []).map((r: any) => r.url));
-    const existingRepoUrls = new Set((original.githubRepos || []).map((r: any) => r.url));
-    const newWeb = (supplement.webResults || []).filter((r: any) => !existingUrls.has(r.url));
-    const newRepos = (supplement.githubRepos || []).filter((r: any) => !existingRepoUrls.has(r.url));
+function mergeIndustryData(original: unknown, supplement: unknown) {
+    const existingUrls = new Set((original.webResults || []).map((r: unknown) => r.url));
+    const existingRepoUrls = new Set((original.githubRepos || []).map((r: unknown) => r.url));
+    const newWeb = (supplement.webResults || []).filter((r: unknown) => !existingUrls.has(r.url));
+    const newRepos = (supplement.githubRepos || []).filter((r: unknown) => !existingRepoUrls.has(r.url));
     return {
         ...original,
         webResults: [...(original.webResults || []), ...newWeb],

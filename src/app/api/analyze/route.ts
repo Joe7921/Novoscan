@@ -8,8 +8,8 @@ import { analyzeWithMultiAgents, AllAgentsFailedError } from '@/agents/orchestra
 import { recordSearchEvent } from '@/lib/services/user/userPreferenceService';
 import { createClient } from '@/utils/supabase/server';
 import { checkRateLimit, sanitizeInput, isValidModelProvider, safeErrorResponse } from '@/lib/security/apiSecurity';
-import { chargeForFeature, FEATURE_COSTS } from '@/lib/featureCosts';
-import { addPoints } from '@/lib/services/walletService';
+
+
 
 // ==================== 辅助函数 ====================
 
@@ -36,13 +36,13 @@ function inferAuthorityLevel(citationCount: number, venue: string): 'high' | 'me
  * 优先使用学术审查员 Agent 的 AI 语义评估结果，
  * 兜底时从原始检索数据映射（修正所有字段）
  */
-function buildSimilarPapers(academicReview: any, dualTrackResult: any): any[] {
+function buildSimilarPapers(academicReview: unknown, dualTrackResult: unknown): unknown[] {
   // 优先方案：使用 Agent 的 AI 语义评估
   if (academicReview?.similarPapers?.length > 0) {
     console.log(`[API Analyze] 使用 Agent AI 评估的 similarPapers (${academicReview.similarPapers.length} 篇)`);
     return academicReview.similarPapers
-      .filter((p: any) => p.title && typeof p.similarityScore === 'number')
-      .sort((a: any, b: any) => (b.similarityScore || 0) - (a.similarityScore || 0))
+      .filter((p: unknown) => p.title && typeof p.similarityScore === 'number')
+      .sort((a: unknown, b: unknown) => (b.similarityScore || 0) - (a.similarityScore || 0))
       .slice(0, 6);
   }
 
@@ -51,7 +51,7 @@ function buildSimilarPapers(academicReview: any, dualTrackResult: any): any[] {
   const papers = dualTrackResult?.academic?.results || [];
   if (papers.length === 0) return [];
 
-  return papers.slice(0, 6).map((p: any) => {
+  return papers.slice(0, 6).map((p: unknown) => {
     const citationCount = p.citationCount || 0;
     const venue = p.venue || '';
 
@@ -107,48 +107,7 @@ export async function POST(request: Request) {
     // 模型白名单校验
     const safeModelProvider = isValidModelProvider(modelProvider) ? modelProvider : 'minimax';
 
-    // ==================== 💰 点数扣费 ====================
-    if (currentUserId) {
-      // 已登录用户：扣费（缓存命中时后续会跳过扣费，此处先预扣）
-      const charge = await chargeForFeature(currentUserId, 'novoscan-full');
-      if (!charge.success) {
-        return NextResponse.json(
-          { success: false, error: charge.error, currentBalance: charge.currentBalance, required: charge.required },
-          { status: 402 }
-        );
-      }
-    } else {
-      // 未登录用户：基于 IP hash 限制一次免费
-      const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-        || request.headers.get('x-real-ip')
-        || 'unknown';
-      const ipHash = Array.from(ip).reduce((h, c) => 0 | (31 * h + c.charCodeAt(0)), 0).toString();
-
-      try {
-        const { data: existing } = await supabaseAdmin
-          .from('anonymous_usage')
-          .select('id')
-          .eq('ip_hash', ipHash)
-          .eq('feature', 'novoscan-full')
-          .limit(1);
-
-        if (existing && existing.length > 0) {
-          return NextResponse.json(
-            { success: false, error: '免费体验次数已用完，请登录后继续使用', requireLogin: true },
-            { status: 401 }
-          );
-        }
-
-        // 记录本次免费使用
-        await supabaseAdmin.from('anonymous_usage').insert({
-          ip_hash: ipHash,
-          feature: 'novoscan-full',
-        });
-      } catch (e: any) {
-        // 表不存在时跳过（首次部署可能未建表），不阻塞主流程
-        console.warn('[API Analyze] 匿名使用记录失败:', e.message);
-      }
-    }
+    // 开源版所有功能免费，无需扣费或限额检查
 
     const startTime = Date.now();
 
@@ -174,7 +133,7 @@ export async function POST(request: Request) {
           }
         }, 15000);
 
-        const sendEvent = (type: string, data: any) => {
+        const sendEvent = (type: string, data: unknown) => {
           if (isClosed) return; // 流已关闭则忽略后续写入
           try {
             controller.enqueue(new TextEncoder().encode(JSON.stringify({ type, data }) + '\n'));
@@ -210,8 +169,8 @@ export async function POST(request: Request) {
                   try {
                     const { handleSearchComplete } = await import('@/lib/services/innovation/innovationService');
                     handleSearchComplete(query, cachedResult).catch(console.error);
-                  } catch (e: any) {
-                    console.warn('[API Analyze] 缓存命中时趋势事件记录失败(不影响主流程):', e.message);
+                  } catch (e: unknown) {
+                    console.warn('[API Analyze] 缓存命中时趋势事件记录失败(不影响主流程):', (e instanceof Error ? e.message : String(e)));
                   }
 
                   // 记录用户搜索事件（与非缓存路径一致）
@@ -279,8 +238,8 @@ export async function POST(request: Request) {
                 }
               }
             }
-          } catch (e: any) {
-            console.warn('[API Analyze] 缓存读取提示:', e.message);
+          } catch (e: unknown) {
+            console.warn('[API Analyze] 缓存读取提示:', (e instanceof Error ? e.message : String(e)));
           }
 
           console.log(`[API Analyze] 开始双轨检索: "${query}"`);
@@ -294,20 +253,20 @@ export async function POST(request: Request) {
               new Promise((_, reject) =>
                 setTimeout(() => reject(new Error('双轨检索超时(30s)')), DUAL_TRACK_TIMEOUT)
               )
-            ]) as any;
+            ]) as unknown;
             if (!dualTrackResult.success) {
-              console.warn('[API Analyze] 双轨检索返回失败:', (dualTrackResult as any).error);
+              console.warn('[API Analyze] 双轨检索返回失败:', (dualTrackResult as unknown).error);
             } else {
               // 将检索到的真实基础上下文发送给前端，用于渲染真实的“加载中”信息 (代替模拟日志)
               sendEvent('context_ready', {
-                academic: dualTrackResult.academic?.results?.slice(0, 6).map((p: any) => p.title) || [],
-                industryRepos: dualTrackResult.industry?.githubRepos?.slice(0, 5).map((r: any) => r.name) || [],
-                industryWeb: dualTrackResult.industry?.webResults?.slice(0, 5).map((w: any) => w.title) || []
+                academic: dualTrackResult.academic?.results?.slice(0, 6).map((p: unknown) => p.title) || [],
+                industryRepos: dualTrackResult.industry?.githubRepos?.slice(0, 5).map((r: unknown) => r.name) || [],
+                industryWeb: dualTrackResult.industry?.webResults?.slice(0, 5).map((w: unknown) => w.title) || []
               });
             }
-          } catch (e: any) {
-            console.error('[API Analyze] 双轨检索失败/超时:', e.message);
-            sendEvent('log', `[Orchestrator] ⚠️ 检索异常(${e.message})，使用空数据继续分析`);
+          } catch (e: unknown) {
+            console.error('[API Analyze] 双轨检索失败/超时:', (e instanceof Error ? e.message : String(e)));
+            sendEvent('log', `[Orchestrator] ⚠️ 检索异常(${(e instanceof Error ? e.message : String(e))})，使用空数据继续分析`);
             // 构造降级空数据，确保后续 Agent 流程可继续执行
             dualTrackResult = {
               success: false,
@@ -344,8 +303,8 @@ export async function POST(request: Request) {
               });
               console.log(`[API Analyze] NovoDNA 预洞察: 基因库=${insight.genePoolSize}, 密度=${insight.crowdingWarning}`);
             }
-          } catch (e: any) {
-            console.warn('[API Analyze] NovoDNA 预洞察失败(不影响主流程):', e.message);
+          } catch (e: unknown) {
+            console.warn('[API Analyze] NovoDNA 预洞察失败(不影响主流程):', (e instanceof Error ? e.message : String(e)));
           }
 
           // 3. 调用 Multi-agents 分析
@@ -386,7 +345,7 @@ export async function POST(request: Request) {
           {
             const agentScore = industryAnalysis?.score;
             const arbIndustryScore = arbitration?.weightedBreakdown?.industry?.raw;
-            const credScore = (dualTrackResult as any)?.finalCredibility?.score;
+            const credScore = (dualTrackResult as unknown)?.finalCredibility?.score;
 
             // 收集可用数据源及其权重
             const sources: { value: number; weight: number }[] = [];
@@ -413,8 +372,8 @@ export async function POST(request: Request) {
             academic: dualTrackResult?.academic,
             industry: dualTrackResult?.industry,
             crossValidation: dualTrackResult?.crossValidation,
-            finalCredibility: (dualTrackResult as any)?.finalCredibility,
-            credibility: (dualTrackResult as any)?.credibility,
+            finalCredibility: (dualTrackResult as unknown)?.finalCredibility,
+            credibility: (dualTrackResult as unknown)?.credibility,
 
             // 兼容字段：从仲裁结果映射
             noveltyScore: arbitration?.overallScore,
@@ -494,13 +453,13 @@ export async function POST(request: Request) {
               } else {
                 console.log(`[API Analyze] 🛡️ 质量门控通过, tier=${qualityTierValue}`);
               }
-            } catch (e: any) {
-              console.warn('[API Analyze] 质量门控模块加载失败(降级为允许入库):', e.message);
+            } catch (e: unknown) {
+              console.warn('[API Analyze] 质量门控模块加载失败(降级为允许入库):', (e instanceof Error ? e.message : String(e)));
             }
           }
 
           // 在 finalResult 中附加质量等级
-          (finalResult as any).qualityTier = qualityTierValue;
+          (finalResult as unknown).qualityTier = qualityTierValue;
 
           if (!isPartialResult && !qualityBlocked && !privacyMode) {
             try {
@@ -514,8 +473,8 @@ export async function POST(request: Request) {
               });
               if (insertError) throw insertError;
               console.log(`[API Analyze] 结果已存入数据库: "${query}"`);
-            } catch (e: any) {
-              console.warn('[API Analyze] 保存到数据库失败:', e.message);
+            } catch (e: unknown) {
+              console.warn('[API Analyze] 保存到数据库失败:', (e instanceof Error ? e.message : String(e)));
             }
 
             // 6. 提取创新点并存入 innovations 表（传递质量等级用于分级入库）
@@ -523,8 +482,8 @@ export async function POST(request: Request) {
               const { handleSearchComplete } = await import('@/lib/services/innovation/innovationService');
               await handleSearchComplete(query, finalResult, qualityTierValue);
               console.log(`[API Analyze] 创新点已提取并存储到 innovations 表 (tier=${qualityTierValue})`);
-            } catch (e: any) {
-              console.warn('[API Analyze] 创新点存储失败(不影响主流程):', e.message);
+            } catch (e: unknown) {
+              console.warn('[API Analyze] 创新点存储失败(不影响主流程):', (e instanceof Error ? e.message : String(e)));
             }
           } else if (isPartialResult) {
             console.log(`[API Analyze] 结果为降级/超时，不存入缓存: "${query}"`);
@@ -572,15 +531,15 @@ export async function POST(request: Request) {
                 Date.now() - startTime, safeModelProvider
               );
               console.log(`[API Analyze] 🧠 Agent 经验已保存到记忆库`);
-            } catch (e: any) {
-              console.warn('[API Analyze] 经验保存失败(不影响主流程):', e.message);
+            } catch (e: unknown) {
+              console.warn('[API Analyze] 经验保存失败(不影响主流程):', (e instanceof Error ? e.message : String(e)));
             }
           }
           try {
             const { buildInnovationMap } = await import('@/lib/services/innovation/innovationDNA');
             const dnaContext = arbitration?.summary || innovationEvaluation?.analysis || '';
             const dnaMap = await buildInnovationMap(query, dnaContext, safeModelProvider);
-            (finalResult as any).innovationDNA = dnaMap;
+            (finalResult as unknown).innovationDNA = dnaMap;
             console.log(`[API Analyze] NovoDNA 图谱完成: [${dnaMap.vector.join(', ')}]`);
 
             // ========== NovoDNA 方向二：DNA -> 搜索（搜索后加权修正） ==========
@@ -593,7 +552,7 @@ export async function POST(request: Request) {
                 dnaMap.density.totalInnovations,
               );
               if (ranking.adjusted) {
-                (finalResult as any).novoDNARanking = ranking;
+                (finalResult as unknown).novoDNARanking = ranking;
                 console.log(`[API Analyze] NovoDNA 加权: ${ranking.originalScore} -> ${ranking.adjustedScore} (${ranking.reason})`);
               }
 
@@ -607,8 +566,8 @@ export async function POST(request: Request) {
                 finalResult.noveltyScore ?? arbitration.overallScore, compCount,
               ).catch(e => console.warn('[API Analyze] 进化反馈失败:', e.message));
             }
-          } catch (e: any) {
-            console.warn('[API Analyze] Innovation DNA 构建失败(不影响主流程):', e.message);
+          } catch (e: unknown) {
+            console.warn('[API Analyze] Innovation DNA 构建失败(不影响主流程):', (e instanceof Error ? e.message : String(e)));
           }
 
           // 9. Async store cross-domain bridges + incremental knowledge graph merging
@@ -639,11 +598,11 @@ export async function POST(request: Request) {
                   }
                   console.log(`[API Analyze] Knowledge graph merged: ${mergedGraph.nodes.length} nodes, ${mergedGraph.edges.length} edges`);
                 }
-              } catch (graphErr: any) {
+              } catch (graphErr: unknown) {
                 console.warn('[API Analyze] Global graph merge failed (non-blocking):', graphErr.message);
               }
-            } catch (e: any) {
-              console.warn('[API Analyze] Cross-domain bridge storage failed (non-blocking):', e.message);
+            } catch (e: unknown) {
+              console.warn('[API Analyze] Cross-domain bridge storage failed (non-blocking):', (e instanceof Error ? e.message : String(e)));
             }
           }
 
@@ -665,7 +624,7 @@ export async function POST(request: Request) {
                 } else {
                   console.log(`[API Analyze] 📄 专业报告预生成完成并已存入`);
                 }
-              }).catch((err: any) => {
+              }).catch((err: unknown) => {
                 console.warn('[API Analyze] 📄 报告预生成失败(不影响主流程):', err.message);
               });
             }).catch(() => { });
@@ -675,20 +634,10 @@ export async function POST(request: Request) {
           clearInterval(heartbeatInterval);
           safeClose();
 
-        } catch (fatalError: any) {
+        } catch (fatalError: unknown) {
           // ===== 全员失败熔断：AI API 完全不可用，退费并通知前端 =====
           if (fatalError instanceof AllAgentsFailedError) {
             console.error('[API Analyze] 🚨 全员失败熔断:', fatalError.message);
-            // 退费：已登录用户退还预扣点数
-            if (currentUserId) {
-              try {
-                const cost = FEATURE_COSTS['novoscan-full'];
-                await addPoints(currentUserId, cost, 'AI 服务不可用自动退费');
-                console.log(`[API Analyze] 💰 已为用户 ${currentUserId} 退还 ${cost} 点`);
-              } catch (refundErr: any) {
-                console.error('[API Analyze] 退费失败:', refundErr.message);
-              }
-            }
 
             // 📝 写入失败记录到 search_history
             if (!privacyMode) {
@@ -709,7 +658,7 @@ export async function POST(request: Request) {
                   },
                 });
                 console.log(`[API Analyze] 📝 全员失败记录已写入 search_history`);
-              } catch (logErr: any) {
+              } catch (logErr: unknown) {
                 console.warn('[API Analyze] 失败记录写入数据库失败:', logErr.message);
               }
             }
@@ -752,7 +701,7 @@ export async function POST(request: Request) {
                 },
               });
               console.log(`[API Analyze] 📝 致命异常记录已写入 search_history`);
-            } catch (logErr: any) {
+            } catch (logErr: unknown) {
               console.warn('[API Analyze] 失败记录写入数据库失败:', logErr.message);
             }
           }
@@ -776,7 +725,7 @@ export async function POST(request: Request) {
       },
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     return safeErrorResponse(error, '分析请求处理失败，请稍后重试', 500, '[API Analyze]');
   }
 }

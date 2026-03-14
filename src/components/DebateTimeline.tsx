@@ -1,2 +1,2 @@
 'use client';
-export default function DebateTimeline(_props: any) { return null; }
+export default function DebateTimeline(_props: unknown) { return null; }

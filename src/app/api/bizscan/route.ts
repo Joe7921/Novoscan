@@ -17,7 +17,7 @@ import { evaluateBusinessIdea } from '@/server/bizscan/evaluator';
 import { recordSearchEvent } from '@/lib/services/user/userPreferenceService';
 import { createClient } from '@/utils/supabase/server';
 import { checkRateLimit, safeErrorResponse } from '@/lib/security/apiSecurity';
-import { chargeForFeature } from '@/lib/featureCosts';
+
 import { NextResponse } from 'next/server';
 import type { ModelProvider } from '@/types';
 import type { BizscanInput } from '@/types/bizscan';
@@ -73,20 +73,7 @@ export async function POST(request: Request) {
             currentUserId = user?.id;
         } catch { /* 未登录，忽略 */ }
 
-        // 💰 点数扣费：Bizscan 需要登录
-        if (!currentUserId) {
-            return NextResponse.json(
-                { success: false, error: '请登录后使用 Bizscan', requireLogin: true },
-                { status: 401 }
-            );
-        }
-        const charge = await chargeForFeature(currentUserId, 'bizscan');
-        if (!charge.success) {
-            return NextResponse.json(
-                { success: false, error: charge.error, currentBalance: charge.currentBalance, required: charge.required },
-                { status: 402 }
-            );
-        }
+        // 开源版所有功能免费，无需扣费
 
         // SSE 流式响应
         const stream = new ReadableStream({
@@ -94,7 +81,7 @@ export async function POST(request: Request) {
                 const encoder = new TextEncoder();
                 const startTime = Date.now();
 
-                function sendEvent(type: string, data: any) {
+                function sendEvent(type: string, data: unknown) {
                     const eventStr = `data: ${JSON.stringify({ type, ...data })}\n\n`;
                     try {
                         controller.enqueue(encoder.encode(eventStr));
@@ -118,8 +105,8 @@ export async function POST(request: Request) {
                                 enhancedKeywords: insight.enhancedKeywords,
                             });
                         }
-                    } catch (e: any) {
-                        console.warn('[Bizscan/API] NovoDNA 预洞察失败:', e.message);
+                    } catch (e: unknown) {
+                        console.warn('[Bizscan/API] NovoDNA 预洞察失败:', (e instanceof Error ? e.message : String(e)));
                     }
 
                     // ========== Phase 1: 想法解析 ==========
@@ -233,8 +220,8 @@ export async function POST(request: Request) {
                     // ========== NovoDNA 创新基因图谱 + 双向进化 ==========
                     try {
                         const { buildInnovationMap } = await import('@/lib/services/innovation/innovationDNA');
-                        const dnaContext = (report as any).executiveSummary || (report as any).summary || trimmed;
-                        const dnaMap = await buildInnovationMap(trimmed, dnaContext, modelProvider as any);
+                        const dnaContext = (report as unknown).executiveSummary || (report as unknown).summary || trimmed;
+                        const dnaMap = await buildInnovationMap(trimmed, dnaContext, modelProvider as unknown);
                         sendEvent('novodna_complete', { data: dnaMap });
                         console.log(`[Bizscan/API] NovoDNA 图谱完成: [${dnaMap.vector.join(', ')}]`);
 
@@ -253,11 +240,11 @@ export async function POST(request: Request) {
                             const qHash = await generateQueryHash(trimmed);
                             evolutionaryFeedback(
                                 qHash, dnaMap.density.uniquenessScore, report.overallBII,
-                                (report as any).competitors?.length || 0,
+                                (report as unknown).competitors?.length || 0,
                             ).catch(() => { });
                         }
-                    } catch (e: any) {
-                        console.warn('[Bizscan/API] NovoDNA 构建失败:', e.message);
+                    } catch (e: unknown) {
+                        console.warn('[Bizscan/API] NovoDNA 构建失败:', (e instanceof Error ? e.message : String(e)));
                     }
 
                     console.log(
@@ -274,10 +261,10 @@ export async function POST(request: Request) {
                         noveltyScore: report.overallBII,
                     }).catch(err => console.warn('[Bizscan/API] 偏好记录失败(不影响主流程):', err.message));
 
-                } catch (error: any) {
+                } catch (error: unknown) {
                     console.error('[Bizscan/API] 评估流程异常:', error);
                     // 错误分级：对用户返回安全的提示信息
-                    const errMsg = error.message || '';
+                    const errMsg = (error instanceof Error ? error.message : String(error)) || '';
                     const userMessage = errMsg.includes('超时') || errMsg.includes('timeout')
                         ? '评估超时，请缩短描述后重试'
                         : errMsg.includes('API') || errMsg.includes('fetch') || errMsg.includes('network')
@@ -302,7 +289,7 @@ export async function POST(request: Request) {
             },
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return safeErrorResponse(error, '请求处理失败', 500, '[Bizscan/API]');
     }
 }

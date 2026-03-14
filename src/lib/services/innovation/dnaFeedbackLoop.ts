@@ -159,8 +159,8 @@ export async function preScanDNAInsight(query: string): Promise<DNAPreScanInsigh
             insightSummary,
             genePoolSize: pool.length,
         };
-    } catch (err: any) {
-        console.warn('[NovoDNA/FeedbackLoop] preScanDNAInsight 失败:', err.message);
+    } catch (err: unknown) {
+        console.warn('[NovoDNA/FeedbackLoop] preScanDNAInsight 失败:', (err instanceof Error ? err.message : String(err)));
         return emptyInsight;
     }
 }
@@ -292,8 +292,8 @@ export async function evolutionaryFeedback(
                 `代数=${evolutionGeneration}`
             );
         }
-    } catch (err: any) {
-        console.warn('[NovoDNA/Evolution] 进化反馈写入失败:', err.message);
+    } catch (err: unknown) {
+        console.warn('[NovoDNA/Evolution] 进化反馈写入失败:', (err instanceof Error ? err.message : String(err)));
     }
 
     return {

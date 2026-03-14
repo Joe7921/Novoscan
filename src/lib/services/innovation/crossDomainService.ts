@@ -62,8 +62,8 @@ export async function storeCrossDomainBridges(
         } else {
             console.log(`[CrossDomainService] ✅ ${bridges.length} 条跨域桥梁已存储`);
         }
-    } catch (err: any) {
-        console.error('[CrossDomainService] 存储异常:', err.message);
+    } catch (err: unknown) {
+        console.error('[CrossDomainService] 存储异常:', (err instanceof Error ? err.message : String(err)));
     }
 }
 
@@ -101,8 +101,8 @@ export async function findExistingBridges(
         }
 
         return (data || []) as StoredBridgeRecord[];
-    } catch (err: any) {
-        console.error('[CrossDomainService] 查询异常:', err.message);
+    } catch (err: unknown) {
+        console.error('[CrossDomainService] 查询异常:', (err instanceof Error ? err.message : String(err)));
         return [];
     }
 }
@@ -142,8 +142,8 @@ export async function findCrossDomainDNANeighbors(
             .slice(0, limit);
 
         return candidates;
-    } catch (err: any) {
-        console.error('[CrossDomainService] DNA 联动查询失败:', err.message);
+    } catch (err: unknown) {
+        console.error('[CrossDomainService] DNA 联动查询失败:', (err instanceof Error ? err.message : String(err)));
         return [];
     }
 }
@@ -222,8 +222,8 @@ export async function buildGlobalCrossFieldGraph(
             nodes: Array.from(nodeMap.values()),
             edges,
         };
-    } catch (err: any) {
-        console.error('[CrossDomainService] 全局图谱构建失败:', err.message);
+    } catch (err: unknown) {
+        console.error('[CrossDomainService] 全局图谱构建失败:', (err instanceof Error ? err.message : String(err)));
         return { nodes: [], edges: [] };
     }
 }

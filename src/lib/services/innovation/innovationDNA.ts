@@ -13,7 +13,7 @@
  */
 
 import { callAIRaw, parseAgentJSON } from '@/lib/ai-client';
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 import { generateQueryHash } from './innovationService';
 import { classifyDomain, type DomainInfo } from './domainClassifier';
 import type { ModelProvider } from '@/types';
@@ -216,8 +216,8 @@ ${analysisContext ? `\n**参考上下文**：${analysisContext.slice(0, 2000)}` 
             dimensions,
             summary: parsed.summary || '基因分析完成',
         };
-    } catch (err: any) {
-        console.error('[InnovationDNA] AI 提取失败:', err.message);
+    } catch (err: unknown) {
+        console.error('[InnovationDNA] AI 提取失败:', (err instanceof Error ? err.message : String(err)));
         // 降级：返回中性向量
         return {
             vector: [0.5, 0.5, 0.5, 0.5, 0.5],
@@ -261,7 +261,7 @@ export async function findNearestNeighbors(
     limit: number = 8
 ): Promise<DNANeighbor[]> {
     try {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await adminDb
             .from('innovation_dna')
             .select('id, query, query_hash, tech_principle, app_scenario, target_user, impl_path, biz_model')
             .limit(100);  // 取前 100 条做内存排序（小规模基因库）
@@ -295,8 +295,8 @@ export async function findNearestNeighbors(
             .slice(0, limit);
 
         return neighbors;
-    } catch (err: any) {
-        console.error('[InnovationDNA] 查询最近邻失败:', err.message);
+    } catch (err: unknown) {
+        console.error('[InnovationDNA] 查询最近邻失败:', (err instanceof Error ? err.message : String(err)));
         return [];
     }
 }
@@ -311,7 +311,7 @@ export async function findBlankZones(
 ): Promise<DNABlankZone[]> {
     try {
         // 获取所有已知向量
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await adminDb
             .from('innovation_dna')
             .select('tech_principle, app_scenario, target_user, impl_path, biz_model')
             .limit(200);
@@ -380,8 +380,8 @@ export async function findBlankZones(
                     : '该区域组合尚无已知创新',
             };
         });
-    } catch (err: any) {
-        console.error('[InnovationDNA] 空白地带分析失败:', err.message);
+    } catch (err: unknown) {
+        console.error('[InnovationDNA] 空白地带分析失败:', (err instanceof Error ? err.message : String(err)));
         return [];
     }
 }
@@ -397,7 +397,7 @@ export async function storeDNAVector(
     try {
         const queryHash = await generateQueryHash(query);
         const domain = classifyDomain(query);
-        const { error } = await supabaseAdmin
+        const { error } = await adminDb
             .from('innovation_dna')
             .upsert({
                 innovation_id: innovationId || null,
@@ -421,8 +421,8 @@ export async function storeDNAVector(
         } else {
             console.log(`[InnovationDNA] ✅ DNA 向量已存储: "${query.slice(0, 30)}..."`);
         }
-    } catch (err: any) {
-        console.error('[InnovationDNA] 存储异常:', err.message);
+    } catch (err: unknown) {
+        console.error('[InnovationDNA] 存储异常:', (err instanceof Error ? err.message : String(err)));
     }
 }
 
@@ -631,7 +631,7 @@ export async function analyzeDensity(
     vector: DNAVector
 ): Promise<DensityProfile | null> {
     try {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await adminDb
             .from('innovation_dna')
             .select('tech_principle, app_scenario, target_user, impl_path, biz_model')
             .limit(500);
@@ -688,8 +688,8 @@ export async function analyzeDensity(
             uniquenessScore: Math.max(0, Math.min(100, uniquenessScore)),
             dimensionDensities,
         };
-    } catch (err: any) {
-        console.error('[InnovationDNA] 密度分析失败:', err.message);
+    } catch (err: unknown) {
+        console.error('[InnovationDNA] 密度分析失败:', (err instanceof Error ? err.message : String(err)));
         return null;
     }
 }
@@ -754,13 +754,13 @@ interface GenePoolRow {
     target_user: number;
     impl_path: number;
     biz_model: number;
-    reasoning: any;  // JSONB，包含 domain 等信息
+    reasoning: Record<string, unknown>;  // JSONB，包含 domain 等信息
 }
 
 /** 单次查询基因库（取最多 500 条，供所有分析共享） */
 async function fetchGenePool(): Promise<GenePoolRow[]> {
     try {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await adminDb
             .from('innovation_dna')
             .select('id, query, query_hash, tech_principle, app_scenario, target_user, impl_path, biz_model, reasoning')
             .limit(500);
@@ -770,8 +770,8 @@ async function fetchGenePool(): Promise<GenePoolRow[]> {
             return [];
         }
         return data;
-    } catch (err: any) {
-        console.error('[InnovationDNA] 基因库查询异常:', err.message);
+    } catch (err: unknown) {
+        console.error('[InnovationDNA] 基因库查询异常:', (err instanceof Error ? err.message : String(err)));
         return [];
     }
 }
@@ -794,7 +794,7 @@ function computeNeighbors(
             ];
             const distance = calculateGeneticDistance(vector, rowVec);
             // 从 reasoning JSONB 中提取领域信息，若无则实时分类
-            const domain = row.reasoning?.domain || classifyDomain(row.query);
+            const domain = (row.reasoning?.domain as ReturnType<typeof classifyDomain> | undefined) || classifyDomain(row.query);
             return {
                 id: row.id,
                 query: row.query,

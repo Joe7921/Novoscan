@@ -21,14 +21,14 @@ export async function POST(request: Request) {
         }
 
         // 限制关键词数量和长度
-        const safeKeywords = keywords.slice(0, 10).map((k: any) =>
+        const safeKeywords = keywords.slice(0, 10).map((k: unknown) =>
             typeof k === 'string' ? k.slice(0, 200) : ''
         ).filter(Boolean);
 
         const result = await searchDualTrack(safeKeywords, domain);
         return NextResponse.json(result);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return safeErrorResponse(error, '双轨检索失败', 500, '[API DualTrack]');
     }
 }

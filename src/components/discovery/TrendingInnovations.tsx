@@ -72,7 +72,7 @@ const getScoreStyle = (score: number) => {
 
 // 性能优化：模块级内存短缓存（60秒），避免 re-mount 或 mode/filter 切回时重复请求
 const CACHE_TTL_MS = 60_000;
-const memoryCache = new Map<string, { data: any[]; domainSummary: any[]; ts: number }>();
+const memoryCache = new Map<string, { data: unknown[]; domainSummary: unknown[]; ts: number }>();
 
 const TrendingInnovations: React.FC<TrendingInnovationsProps> = ({ language, onKeywordClick }) => {
     const [innovations, setInnovations] = useState<any[]>([]);
@@ -104,8 +104,8 @@ const TrendingInnovations: React.FC<TrendingInnovationsProps> = ({ language, onK
 
         setLoading(true);
         const fetchData = async () => {
-            let data: any[];
-            let summary: any[] = [];
+            let data: unknown[];
+            let summary: unknown[] = [];
             if (mode === 'rising') {
                 try {
                     const domainParam = filter !== 'ALL' ? `&domainId=${filter}` : '';

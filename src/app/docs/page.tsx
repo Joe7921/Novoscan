@@ -71,8 +71,7 @@ const CHAPTERS: Chapter[] = [
             { id: 'novo-dna', title: 'NovoDNA 创新基因图谱', icon: <Dna className="w-3.5 h-3.5" />, color: 'text-emerald-500' },
             { id: 'novo-mind', title: 'NovoMind 创新人格评测', icon: <FlaskConical className="w-3.5 h-3.5" />, color: 'text-fuchsia-500' },
             { id: 'novo-evo', title: 'NovoscanEVO 智能体进化', icon: <Brain className="w-3.5 h-3.5" />, color: 'text-violet-500' },
-            { id: 'novo-credits', title: 'NovoCredits 积分体系', icon: <Coins className="w-3.5 h-3.5" />, color: 'text-amber-500' },
-            { id: 'novo-tracker', title: 'NovoTracker 趋势监控', icon: <Radar className="w-3.5 h-3.5" />, color: 'text-blue-500' },
+
             { id: 'public-share', title: '公开报告与社交分享', icon: <Share2 className="w-3.5 h-3.5" />, color: 'text-teal-500' },
             { id: 'mcp-service', title: 'MCP 远程服务', icon: <Plug className="w-3.5 h-3.5" />, color: 'text-orange-500' },
         ],
@@ -975,114 +974,7 @@ export default function DocsPage() {
                             </InfoBox>
                         </DocSection>
 
-                        {/* ==================== NovoCredits 积分体系 ==================== */}
-                        <DocSection id="novo-credits">
-                            <SectionHeader icon={<Coins />} color="amber" title="NovoCredits 积分体系" />
-                            <p className="doc-text">
-                                <strong>NovoCredits</strong> 是 Novoscan 的积分消费系统。
-                                用户通过注册、邀请、兑换码等方式获取 Credits，用于兑换各项分析服务。
-                            </p>
 
-                            <h3 className="doc-h3 mt-8">积分获取</h3>
-                            <div className="mt-4 overflow-x-auto">
-                                <table className="w-full text-sm border-collapse">
-                                    <thead>
-                                        <tr className="bg-gray-50">
-                                            <th className="text-left px-3 py-2 border border-gray-200 font-bold text-gray-700">获取方式</th>
-                                            <th className="text-left px-3 py-2 border border-gray-200 font-bold text-gray-700">Credits</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {[
-                                            ['🎁 新用户注册', '100 Credits'],
-                                            ['👥 邀请好友（双方）', '各 50 Credits'],
-                                            ['🎫 兑换码兑换', '按码面值'],
-                                        ].map(([method, credits], i) => (
-                                            <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}>
-                                                <td className="px-3 py-2 border border-gray-200 text-gray-800">{method}</td>
-                                                <td className="px-3 py-2 border border-gray-200 font-bold text-amber-600">{credits}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <h3 className="doc-h3 mt-8">积分消费</h3>
-                            <div className="mt-4 overflow-x-auto">
-                                <table className="w-full text-sm border-collapse">
-                                    <thead>
-                                        <tr className="bg-gray-50">
-                                            <th className="text-left px-3 py-2 border border-gray-200 font-bold text-gray-700">功能</th>
-                                            <th className="text-left px-3 py-2 border border-gray-200 font-bold text-gray-700">消耗</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {[
-                                            ['⚡ Novoscan Flash', '0 Credits（免费）'],
-                                            ['🔬 Novoscan 标准模式', '10 Credits / 次（含追问生成）'],
-                                            ['🔄 追问精化分析', '10 Credits / 次（等同常规分析）'],
-                                            ['💼 Bizscan 商业评估', '10 Credits / 次'],
-                                            ['🔍 Clawscan Skill 查重', '10 Credits / 次'],
-                                        ].map(([feature, cost], i) => (
-                                            <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}>
-                                                <td className="px-3 py-2 border border-gray-200 text-gray-800">{feature}</td>
-                                                <td className="px-3 py-2 border border-gray-200 font-bold text-gray-700">{cost}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <h3 className="doc-h3 mt-6">使用说明</h3>
-                            <div className="space-y-3 mt-4">
-                                <StepItem step={1} text="登录后，头像下拉菜单显示当前 Credits 余额" />
-                                <StepItem step={2} text="进入「个人中心」→「NovoCredits 积分账户」查看详细流水" />
-                                <StepItem step={3} text="在积分账户下方输入兑换码即可充值" />
-                                <StepItem step={4} text="邀请好友：个人中心获取专属邀请链接，好友注册后双方自动获得奖励" />
-                            </div>
-
-                            <InfoBox variant="tip" className="mt-6">
-                                未登录用户也可使用 3 次免费 Flash 分析，无需注册。管理员可配置特定用户的「无限使用」权限。
-                            </InfoBox>
-                        </DocSection>
-
-                        {/* ==================== NovoTracker 趋势监控 ==================== */}
-                        <DocSection id="novo-tracker">
-                            <SectionHeader icon={<Radar />} color="blue" title="NovoTracker 趋势监控" />
-                            <p className="doc-text">
-                                <strong>NovoTracker</strong> 是 Novoscan 的持续监控系统。
-                                它允许用户为自己关注的研究方向设置<strong>自动化定期扫描任务</strong>（每日两次 Cron），
-                                系统会按照设定频率自动重新分析，并在发现显著变化时推送通知。
-                            </p>
-
-                            <h3 className="doc-h3 mt-8">原理</h3>
-                            <div className="space-y-3 mt-4">
-                                <StepItem step={1} text="用户创建监控任务：选择想法、监控频率（每日/每周/每月）和通知渠道" />
-                                <StepItem step={2} text="Vercel Cron 每日 02:00 和 14:00 UTC 触发扫描，执行 Flash 分析获取最新评分" />
-                                <StepItem step={3} text="系统对比历史评分，检测显著变化（评分波动 > 阈值）" />
-                                <StepItem step={4} text="变化达到预警条件时，通过多通道推送通知" />
-                            </div>
-
-                            <h3 className="doc-h3 mt-6">通知渠道</h3>
-                            <div className="mt-4 grid sm:grid-cols-2 gap-3">
-                                <FeatureCard icon={<Bell className="w-5 h-5" />} color="blue" title="邮件 / Server酱 / Telegram" desc="面向用户的多通道预警通知" />
-                                <FeatureCard icon={<Code className="w-5 h-5" />} color="green" title="Webhook 推送" desc="Cron 执行后自动推送结果至飞书 / Slack / 企微 / 自定义 URL" />
-                            </div>
-
-                            <h3 className="doc-h3 mt-6">健康检查端点</h3>
-                            <p className="doc-text">
-                                内置 <code>/api/tracker/health</code> 端点，实时报告 Cron 运行状态（<code>healthy</code> / <code>degraded</code> / <code>critical</code>），
-                                检测过期和错过 48h+ 的监控任务，为运维提供可观测性。
-                            </p>
-
-                            <h3 className="doc-h3 mt-6">使用说明</h3>
-                            <div className="space-y-3 mt-4">
-                                <StepItem step={1} text="登录后进入 Tracker 页面（导航栏 → Tracker）" />
-                                <StepItem step={2} text="点击「添加监控」，输入想法描述和监控频率" />
-                                <StepItem step={3} text="在个人中心 → 通知设置中配置接收渠道（邮件/Server酱/Telegram）" />
-                                <StepItem step={4} text="Tracker 仪表盘实时展示所有监控任务的评分变化曲线" />
-                            </div>
-                        </DocSection>
 
                         {/* ==================== NovoMind 创新人格评测 ==================== */}
                         <DocSection id="novo-mind">

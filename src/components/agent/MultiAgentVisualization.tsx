@@ -34,7 +34,7 @@ const MultiAgentVisualization: React.FC<MultiAgentVisualizationProps> = ({
 }) => {
     const isZh = language === 'zh';
 
-    const getAgentStatus = (agentReport: any): AgentStatus => {
+    const getAgentStatus = (agentReport: unknown): AgentStatus => {
         if (!agentReport) return 'completed';
         // 使用 isFallback 标记区分超时降级和正常的低置信度
         if (agentReport.isFallback) return 'timeout';
@@ -100,7 +100,7 @@ const MultiAgentVisualization: React.FC<MultiAgentVisualizationProps> = ({
     const hasMultipleFailed = failedAgentIds.length > 1;
     const hasAnyFailed = failedAgentIds.length > 0;
 
-    const AgentCard = ({ data, phase }: { data: any, phase: number }) => {
+    const AgentCard = ({ data, phase }: { data: unknown, phase: number }) => {
         const retryId = RETRYABLE_AGENT_IDS[data.id];
         const isRetrying = retryId ? retryingAgents.has(retryId) : false;
         const canRetry = data.status === 'timeout' && retryId && onRetryAgent && !isRetrying;

@@ -148,7 +148,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({ isOpen, onClose, errorInfo, onR
 /**
  * 从原始错误对象解析出结构化的 ErrorInfo
  */
-export function parseError(err: any, model: string, language: 'zh' | 'en'): ErrorInfo {
+export function parseError(err: unknown, model: string, language: 'zh' | 'en'): ErrorInfo {
     const isZh = language === 'zh';
     const timestamp = new Date().toLocaleString(isZh ? 'zh-CN' : 'en-US');
     const errMsg = err?.message || String(err);

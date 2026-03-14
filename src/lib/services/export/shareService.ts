@@ -5,15 +5,7 @@
  * 以及通过 ID 获取公开报告数据。
  */
 
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:0';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'fallback-key-for-build-only';
-
-// 使用 service role key 以绕过 RLS（服务端调用）
-function getAdminClient() {
-    return createClient(supabaseUrl, supabaseServiceKey);
-}
+import { adminDb } from '@/lib/db/factory';
 
 // ============ 类型定义 ============
 
@@ -25,7 +17,7 @@ export interface PublicReport {
     overall_score: number;
     novelty_level: string;
     key_finding: string | null;
-    report_json: any;
+    report_json: Record<string, unknown>;
     user_id: string | null;
     view_count: number;
     created_at: string;
@@ -38,7 +30,7 @@ export interface ShareReportInput {
     overallScore: number;
     noveltyLevel: string;
     keyFinding?: string;
-    reportJson: any;
+    reportJson: Record<string, unknown>;
     userId?: string;
 }
 
@@ -49,9 +41,7 @@ export interface ShareReportInput {
  * @returns 公开报告的 ID（用于构建分享链接）
  */
 export async function shareReport(input: ShareReportInput): Promise<{ id: string } | null> {
-    const supabase = getAdminClient();
-
-    const { data, error } = await supabase
+    const { data, error } = await adminDb
         .from('public_reports')
         .insert({
             idea_summary: input.ideaSummary.slice(0, 200),
@@ -79,10 +69,8 @@ export async function shareReport(input: ShareReportInput): Promise<{ id: string
  * 同时自增浏览次数
  */
 export async function getPublicReport(id: string): Promise<PublicReport | null> {
-    const supabase = getAdminClient();
-
     // 获取报告数据
-    const { data, error } = await supabase
+    const { data, error } = await adminDb
         .from('public_reports')
         .select('*')
         .eq('id', id)
@@ -94,9 +82,9 @@ export async function getPublicReport(id: string): Promise<PublicReport | null> 
     }
 
     // 异步自增浏览次数（不阻塞返回）
-    supabase
+    adminDb
         .from('public_reports')
-        .update({ view_count: (data.view_count || 0) + 1 })
+        .update({ view_count: ((data as PublicReport).view_count || 0) + 1 })
         .eq('id', id)
         .then(() => { /* 忽略 */ });
 
@@ -107,9 +95,7 @@ export async function getPublicReport(id: string): Promise<PublicReport | null> 
  * 获取最新公开报告列表（用于首页展示）
  */
 export async function getRecentPublicReports(limit: number = 10): Promise<PublicReport[]> {
-    const supabase = getAdminClient();
-
-    const { data, error } = await supabase
+    const { data, error } = await adminDb
         .from('public_reports')
         .select('id, idea_summary, report_type, overall_score, novelty_level, key_finding, view_count, created_at')
         .order('created_at', { ascending: false })

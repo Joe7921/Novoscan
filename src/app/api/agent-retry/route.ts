@@ -15,12 +15,11 @@ import type { AgentInput, AgentOutput, ArbitrationResult, CrossDomainScoutOutput
 import type { ModelProvider } from '@/types';
 import { safeErrorResponse } from '@/lib/security/apiSecurity';
 import { createClient } from '@/utils/supabase/server';
-import { chargeForFeature, FEATURE_COSTS } from '@/lib/featureCosts';
-import { addPoints, deductPoints, getBalance } from '@/lib/services/walletService';
-import { checkFeatureAccess } from '@/lib/services/featureAccessService';
+
+import { checkFeatureAccess } from '@/lib/stubs';
 
 // Agent ID → 执行函数映射（Layer1 独立 Agent）
-const LAYER1_AGENT_MAP: Record<string, (input: AgentInput) => Promise<any>> = {
+const LAYER1_AGENT_MAP: Record<string, (input: AgentInput) => Promise<unknown>> = {
     academicReviewer,
     industryAnalyst,
     competitorDetective,
@@ -180,16 +179,16 @@ export async function POST(request: Request) {
                     console.log(`[Agent Retry] ✅ ${agentId} 完成 (${duration}ms), score=${result.score}`);
 
                     return { agentId, success: true, result };
-                } catch (err: any) {
+                } catch (err: unknown) {
                     const duration = Date.now() - startTime;
-                    console.error(`[Agent Retry] ❌ ${agentId} 失败 (${duration}ms):`, err.message);
-                    return { agentId, success: false, error: err.message };
+                    console.error(`[Agent Retry] ❌ ${agentId} 失败 (${duration}ms):`, (err instanceof Error ? err.message : String(err)));
+                    return { agentId, success: false, error: (err instanceof Error ? err.message : String(err)) };
                 }
             })
         );
 
         // 组装 Layer1 结果
-        const results: Record<string, any> = {};
+        const results: Record<string, unknown> = {};
         const failureDetails: Record<string, string> = {};
         let successCount = 0;
 
@@ -231,11 +230,11 @@ export async function POST(request: Request) {
 
                 results.innovationEvaluator = result;
                 successCount++;
-            } catch (err: any) {
+            } catch (err: unknown) {
                 const duration = Date.now() - startTime;
-                console.error(`[Agent Retry] ❌ innovationEvaluator 失败 (${duration}ms):`, err.message);
+                console.error(`[Agent Retry] ❌ innovationEvaluator 失败 (${duration}ms):`, (err instanceof Error ? err.message : String(err)));
                 results.innovationEvaluator = null;
-                failureDetails.innovationEvaluator = err.message || '未知错误';
+                failureDetails.innovationEvaluator = (err instanceof Error ? err.message : String(err)) || '未知错误';
             }
         }
 
@@ -249,7 +248,7 @@ export async function POST(request: Request) {
             successCount,
             failureDetails: failedCount > 0 ? failureDetails : undefined,
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         return safeErrorResponse(error, 'Agent 重试失败', 500, '[Agent Retry]');
     }
 }
@@ -263,8 +262,8 @@ export async function POST(request: Request) {
 async function handleFullRetry(
     params: {
         query: string;
-        academicData: any;
-        industryData: any;
+        academicData: unknown;
+        industryData: unknown;
         modelProvider: string;
         language: string;
         domainHint?: string;
@@ -297,13 +296,7 @@ async function handleFullRetry(
         );
     }
 
-    const charge = await chargeForFeature(currentUserId, 'novoscan-retry');
-    if (!charge.success) {
-        return NextResponse.json(
-            { success: false, error: charge.error, currentBalance: charge.currentBalance, required: charge.required },
-            { status: 402 }
-        );
-    }
+    // 开源版所有功能免费，无需扣费
 
     console.log(`[Full Retry] 🚀 开始完全重试 (用户=${currentUserId}, 模型=${modelProvider})`);
     const startTime = Date.now();
@@ -311,7 +304,7 @@ async function handleFullRetry(
     const input: AgentInput = {
         query, academicData, industryData,
         language: (language === 'en' ? 'en' : 'zh') as 'zh' | 'en',
-        modelProvider: modelProvider as any,
+        modelProvider: modelProvider as unknown,
         domainId, subDomainId, domainHint,
     };
 
@@ -324,8 +317,8 @@ async function handleFullRetry(
             clearTimeout(timeoutId);
             console.log(`[Full Retry] ✅ crossDomainScout 完成`);
             return result;
-        } catch (err: any) {
-            console.warn(`[Full Retry] ⚠️ crossDomainScout 失败 (non-blocking):`, err.message);
+        } catch (err: unknown) {
+            console.warn(`[Full Retry] ⚠️ crossDomainScout 失败 (non-blocking):`, (err instanceof Error ? err.message : String(err)));
             return createFallbackCrossDomainOutput(input);
         }
     })();
@@ -342,8 +335,8 @@ async function handleFullRetry(
                 clearTimeout(timeoutId);
                 console.log(`[Full Retry] ✅ ${agentId} 完成 (${Date.now() - sTime}ms)`);
                 return result as AgentOutput;
-            } catch (err: any) {
-                console.error(`[Full Retry] ❌ ${agentId} 失败 (${Date.now() - sTime}ms):`, err.message);
+            } catch (err: unknown) {
+                console.error(`[Full Retry] ❌ ${agentId} 失败 (${Date.now() - sTime}ms):`, (err instanceof Error ? err.message : String(err)));
                 return null;
             }
         })
@@ -354,14 +347,11 @@ async function handleFullRetry(
     const l1FailCount = l1Results.filter(r => r === null).length;
     if (l1FailCount === 3) {
         // 退费
-        try {
-            await addPoints(currentUserId, 8, '完全重试全部失败自动退费');
-            console.log(`[Full Retry] 💰 已退还 8 点`);
-        } catch { /* 退费失败忽略 */ }
+        // 开源版无积分系统，跳过退费
+        console.log(`[Full Retry] 开源版跳过退费逻辑`);
         return NextResponse.json({
             success: false,
-            error: 'Layer1 全部 Agent 失败，AI 服务可能暂时不可用，已退费',
-            refunded: true,
+            error: 'Layer1 全部 Agent 失败，AI 服务可能暂时不可用',
         });
     }
 
@@ -381,8 +371,8 @@ async function handleFullRetry(
         );
         clearTimeout(timeoutId);
         console.log(`[Full Retry] ✅ innovationEvaluator 完成`);
-    } catch (err: any) {
-        console.error(`[Full Retry] ❌ innovationEvaluator 失败:`, err.message);
+    } catch (err: unknown) {
+        console.error(`[Full Retry] ❌ innovationEvaluator 失败:`, (err instanceof Error ? err.message : String(err)));
         innovationResult = createFallbackAgentOutput('创新评估师', input);
     }
 
@@ -410,8 +400,8 @@ async function handleFullRetry(
                 45000
             );
             console.log(`[Full Retry] ✅ NovoDebate 完成 — ${debateRecord.sessions.length} 场辩论`);
-        } catch (err: any) {
-            console.warn(`[Full Retry] ⚠️ NovoDebate 失败 (non-blocking):`, err.message);
+        } catch (err: unknown) {
+            console.warn(`[Full Retry] ⚠️ NovoDebate 失败 (non-blocking):`, (err instanceof Error ? err.message : String(err)));
             debateRecord = createFallbackDebateRecord('辩论执行失败');
         }
     }
@@ -436,8 +426,8 @@ async function handleFullRetry(
         );
         clearTimeout(timeoutId);
         console.log(`[Full Retry] ✅ 仲裁员完成，综合评分: ${arbitrationResult.overallScore}`);
-    } catch (err: any) {
-        console.error(`[Full Retry] ❌ 仲裁员失败:`, err.message);
+    } catch (err: unknown) {
+        console.error(`[Full Retry] ❌ 仲裁员失败:`, (err instanceof Error ? err.message : String(err)));
         arbitrationResult = createFallbackArbitration(allAgents);
     }
 
@@ -476,7 +466,7 @@ async function handleFullRetry(
         arbitration: arbitrationResult,
         qualityCheck: qualityCheckResult,
         // NovoStarchart 雷达图数据
-        innovationRadar: (innovationResult as any)?.innovationRadar || null,
+        innovationRadar: (innovationResult as unknown)?.innovationRadar || null,
         // 元数据
         isPartial: !!arbitrationResult.isPartial,
         retryDurationMs: duration,
@@ -495,14 +485,14 @@ async function handlePartialRetry(
     params: {
         agentIds: string[];
         query: string;
-        academicData: any;
-        industryData: any;
+        academicData: unknown;
+        industryData: unknown;
         modelProvider: string;
         language: string;
         domainHint?: string;
         domainId?: string;
         subDomainId?: string;
-        existingAgentResults?: Record<string, any>;
+        existingAgentResults?: Record<string, unknown>;
     },
     _request: Request
 ) {
@@ -546,29 +536,14 @@ async function handlePartialRetry(
     const isAdmin = await checkFeatureAccess(currentUserId, 'admin');
     const skipCharge = isUnlimited || isAdmin;
 
-    if (!skipCharge) {
-        const balance = await getBalance(currentUserId);
-        if (balance < cost) {
-            return NextResponse.json(
-                { success: false, error: `余额不足：当前 ${balance} 点，需要 ${cost} 点`, currentBalance: balance, required: cost },
-                { status: 402 }
-            );
-        }
-        const deductResult = await deductPoints(currentUserId, cost, `Novoscan 部分重试 (${validIds.length} 个 Agent)`);
-        if (!deductResult.success) {
-            return NextResponse.json(
-                { success: false, error: '扣费失败，请稍后重试' },
-                { status: 402 }
-            );
-        }
-    }
+    // 开源版所有功能免费，跳过扣费检查
 
     console.log(`[Partial Retry] 🚀 开始 (${validIds.length} Agent, ${cost}点, 用户=${currentUserId})`);
 
     const input: AgentInput = {
         query, academicData, industryData,
         language: (language === 'en' ? 'en' : 'zh') as 'zh' | 'en',
-        modelProvider: modelProvider as any,
+        modelProvider: modelProvider as unknown,
         domainId, subDomainId, domainHint,
     };
 
@@ -586,13 +561,13 @@ async function handlePartialRetry(
                 const result = await agentFn({ ...input, _abortSignal: controller.signal });
                 clearTimeout(timeoutId);
                 return { agentId, success: true, result };
-            } catch (err: any) {
-                return { agentId, success: false, error: err.message };
+            } catch (err: unknown) {
+                return { agentId, success: false, error: (err instanceof Error ? err.message : String(err)) };
             }
         })
     );
 
-    const results: Record<string, any> = {};
+    const results: Record<string, unknown> = {};
     const failureDetails: Record<string, string> = {};
     let successCount = 0;
 
@@ -619,18 +594,14 @@ async function handlePartialRetry(
             clearTimeout(timeoutId);
             results.innovationEvaluator = result;
             successCount++;
-        } catch (err: any) {
+        } catch (err: unknown) {
             results.innovationEvaluator = null;
-            failureDetails.innovationEvaluator = err.message || '未知错误';
+            failureDetails.innovationEvaluator = (err instanceof Error ? err.message : String(err)) || '未知错误';
         }
     }
 
     // 如果全部失败，退费
-    if (successCount === 0 && !skipCharge) {
-        try {
-            await addPoints(currentUserId, cost, `部分重试全部失败自动退费 (${cost}点)`);
-        } catch { /* 退费失败忽略 */ }
-    }
+    // 开源版无需退费
 
     console.log(`[Partial Retry] 完成: ${successCount}/${validIds.length} 成功, 扣费 ${skipCharge ? '0 (免费)' : cost} 点`);
 

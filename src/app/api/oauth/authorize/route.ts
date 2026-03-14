@@ -166,7 +166,7 @@ export async function POST(request: Request) {
 
         // 验证 API Key（复用 mcpAuth 的环境变量逻辑，轻量验证）
         const { validateMcpKey } = await import('@/lib/security/mcpAuth');
-        const auth = (await validateMcpKey(apiKey)) as any;
+        const auth = (await validateMcpKey(apiKey)) as unknown;
 
         if (!auth.valid) {
             return NextResponse.json({ error: auth.error || 'API Key 无效' }, { status: 401 });

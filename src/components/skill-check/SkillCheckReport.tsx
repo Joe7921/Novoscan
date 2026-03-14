@@ -6,7 +6,7 @@ import AntigravityButton from '@/components/antigravity/AntigravityButton';
 import AgentRawDisplay from '@/components/agent/AgentRawDisplay';
 
 interface SkillCheckReportProps {
-    reportData: any;
+    reportData: unknown;
 }
 
 const LEVEL_CONFIG = {
@@ -145,7 +145,7 @@ export default function SkillCheckReport({ reportData }: SkillCheckReportProps) 
                                     ClawHub 同类方案 ({reportData.similarSkills.length})
                                 </h3>
                                 <div className="space-y-4">
-                                    {reportData.similarSkills.map((skill: any, idx: number) => {
+                                    {reportData.similarSkills.map((skill: unknown, idx: number) => {
                                         const pct = skill.similarityPercentage ?? 0;
                                         const badgeStyle = getSimBadgeStyle(pct);
                                         const barGradient = getBarGradient(pct);
@@ -211,7 +211,7 @@ export default function SkillCheckReport({ reportData }: SkillCheckReportProps) 
                                     落地实战案例 ({reportData.caseStudies.length})
                                 </h3>
                                 <div className="space-y-3">
-                                    {reportData.caseStudies.map((cs: any, idx: number) => (
+                                    {reportData.caseStudies.map((cs: unknown, idx: number) => (
                                         <motion.div
                                             key={idx}
                                             initial={{ opacity: 0, x: -20 }}
@@ -256,7 +256,7 @@ export default function SkillCheckReport({ reportData }: SkillCheckReportProps) 
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {reportData.featureCoverage.map((row: any, idx: number) => (
+                                            {reportData.featureCoverage.map((row: unknown, idx: number) => (
                                                 <motion.tr
                                                     key={idx}
                                                     initial={{ opacity: 0 }}

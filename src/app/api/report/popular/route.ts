@@ -13,7 +13,7 @@ import { getRecentPublicReports } from '@/lib/services/export/shareService';
 
 // 60 秒内存缓存
 const CACHE_TTL_MS = 60_000;
-let popularCache: { data: any[]; ts: number } | null = null;
+let popularCache: { data: unknown[]; ts: number } | null = null;
 
 export async function GET() {
     try {

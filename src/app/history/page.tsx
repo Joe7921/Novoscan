@@ -413,7 +413,7 @@ export default function HistoryPage() {
                             );
                         })}
 
-                        {/* 免费用户升级提示 */}
+                        {/* 历史记录数量提示 */}
                         {!isPremium && totalCount > FREE_LIMIT && (
                             <div className="flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl">
                                 <Lock className="w-5 h-5 text-indigo-500 flex-shrink-0" />
@@ -422,15 +422,9 @@ export default function HistoryPage() {
                                         还有 {totalCount - FREE_LIMIT} 条历史记录未展示
                                     </p>
                                     <p className="text-xs text-slate-500 mt-0.5">
-                                        升级 Premium 即可查看最近 {PREMIUM_LIMIT} 条分析报告
+                                        登录后可查看更多历史分析报告
                                     </p>
                                 </div>
-                                <button
-                                    onClick={() => router.push('/novocredit')}
-                                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition-colors flex-shrink-0"
-                                >
-                                    升级
-                                </button>
                             </div>
                         )}
 

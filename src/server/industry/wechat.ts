@@ -7,7 +7,7 @@
  * 成本：复用现有 SerpAPI 配额，无额外费用。
  */
 
-import { checkCostLimit } from '@/lib/services/costLimiter';
+import { checkCostLimit } from '@/lib/stubs';
 
 const SERPAPI_KEY = process.env.SERPAPI_KEY || '';
 const SERPAPI_URL = process.env.SERPAPI_BASE_URL || 'https://serpapi.com/search';

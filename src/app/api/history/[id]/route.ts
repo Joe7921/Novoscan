@@ -52,8 +52,8 @@ export async function GET(
             success: true,
             record: data,
         });
-    } catch (error: any) {
-        console.error('[API History] GET 异常:', error.message);
+    } catch (error: unknown) {
+        console.error('[API History] GET 异常:', (error instanceof Error ? error.message : String(error)));
         return NextResponse.json(
             { success: false, error: '查询失败' },
             { status: 500 }
@@ -106,8 +106,8 @@ export async function DELETE(
         }
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
-        console.error('[API History] DELETE 异常:', error.message);
+    } catch (error: unknown) {
+        console.error('[API History] DELETE 异常:', (error instanceof Error ? error.message : String(error)));
         return NextResponse.json(
             { success: false, error: '删除失败' },
             { status: 500 }

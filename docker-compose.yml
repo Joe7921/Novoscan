@@ -17,9 +17,9 @@
 
 services:
   # ────────────────── PostgreSQL 16 ──────────────────
-  postgres:
+  db:
     image: postgres:16-alpine
-    container_name: novoscan-postgres
+    container_name: novoscan-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-novoscan}
@@ -58,7 +58,7 @@ services:
       retries: 5
 
   # ────────────────── Novoscan 应用 ──────────────────
-  novoscan:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -75,6 +75,14 @@ services:
       NODE_ENV: production
       # ── 站点配置 ──
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      # ── 数据库（Docker 内部网络连接） ──
+      DATABASE_URL: postgresql://${POSTGRES_USER:-novoscan}:${POSTGRES_PASSWORD:-novoscan_secret_2026}@db:5432/${POSTGRES_DB:-novoscan}
+      DATABASE_PROVIDER: ${DATABASE_PROVIDER:-postgres}
+      # ── Redis（Docker 内部网络连接） ──
+      REDIS_URL: redis://redis:6379
+      # ── 认证 ──
+      AUTH_PROVIDER: ${AUTH_PROVIDER:-nextauth}
+      AUTH_SECRET: ${AUTH_SECRET:-please-change-me-in-production}
       # ── Supabase（可选：指向外部 Supabase 云或留空使用 IndexedDB）──
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
@@ -94,7 +102,7 @@ services:
       CORE_API_KEY: ${CORE_API_KEY:-}
       OPENALEX_EMAIL: ${OPENALEX_EMAIL:-}
       CROSSREF_EMAIL: ${CROSSREF_EMAIL:-}
-      # ── Redis（指向 Docker 内部 Redis）──
+      # ── Upstash Redis（可选 — Docker 部署时可留空，使用内存回退） ──
       UPSTASH_REDIS_REST_URL: ${UPSTASH_REDIS_REST_URL:-}
       UPSTASH_REDIS_REST_TOKEN: ${UPSTASH_REDIS_REST_TOKEN:-}
       # ── 其他可选配置 ──
@@ -105,7 +113,7 @@ services:
       ADMIN_SECRET: ${ADMIN_SECRET:-}
       FINOPS_PRICING: ${FINOPS_PRICING:-}
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
       redis:
         condition: service_healthy

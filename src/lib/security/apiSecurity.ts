@@ -1,13 +1,6 @@
-/**
- * API 安全工具库
- *
- * 提供 Admin 鉴权（数据库驱动）、速率限制、输入清洗、安全错误响应四大功能。
- * 所有 API 路由均应引用此模块。
- */
-
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-import { checkFeatureAccess } from '@/lib/services/featureAccessService';
+import { getCurrentUser } from '@/lib/auth';
+import { checkFeatureAccess } from '@/lib/stubs';
 
 // ======================== 配置常量 ========================
 
@@ -21,13 +14,13 @@ const DEFAULT_MAX_REQUESTS = 10;
 /**
  * Admin API 路由鉴权守卫
  * 校验当前登录用户是否拥有 'admin' 功能权限（feature_access 表）。
+ * 通过 getCurrentUser() 自动适配 NextAuth / Supabase 认证模式。
  *
  * @returns null 表示鉴权通过；非 null 表示拦截响应
  */
 export async function requireAdminAuth(): Promise<NextResponse | null> {
     try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await getCurrentUser();
 
         if (!user) {
             return NextResponse.json(

@@ -4,12 +4,13 @@
  * GET /api/auth/check-access?feature=tracker
  *
  * 供前端查询当前登录用户是否拥有指定功能的权限。
+ * 通过 getCurrentUser() 自动适配 NextAuth / Supabase 认证模式。
  * 返回 { hasAccess: boolean }
  */
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-import { checkFeatureAccess } from '@/lib/services/featureAccessService';
+import { getCurrentUser } from '@/lib/auth';
+import { checkFeatureAccess } from '@/lib/stubs';
 
 // 此路由依赖 cookies/auth，不能在构建时预渲染
 export const dynamic = 'force-dynamic';
@@ -26,8 +27,7 @@ export async function GET(request: Request) {
             );
         }
 
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await getCurrentUser();
 
         if (!user) {
             return NextResponse.json({ hasAccess: false }, { status: 401 });
@@ -40,3 +40,4 @@ export async function GET(request: Request) {
         return NextResponse.json({ hasAccess: false }, { status: 500 });
     }
 }
+

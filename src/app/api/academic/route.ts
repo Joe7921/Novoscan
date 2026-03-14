@@ -25,7 +25,7 @@ export async function POST(request: Request) {
         const result = await searchAcademic(keywords, domain)
         return NextResponse.json(result)
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         return safeErrorResponse(error, '学术搜索失败', 500, '[API Academic]');
     }
 }

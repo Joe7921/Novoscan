@@ -81,7 +81,7 @@ export async function POST(request: Request) {
             report: professionalReport,
         });
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         return safeErrorResponse(err, '报告生成失败，请稍后重试', 500, '[Report API]');
     }
 }

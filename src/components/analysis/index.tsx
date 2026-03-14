@@ -210,7 +210,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ report, onReset, language, 
         debate,
         arbitration,
         qualityCheck
-    } = report as any;
+    } = report as unknown;
 
     // 从 dualResult 中获取交叉验证和可信度（合并旧有 + 新数据）
     const crossValidation = dualResult?.crossValidation;
@@ -420,19 +420,19 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ report, onReset, language, 
                 )}
 
                 {/* 🧬 NovoDNA 创新基因图谱 */}
-                {(report as any)?.innovationDNA && (
+                {(report as unknown)?.innovationDNA && (
                     <div className="rounded-2xl border border-indigo-200/50 bg-white/95 shadow-sm overflow-hidden">
                         <InnovationDNAMap
-                            data={(report as any).innovationDNA}
+                            data={(report as unknown).innovationDNA}
                             language={language}
                         />
                     </div>
                 )}
 
                 {/* 🧠 Agent 记忆进化洞察 */}
-                {(report as any)?.memoryInsight && (report as any).memoryInsight.experiencesUsed > 0 && (
+                {(report as unknown)?.memoryInsight && (report as unknown).memoryInsight.experiencesUsed > 0 && (
                     <AgentMemoryInsight
-                        data={(report as any).memoryInsight}
+                        data={(report as unknown).memoryInsight}
                         language={language}
                     />
                 )}
@@ -440,7 +440,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ report, onReset, language, 
                 {/* NovoStarchart 雷达图 + 验证状态集成行 */}
                 <div className="grid lg:grid-cols-12 gap-6">
                     <div className="lg:col-span-7 h-full">
-                        <RadarChart language={language} data={(report as any)?.innovationRadar} />
+                        <RadarChart language={language} data={(report as unknown)?.innovationRadar} />
                     </div>
                     <div className="lg:col-span-5 h-full flex flex-col gap-4">
                         {/* 可信度验证卡片 */}
@@ -589,7 +589,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ report, onReset, language, 
                     <AccordionSection
                         icon={<Swords size={18} className="text-rose-500" />}
                         title={isZh ? 'NovoDebate 专家对抗辩论' : 'NovoDebate Adversarial Debate'}
-                        badge={`${debate.sessions.reduce((s: number, ss: any) => s + ss.exchanges.length, 0)} ${isZh ? '轮交锋' : 'Rounds'}`}
+                        badge={`${debate.sessions.reduce((s: number, ss: unknown) => s + ss.exchanges.length, 0)} ${isZh ? '轮交锋' : 'Rounds'}`}
                         badgeColor="bg-rose-100 text-rose-700"
                         defaultOpen={true}
                     >
@@ -598,16 +598,16 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ report, onReset, language, 
                 )}
 
                 {/* 🆕 跨域创新迁移洞察 */}
-                {(report as any)?.crossDomainTransfer && (report as any).crossDomainTransfer.bridges?.length > 0 && (
+                {(report as unknown)?.crossDomainTransfer && (report as unknown).crossDomainTransfer.bridges?.length > 0 && (
                     <AccordionSection
                         icon={<Globe size={18} className="text-purple-500" />}
                         title={isZh ? 'NovoDiscover 跨域创新迁移洞察' : 'NovoDiscover Cross-Domain Innovation Transfer'}
-                        badge={`${(report as any).crossDomainTransfer.bridges.length} ${isZh ? '条桥梁' : 'bridges'}`}
+                        badge={`${(report as unknown).crossDomainTransfer.bridges.length} ${isZh ? '条桥梁' : 'bridges'}`}
                         badgeColor="bg-purple-100 text-purple-700"
                         defaultOpen={true}
                     >
                         <CrossDomainInsights
-                            data={(report as any).crossDomainTransfer}
+                            data={(report as unknown).crossDomainTransfer}
                             language={language}
                         />
 
@@ -671,8 +671,8 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ report, onReset, language, 
                     const agentItems: AgentRawItem[] = [
                         academicReview?.analysis && { agentName: isZh ? '学术审查员' : 'Academic Reviewer', rawText: academicReview.analysis },
                         industryAnalysis?.analysis && { agentName: isZh ? '产业分析员' : 'Industry Analyst', rawText: industryAnalysis.analysis },
-                        (report as any)?.competitorAnalysis?.analysis && { agentName: isZh ? '竞品侦探' : 'Competitor Detective', rawText: (report as any).competitorAnalysis.analysis },
-                        (report as any)?.crossDomainTransfer?.analysis && { agentName: isZh ? 'NovoDiscover 跨域侦察兵' : 'NovoDiscover Cross-Domain Scout', rawText: (report as any).crossDomainTransfer.analysis },
+                        (report as unknown)?.competitorAnalysis?.analysis && { agentName: isZh ? '竞品侦探' : 'Competitor Detective', rawText: (report as unknown).competitorAnalysis.analysis },
+                        (report as unknown)?.crossDomainTransfer?.analysis && { agentName: isZh ? 'NovoDiscover 跨域侦察兵' : 'NovoDiscover Cross-Domain Scout', rawText: (report as unknown).crossDomainTransfer.analysis },
                         innovationEvaluation?.analysis && { agentName: isZh ? '创新评估师' : 'Innovation Evaluator', rawText: innovationEvaluation.analysis },
                         arbitration?.summary && { agentName: isZh ? '首席仲裁员' : 'Chief Arbitrator', rawText: arbitration.summary + (arbitration.reasoningContent ? '\n\n---\n\n**思维链 (Chain of Thought):**\n\n' + arbitration.reasoningContent : '') },
                     ].filter(Boolean) as AgentRawItem[];
@@ -820,13 +820,13 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ report, onReset, language, 
                         academicScore={arbitration?.overallScore ?? report?.noveltyScore ?? 85}
                         industryScore={report.practicalScore ?? industryAnalysis?.score ?? report.commercialScore ?? 50}
                         language={language}
-                        academicDimensions={academicReview?.dimensionScores?.map((dim: any, _i: number, arr: any[]) => ({
+                        academicDimensions={academicReview?.dimensionScores?.map((dim: unknown, _i: number, arr: unknown[]) => ({
                             name: dim.name,
                             weight: Math.round(100 / arr.length),
                             score: dim.score,
                             description: dim.reasoning || ''
                         }))}
-                        industryDimensions={industryAnalysis?.dimensionScores?.map((dim: any, _i: number, arr: any[]) => ({
+                        industryDimensions={industryAnalysis?.dimensionScores?.map((dim: unknown, _i: number, arr: unknown[]) => ({
                             name: dim.name,
                             weight: Math.round(100 / arr.length),
                             score: dim.score,
@@ -913,7 +913,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ report, onReset, language, 
                         badgeColor="bg-green-100 text-green-700"
                     >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {dualResult.industry.wechatArticles.map((article: any, idx: number) => (
+                            {dualResult.industry.wechatArticles.map((article: unknown, idx: number) => (
                                 <a
                                     key={idx}
                                     href={article.url}
@@ -962,12 +962,12 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ report, onReset, language, 
                         title={isZh ? '深度审查报告' : 'Deep Review Report'}
                     >
                         <div className="space-y-6">
-                            {!!(report.sections as any).academic && (
+                            {!!(report.sections as unknown).academic && (
                                 <div className="space-y-3">
                                     <h4 className="font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
-                                        <span className="text-blue-500">📚</span> {`${(report.sections as any).academic.title || ''}`}
+                                        <span className="text-blue-500">📚</span> {`${(report.sections as unknown).academic.title || ''}`}
                                     </h4>
-                                    {((report.sections as any).academic.subsections || []).map((sub: any, i: number) => (
+                                    {((report.sections as unknown).academic.subsections || []).map((sub: unknown, i: number) => (
                                         <div key={i} className="prose prose-sm prose-indigo max-w-none">
                                             <strong className="text-slate-700">{sub.title}</strong>
                                             {renderMarkdown(sub.content)}
@@ -975,12 +975,12 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ report, onReset, language, 
                                     ))}
                                 </div>
                             )}
-                            {!!(report.sections as any).internet && (
+                            {!!(report.sections as unknown).internet && (
                                 <div className="space-y-3 pt-4 border-t border-slate-100">
                                     <h4 className="font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
-                                        <span className="text-amber-500">🌍</span> {`${(report.sections as any).internet.title || ''}`}
+                                        <span className="text-amber-500">🌍</span> {`${(report.sections as unknown).internet.title || ''}`}
                                     </h4>
-                                    {((report.sections as any).internet.subsections || []).map((sub: any, i: number) => (
+                                    {((report.sections as unknown).internet.subsections || []).map((sub: unknown, i: number) => (
                                         <div key={i} className="prose prose-sm prose-indigo max-w-none">
                                             <strong className="text-slate-700">{sub.title}</strong>
                                             {renderMarkdown(sub.content)}
@@ -1052,7 +1052,7 @@ const AnalysisView: React.FC<AnalysisViewProps> = ({ report, onReset, language, 
                                     </div>
                                     {(dualResult.industry.topProjects?.length || 0) > 0 && (
                                         <div className="space-y-1">
-                                            {dualResult.industry.topProjects.slice(0, 3).map((p: any, i: number) => (
+                                            {dualResult.industry.topProjects.slice(0, 3).map((p: unknown, i: number) => (
                                                 <div key={i} className="flex items-center justify-between text-xs bg-white/95 px-2 py-1.5 rounded-lg">
                                                     <span className="truncate flex-1 font-medium">{p.name}</span>
                                                     <span className="text-orange-600 ml-2">{(p.stars || 0).toLocaleString()}⭐</span>

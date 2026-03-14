@@ -76,8 +76,8 @@ const FileAttachment: React.FC<FileAttachmentProps> = ({
       if (results.length > 0) {
         onAttachmentsChange([...attachments, ...results]);
       }
-    } catch (err: any) {
-      setError(err.message || (isZh ? '上传失败' : 'Upload failed'));
+    } catch (err: unknown) {
+      setError((err instanceof Error ? err.message : String(err)) || (isZh ? '上传失败' : 'Upload failed'));
     } finally {
       setIsUploading(false);
       // 重置 input 以允许重复上传同一文件

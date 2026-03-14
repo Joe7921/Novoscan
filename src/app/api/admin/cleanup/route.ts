@@ -17,8 +17,8 @@ export async function GET(request: Request) {
         const days = parseInt(url.searchParams.get('days') || '90') || 90;
         const data = await getCleanupPreview(days);
         return NextResponse.json({ preview: data, days });
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }
 
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         const days = body.days || 90;
         const data = await executeCleanup(days);
         return NextResponse.json(data);
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ error: (err instanceof Error ? err.message : String(err)) }, { status: 500 });
     }
 }

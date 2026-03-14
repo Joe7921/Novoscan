@@ -43,7 +43,7 @@ export async function POST(request: Request) {
                 user_id: userId || null,
                 clicked_at: timestamp || new Date().toISOString(),
             });
-        } catch (dbErr: any) {
+        } catch (dbErr: unknown) {
             // 表可能不存在，只记日志不报错
             console.warn('[TrackRecommendation] 写入失败（表可能不存在）:', dbErr.message);
         }

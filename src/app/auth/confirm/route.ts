@@ -2,8 +2,6 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { addPoints, getBalance } from '@/lib/services/walletService';
-import { WELCOME_BONUS } from '@/lib/featureCosts';
 
 /**
  * Magic Link 邮箱登录确认路由。
@@ -24,17 +22,6 @@ export async function GET(request: Request) {
         });
 
         if (!error && data?.user) {
-            // 🎁 新用户欢迎奖励：首次注册赠送点数
-            try {
-                const balance = await getBalance(data.user.id);
-                if (balance === 0) {
-                    await addPoints(data.user.id, WELCOME_BONUS, '新用户欢迎奖励', 'admin');
-                    console.log(`[Auth Confirm] 🎁 新用户 ${data.user.id} 赠送 ${WELCOME_BONUS} 点欢迎奖励`);
-                }
-            } catch (e: any) {
-                console.warn('[Auth Confirm] 欢迎奖励发放失败(不影响登录):', e.message);
-            }
-
             const forwardedHost = request.headers.get('x-forwarded-host');
             const isLocalEnv = process.env.NODE_ENV === 'development';
 

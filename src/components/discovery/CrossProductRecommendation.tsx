@@ -1,2 +1,2 @@
 'use client';
-export default function CrossProductRecommendation(_props: any) { return null; }
+export default function CrossProductRecommendation(_props: unknown) { return null; }

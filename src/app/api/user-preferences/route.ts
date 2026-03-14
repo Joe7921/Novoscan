@@ -48,8 +48,8 @@ export async function GET() {
             } : null,
             recentDomains,
         });
-    } catch (error: any) {
-        console.error('[UserPreferences/API] 查询失败:', error.message);
+    } catch (error: unknown) {
+        console.error('[UserPreferences/API] 查询失败:', (error instanceof Error ? error.message : String(error)));
         return NextResponse.json(
             { success: false, error: '查询用户偏好失败' },
             { status: 500 }
@@ -113,8 +113,8 @@ export async function PUT(request: NextRequest) {
         }
 
         return NextResponse.json({ success: true, updated: updates });
-    } catch (error: any) {
-        console.error('[UserPreferences/API] PUT 异常:', error.message);
+    } catch (error: unknown) {
+        console.error('[UserPreferences/API] PUT 异常:', (error instanceof Error ? error.message : String(error)));
         return NextResponse.json(
             { success: false, error: '更新偏好失败' },
             { status: 500 }

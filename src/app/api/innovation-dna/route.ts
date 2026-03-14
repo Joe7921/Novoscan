@@ -45,7 +45,7 @@ export async function POST(request: Request) {
             success: true,
             data: map,
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         return safeErrorResponse(error, 'NovoDNA 分析失败', 500, '[API NovoDNA]');
     }
 }

@@ -85,7 +85,7 @@ ${cleanSummary || '无'}
             businessModel: result.businessModel || '',
             industryVertical: result.industryVertical || '',
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         return safeErrorResponse(error, '商业想法增强失败', 500, '[API CrossRecommend]');
     }
 }

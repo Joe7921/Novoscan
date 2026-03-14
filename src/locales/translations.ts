@@ -1,7 +1,7 @@
 export const translations = {
   en: {
     howItWorks: "Docs",
-    pricing: "NovoCredit",
+    pricing: "免费使用",
     login: "Log In",
     titleStart: "Is Your Research",
     titleEnd: "Novel?",
@@ -20,7 +20,7 @@ export const translations = {
   },
   zh: {
     howItWorks: "官方文档",
-    pricing: "NovoCredit",
+    pricing: "免费使用",
     login: "登录",
     titleStart: "你的研究有",
     titleEnd: "创新性吗？",

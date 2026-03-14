@@ -1,2 +1,2 @@
 'use client';
-export default function CrossDomainInsights(_props: any) { return null; }
+export default function CrossDomainInsights(_props: unknown) { return null; }

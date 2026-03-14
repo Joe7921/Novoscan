@@ -156,8 +156,8 @@ ${dimSummary}
         const cleaned = text.replace(/```json\n?/g, '').replace(/```/g, '').trim();
         const insights: DivergenceInsight[] = JSON.parse(cleaned);
         return insights.slice(0, 3);
-    } catch (error: any) {
-        console.warn('[Divergence] AI 洞察生成失败，使用默认:', error.message);
+    } catch (error: unknown) {
+        console.warn('[Divergence] AI 洞察生成失败，使用默认:', (error instanceof Error ? error.message : String(error)));
         // 降级：基于规则生成
         return divergentDims.slice(0, 3).map(d => ({
             title: d.type === 'overestimate'
@@ -244,15 +244,15 @@ export async function analyzeDivergence(userId: string): Promise<DivergenceRepor
         await supabaseAdmin
             .from('user_idea_profile')
             .update({
-                divergence_report: report as any,
+                divergence_report: report as unknown as Record<string, unknown>,
                 updated_at: new Date().toISOString(),
             })
             .eq('user_id', userId);
 
         console.log(`[Divergence] 偏差报告已生成: ${statedArchetypeName} vs ${behavioralArchetypeName}`);
         return report;
-    } catch (error: any) {
-        console.error('[Divergence] 偏差分析异常:', error.message);
+    } catch (error: unknown) {
+        console.error('[Divergence] 偏差分析异常:', (error instanceof Error ? error.message : String(error)));
         return null;
     }
 }

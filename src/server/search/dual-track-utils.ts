@@ -77,12 +77,14 @@ export async function extractEnglishKeywordsAI(zhQuery: string): Promise<string>
         console.log(`[SearchUtils] 🤖 AI 关键词提取: "${zhQuery}" → "${cleaned}"`);
         return cleaned;
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         clearTimeout(timeoutId);
-        if (err.name === 'AbortError') {
+        const isAbort = err instanceof Error && err.name === 'AbortError';
+        if (isAbort) {
             console.warn('[SearchUtils] AI 关键词提取超时(3s)，回退到词典');
         } else {
-            console.warn('[SearchUtils] AI 关键词提取异常，回退到词典:', err.message);
+            const msg = err instanceof Error ? err.message : String(err);
+            console.warn('[SearchUtils] AI 关键词提取异常，回退到词典:', msg);
         }
         return extractEnglishKeywordsFallback(zhQuery);
     }

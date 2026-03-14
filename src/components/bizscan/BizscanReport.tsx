@@ -483,7 +483,7 @@ export default function BizscanReport({ reportData }: BizscanReportProps) {
                                 {reportData.crossValidation.divergences?.length > 0 && (
                                     <div className="space-y-2">
                                         <h4 className="text-xs font-bold text-gray-500">专家分歧点</h4>
-                                        {reportData.crossValidation.divergences.map((d: any, i: number) => (
+                                        {reportData.crossValidation.divergences.map((d: unknown, i: number) => (
                                             <div key={i} className="p-3 rounded-lg bg-amber-50/50 border border-amber-100 text-sm">
                                                 <div className="flex items-center justify-between mb-1">
                                                     <span className="font-bold text-gray-700">{d.dimension}</span>

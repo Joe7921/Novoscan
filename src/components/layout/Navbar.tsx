@@ -1,16 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Language } from '@/types';
 import { translations } from '../../locales/translations';
-import { Sparkles, Clock, Briefcase, Radar, Wallet } from 'lucide-react';
+import { Sparkles, Clock, Briefcase } from 'lucide-react';
 import { ProjectIcon } from '../icons/ProjectIcon';
-import { LobsterIcon } from '../icons/LobsterIcon';
 import AuthButton from '@/components/auth/AuthButton';
-import { createClient } from '@/utils/supabase/client';
+import { useAuthSession } from '@/components/auth/AuthSessionProvider';
 import ThemeToggle from './ThemeToggle';
 
 interface NavbarProps {
@@ -22,58 +21,15 @@ const Navbar: React.FC<NavbarProps> = ({ language = 'zh', setLanguage }) => {
     const t = translations[language];
     const [hoveredPath, setHoveredPath] = useState<string | null>(null);
     const pathname = usePathname();
+    const { user: authUser } = useAuthSession();
 
-    // 未读预警铃铛
-    const [unreadCount, setUnreadCount] = useState(0);
-    const fetchUnread = useCallback(async () => {
-        try {
-            const supabase = createClient();
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-            const res = await fetch('/api/tracker');
-            const json = await res.json();
-            if (json.success && typeof json.unreadAlertCount === 'number') {
-                setUnreadCount(json.unreadAlertCount);
-            }
-        } catch { /* 静默 */ }
-    }, []);
-    useEffect(() => {
-        fetchUnread();
-        const timer = setInterval(fetchUnread, 60000);
-        return () => clearInterval(timer);
-    }, [fetchUnread]);
-
-    // NovoCredit 钱包余额
-    const [walletPoints, setWalletPoints] = useState<number | null>(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const fetchWallet = useCallback(async () => {
-        try {
-            const supabase = createClient();
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) { setIsLoggedIn(false); return; }
-            setIsLoggedIn(true);
-            const res = await fetch('/api/wallet');
-            const json = await res.json();
-            if (json.success && typeof json.points === 'number') {
-                setWalletPoints(json.points);
-            }
-        } catch { /* 静默 */ }
-    }, []);
-    useEffect(() => {
-        fetchWallet();
-        const timer = setInterval(fetchWallet, 60000);
-        return () => clearInterval(timer);
-    }, [fetchWallet]);
-
-    // 桌面导航项定义
+    // 桌面导航项定义（已移除云端专属的 skill-check 和 tracker）
     const searchLinks = [
         { href: '/', icon: Sparkles, label: 'Novoscan', color: 'text-blue-600 dark:text-blue-400', indicator: 'bg-blue-600 dark:bg-blue-400', iconSize: 'w-4 h-4' },
-        { href: '/skill-check', icon: LobsterIcon, label: 'Clawscan', color: 'text-amber-500 dark:text-amber-400', indicator: 'bg-amber-500 dark:bg-amber-400', iconSize: 'w-4 h-4' },
         { href: '/bizscan', icon: Briefcase, label: 'Bizscan', color: 'text-orange-500 dark:text-orange-400', indicator: 'bg-orange-500 dark:bg-orange-400', iconSize: 'w-4 h-4' },
-        { href: '/tracker', icon: Radar, label: 'Tracker', color: 'text-teal-500 dark:text-teal-400', indicator: 'bg-teal-500 dark:bg-teal-400', iconSize: 'w-4 h-4' },
     ];
 
-    const renderNavLink = (link: { href: string; icon: any; label: string; color: string; indicator: string; iconSize: string }) => {
+    const renderNavLink = (link: { href: string; icon: unknown; label: string; color: string; indicator: string; iconSize: string }) => {
         const isActive = pathname === link.href;
         const isHovered = hoveredPath === link.href;
 
@@ -158,7 +114,7 @@ const Navbar: React.FC<NavbarProps> = ({ language = 'zh', setLanguage }) => {
                             中文
                         </button>
                     </div>
-                    <AuthButton unreadCount={unreadCount} />
+                    <AuthButton />
                 </div>
 
                 {/* ===== 桌面端导航 ===== */}
@@ -215,19 +171,8 @@ const Navbar: React.FC<NavbarProps> = ({ language = 'zh', setLanguage }) => {
                         {/* 明暗模式切换 */}
                         <ThemeToggle />
 
-                        {/* NovoCredit 钱包 */}
-                        {isLoggedIn && (
-                            <Link
-                                href="/novocredit"
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-500/10 hover:bg-amber-100 dark:hover:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30 text-amber-700 dark:text-amber-400 transition-all duration-300 whitespace-nowrap"
-                            >
-                                <Wallet className="w-3.5 h-3.5" />
-                                <span className="text-xs font-bold">{walletPoints !== null ? walletPoints : '…'}</span>
-                            </Link>
-                        )}
-
                         {/* 登录/用户按钮 */}
-                        <AuthButton unreadCount={unreadCount} />
+                        <AuthButton />
                     </div>
                 </div>
             </div>

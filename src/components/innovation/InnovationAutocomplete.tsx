@@ -150,10 +150,10 @@ const InnovationAutocomplete: React.FC<InnovationAutocompleteProps> = ({
                     <button
                         type="button"
                         onClick={() => {
-                            const SpeechRecognition = (window as any).webkitSpeechRecognition;
+                            const SpeechRecognition = (window as unknown).webkitSpeechRecognition;
                             const recognition = new SpeechRecognition();
                             recognition.lang = isZh ? 'zh-CN' : 'en-US';
-                            recognition.onresult = (event: any) => {
+                            recognition.onresult = (event: unknown) => {
                                 const transcript = event.results[0][0].transcript;
                                 onChange(value + transcript);
                             };

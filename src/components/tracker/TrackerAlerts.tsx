@@ -16,7 +16,7 @@ interface Alert {
     severity: string;
     title: string;
     description: string;
-    details: any;
+    details: unknown;
     is_read: boolean;
     created_at: string;
 }
@@ -26,13 +26,13 @@ interface TrackerAlertsProps {
 }
 
 // ==================== 配置 ====================
-const severityConfig: Record<string, { icon: any; color: string; bg: string; border: string; label: string }> = {
+const severityConfig: Record<string, { icon: unknown; color: string; bg: string; border: string; label: string }> = {
     critical: { icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', label: '紧急' },
     warning: { icon: AlertCircle, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', label: '警告' },
     info: { icon: Info, color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200', label: '信息' },
 };
 
-const typeConfig: Record<string, { icon: any; label: string }> = {
+const typeConfig: Record<string, { icon: unknown; label: string }> = {
     new_competitor: { icon: Users, label: '新竞品' },
     new_paper: { icon: FileText, label: '新论文' },
     score_drop: { icon: TrendingDown, label: '分数下降' },
@@ -234,7 +234,7 @@ export default function TrackerAlerts({ monitorId }: TrackerAlertsProps) {
                                                         <div className="flex flex-wrap gap-1.5">
                                                             {alert.details.competitors.map((c: string, i: number) => {
                                                                 // 检查是否有对应的 URL（从 diff.newCompetitorDetails 保存在 alert.details 中）
-                                                                const detail = alert.details?.competitorDetails?.find((d: any) => d.title === c);
+                                                                const detail = alert.details?.competitorDetails?.find((d: unknown) => d.title === c);
                                                                 return detail?.url ? (
                                                                     <a key={i} href={detail.url} target="_blank" rel="noopener noreferrer"
                                                                        className="px-2 py-1 bg-red-50 text-red-600 text-[11px] font-medium rounded-lg hover:bg-red-100 hover:underline transition-colors">
@@ -255,7 +255,7 @@ export default function TrackerAlerts({ monitorId }: TrackerAlertsProps) {
                                                         <p className="text-xs font-bold text-gray-400 mb-1.5">新出现的论文:</p>
                                                         <div className="space-y-1">
                                                             {alert.details.papers.slice(0, 5).map((p: string, i: number) => {
-                                                                const detail = alert.details?.paperDetails?.find((d: any) => d.title === p);
+                                                                const detail = alert.details?.paperDetails?.find((d: unknown) => d.title === p);
                                                                 return detail?.url ? (
                                                                     <a key={i} href={detail.url} target="_blank" rel="noopener noreferrer"
                                                                        className="block text-[11px] text-blue-700 bg-blue-50 px-2 py-1 rounded-lg truncate hover:bg-blue-100 hover:underline transition-colors">

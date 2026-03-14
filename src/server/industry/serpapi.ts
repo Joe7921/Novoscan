@@ -9,7 +9,7 @@
  */
 
 
-import { checkCostLimit, recordSerpEngineCall } from '@/lib/services/costLimiter';
+import { checkCostLimit, recordSerpEngineCall } from '@/lib/stubs';
 
 const SERPAPI_KEY = process.env.SERPAPI_KEY || '';
 const SERPAPI_URL = process.env.SERPAPI_BASE_URL || 'https://serpapi.com/search';

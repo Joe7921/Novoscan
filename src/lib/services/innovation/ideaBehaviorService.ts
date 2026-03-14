@@ -204,9 +204,9 @@ export async function recordBehaviorSignal(signal: BehaviorSignal): Promise<void
         } else {
             console.log(`[IDEA Behavior] 用户 ${signal.userId.slice(0, 8)} 画像更新: ${signal.type} → Δ(v=${delta.v}, d=${delta.d}, p=${delta.p}, s=${delta.s}), 数据点=${dataPoints}, 类型=${finalArchetype}`);
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         // 行为收集绝不影响主流程
-        console.warn('[IDEA Behavior] 行为记录异常:', error.message);
+        console.warn('[IDEA Behavior] 行为记录异常:', (error instanceof Error ? error.message : String(error)));
     }
 }
 

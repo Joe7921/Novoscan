@@ -18,7 +18,7 @@ interface Monitor {
     status: string;
     last_scan_at?: string;
     next_scan_at?: string;
-    baseline_snapshot: any;
+    baseline_snapshot: unknown;
     scan_count: number;
     domain_id?: string;
     sub_domain_id?: string;
