@@ -70,6 +70,13 @@ export class PluginRegistry {
     // 1. 运行时严格校验
     validateAgent(agent)
 
+    // 1.5 manifest 一致性校验（如果提供了 manifest，id 必须与 agent.id 一致）
+    if (agent.manifest && agent.manifest.id !== agent.id) {
+      throw new PluginValidationError(agent.id, [
+        `manifest.id ("${agent.manifest.id}") 与 agent.id ("${agent.id}") 不一致，请确保两者相同`
+      ])
+    }
+
     // 2. ID 重复检查
     if (this.agents.has(agent.id)) {
       throw new Error(

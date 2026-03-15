@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../../plugin-manifest.schema.json",
+  "id": "patent-scout",
+  "name": "专利侦察兵",
+  "nameEn": "Patent Scout",
+  "description": "搜索全球专利数据库，评估创新点与已有专利的重叠度",
+  "version": "1.0.0",
+  "author": "Novoscan Team",
+  "category": "specialized",
+  "icon": "📜",
+  "tags": ["专利", "知识产权", "FTO", "patent", "IP"],
+  "license": "MIT",
+  "repository": "https://github.com/Novoscan/novoscan-open",
+  "minNovoscanVersion": "1.0.0",
+  "entryPoint": "index.ts",
+  "permissions": ["network"],
+  "screenshots": [],
+  "pricing": "free"
+}

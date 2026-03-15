@@ -1,0 +1,22 @@
+# Gitpod 配置 — 浏览器内一键开发环境
+# 使用方法：在仓库 URL 前加 https://gitpod.io/#
+# 例如：https://gitpod.io/#https://github.com/Joe7921/Novoscan
+
+image: gitpod/workspace-node-lts
+
+tasks:
+  - name: 🚀 Novoscan
+    init: npm install && npm run setup -- --yes
+    command: npm run dev
+
+ports:
+  - port: 3000
+    onOpen: open-browser
+    name: Novoscan App
+    visibility: public
+
+vscode:
+  extensions:
+    - dbaeumer.vscode-eslint
+    - esbenp.prettier-vscode
+    - bradlc.vscode-tailwindcss

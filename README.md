@@ -75,6 +75,36 @@ Unlike single-model Q&A, Novoscan runs a full **multi-agent decision pipeline**:
 
 ## 🚀 Quick Start
 
+### ⚡ 30-Second Experience (Zero API Keys!)
+
+```bash
+git clone https://github.com/Joe7921/Novoscan.git
+cd Novoscan
+npm install
+npm run setup   # Auto-creates .env.local with Mock AI ON
+npm run dev
+```
+
+🎉 Open [http://localhost:3000](http://localhost:3000) — **no API keys needed!** Mock AI mode provides a full end-to-end experience with high-quality simulated data.
+
+---
+
+### 🌐 One-Click Cloud Experience (Zero Install!)
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Joe7921/Novoscan?quickstart=1)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/Joe7921/Novoscan)
+
+> Browser-based IDE with auto-setup. Opens `http://localhost:3000` within 60 seconds!
+
+**Or quick clone without Git history:**
+```bash
+npx degit Joe7921/Novoscan my-novoscan && cd my-novoscan
+npm install && npm run setup
+npm run dev
+```
+
+---
+
 ### ☁️ Option A: Try Online (Zero Setup)
 
 Head to **[novoscan.cn](https://novoscan.cn)** — sign up free and start scanning instantly.
@@ -91,8 +121,6 @@ docker compose up -d
 
 Open [http://localhost:3000](http://localhost:3000) — that's it!
 
-> **Tip:** Use `MOCK_AI=true` in `.env` to try the full pipeline without any API keys.
-
 ---
 
 ### 💻 Option C: Local Development
@@ -101,13 +129,12 @@ Open [http://localhost:3000](http://localhost:3000) — that's it!
 
 - **Node.js** ≥ 18.17.0
 - **npm** / **yarn** / **pnpm**
-- At least one AI model API key (DeepSeek / MiniMax / Moonshot)
 
 ```bash
 git clone https://github.com/Joe7921/Novoscan.git
 cd Novoscan
 npm install
-cp .env.example .env.local   # Fill in your API keys
+npm run setup   # Auto-creates .env.local (Mock AI ON, no keys needed)
 npm run dev
 ```
 
@@ -184,12 +211,66 @@ graph LR
 
 ---
 
+## 🧩 Plugin Development — Write Your First Agent in 15 Lines
+
+Novoscan features a powerful **plugin system** that lets you create custom analysis Agents:
+
+```bash
+# Generate a new Agent plugin with interactive CLI
+npm run create-agent
+```
+
+Or create one manually — it's just 15 lines of TypeScript:
+
+```typescript
+import { defineAgent } from '@/plugins/types'
+
+export default defineAgent({
+  id: 'my-agent',
+  name: 'My Agent',
+  nameEn: 'My Agent',
+  description: 'Custom analysis logic',
+  version: '1.0.0',
+  category: 'community',
+  icon: '🤖',
+  async analyze(input) {
+    // Your analysis logic here
+    return { agentName: 'My Agent', score: 75, /* ... */ }
+  }
+})
+```
+
+📖 Full plugin development guide: [src/plugins/README.md](src/plugins/README.md)
+
+### 🧪 Built-in Example Plugins
+
+| Plugin | Description |
+|--------|-------------|
+| 📜 **Patent Scout** | Search global patent databases, assess overlap |
+| 📈 **GitHub Trends** | Analyze open source ecosystem trends |
+| 🔬 **arXiv Scanner** | Scan frontier academic papers for innovation space |
+
+---
+
+## 🛠️ Developer Tools
+
+| Tool | URL | Description |
+|------|-----|-------------|
+| 🧩 **Agent Playground** | `/playground` | Interactively test any registered Agent plugin |
+| 🏪 **Plugin Marketplace** | `/marketplace` | Browse, search, and install community plugins |
+| 🛠️ **Dev Dashboard** | `/dev` | View plugin registry, health status, environment config |
+| 📖 **Documentation** | `/docs` | Full architecture and API documentation |
+| 🏥 **Health Check** | `/health` | API data source connectivity test |
+
+---
+
 ## 🤝 Contributing
 
 Contributions of all kinds are welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 - 🐛 [Report a Bug](../../issues/new?template=bug_report.md)
 - ✨ [Request a Feature](../../issues/new?template=feature_request.md)
+- 🧩 Build a Plugin — `npm run create-agent`
 - 📖 Improve Documentation
 - 💻 Submit a Pull Request
 
@@ -270,7 +351,6 @@ Layer 4（同步）：质量守卫 → 纯逻辑校验
 
 - **Node.js** >= 18.17.0
 - **npm** / **yarn** / **pnpm**
-- 至少一组 AI 模型 API Key（DeepSeek / MiniMax / Moonshot）
 
 #### 1. 克隆与安装
 
@@ -280,14 +360,14 @@ cd novoscan
 npm install
 ```
 
-#### 2. 配置环境变量
+#### 2. 初始化环境变量
 
 ```bash
-cp .env.example .env.local
-# 在 .env.local 中填入你的 API 密钥
+npm run setup   # 自动创建 .env.local，Mock AI 模式已开启
 ```
 
-查看 [.env.example](.env.example) 了解所有可配置项及说明。
+> 🎉 **无需任何 API Key！** Mock AI 模式提供完整的端到端体验。
+> 准备接入真实 AI？编辑 `.env.local`，将 `MOCK_AI` 改为 `false` 并填入密钥。
 
 #### 3. 启动开发服务器
 

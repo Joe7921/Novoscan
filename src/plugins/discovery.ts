@@ -24,6 +24,7 @@
 
 import { PluginRegistry } from './registry'
 import type { INovoAgent } from './types'
+import type { PluginManifest } from './marketplace-types'
 
 /** 插件发现结果（单个） */
 export interface DiscoveryResult {
@@ -63,6 +64,20 @@ export interface DiscoverySummary {
  */
 const PLUGIN_MODULES: Record<string, () => Promise<{ default: INovoAgent }>> = {
   'patent-scout': () => import('./agents/patent-scout/index'),
+  'github-trends': () => import('./agents/github-trends/index'),
+  'arxiv-scanner': () => import('./agents/arxiv-scanner/index'),
+}
+
+/**
+ * 插件 Manifest 映射表
+ *
+ * 与 PLUGIN_MODULES 同步维护，用于自动加载 plugin-manifest.json。
+ * 加载后会自动挂载到 agent.manifest 字段。
+ */
+const MANIFEST_MODULES: Record<string, () => Promise<unknown>> = {
+  'patent-scout': () => import('./agents/patent-scout/plugin-manifest.json').then(m => m.default || m),
+  'github-trends': () => import('./agents/github-trends/plugin-manifest.json').then(m => m.default || m),
+  'arxiv-scanner': () => import('./agents/arxiv-scanner/plugin-manifest.json').then(m => m.default || m),
 }
 
 /**
@@ -136,7 +151,21 @@ export async function autoDiscoverPlugins(): Promise<DiscoverySummary> {
         continue
       }
 
-      // 4. 注册（内部自动校验 + onInit）
+      // 3.5 自动加载 manifest（如果有映射且 agent 尚未自带 manifest）
+      if (!agent.manifest && MANIFEST_MODULES[dirName]) {
+        try {
+          const manifest = await MANIFEST_MODULES[dirName]()
+          agent.manifest = manifest as PluginManifest
+          console.log(`[PluginDiscovery] 📋 已加载 manifest: ${dirName}`)
+        } catch (manifestErr) {
+          console.warn(
+            `[PluginDiscovery] ⚠️ 加载 "${dirName}" 的 manifest 失败（已忽略）:`,
+            manifestErr instanceof Error ? manifestErr.message : manifestErr
+          )
+        }
+      }
+
+      // 4. 注册（内部自动校验 + onInit + manifest 一致性校验）
       await registry.registerAgent(agent)
       results.push({
         dirName,
@@ -170,4 +199,31 @@ export async function autoDiscoverPlugins(): Promise<DiscoverySummary> {
   )
 
   return summary
+}
+
+/**
+ * 获取所有已激活且可用的插件 Agent 列表
+ *
+ * 从 PluginRegistry 获取全部已注册 Agent，过滤掉以下情况：
+ * - analyze 方法不存在或不是函数的 Agent（注册异常）
+ *
+ * 适用于 Orchestrator 在插件增强模式下获取可执行的 Agent。
+ *
+ * @returns 可用的 INovoAgent 数组
+ */
+export function getActivePluginAgents(): INovoAgent[] {
+  const registry = PluginRegistry.getInstance()
+  const allAgents = registry.getAllAgents()
+
+  // 过滤掉无效的 Agent（例如 onInit 失败但仍残留在注册表中的情况）
+  const activeAgents = allAgents.filter((agent) => {
+    if (typeof agent.analyze !== 'function') {
+      console.warn(`[PluginDiscovery] ⚠️ Agent "${agent.id}" 的 analyze 方法不可用，已跳过`)
+      return false
+    }
+    return true
+  })
+
+  console.log(`[PluginDiscovery] 📋 获取到 ${activeAgents.length} 个可用插件 Agent（共 ${allAgents.length} 个已注册）`)
+  return activeAgents
 }

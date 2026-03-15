@@ -1,0 +1,22 @@
+[package]
+name = "novoscan-core"
+version = "0.1.0"
+edition = "2021"
+description = "Novoscan 核心计算引擎 — 评分引擎 + JSON 自愈解析器 (WASM)"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+js-sys = "0.3"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+
+[profile.release]
+opt-level = "s"      # 优化体积（WASM 文件更小）
+lto = true           # 链接时优化

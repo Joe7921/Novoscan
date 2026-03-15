@@ -253,4 +253,13 @@ export interface FinalReport {
         relevantQueries: string[];
         contextSummary: string;
     };
+    /** 插件 Agent 增强结果（仅 ENABLE_PLUGIN_AGENTS=true 时填充） */
+    pluginResults?: Array<{
+        /** 插件 Agent ID */
+        agentId: string;
+        /** 插件 Agent 输出 */
+        output: AgentOutput;
+        /** 执行耗时（毫秒） */
+        durationMs: number;
+    }>;
 }

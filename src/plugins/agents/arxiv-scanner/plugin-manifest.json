@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../../plugin-manifest.schema.json",
+  "id": "arxiv-scanner",
+  "name": "arXiv 论文扫描仪",
+  "nameEn": "arXiv Scanner",
+  "description": "扫描 arXiv 前沿论文，评估创新点在学术研究中的热度、密集度和突破口",
+  "version": "1.0.0",
+  "author": "Novoscan Community",
+  "category": "academic",
+  "icon": "🔬",
+  "tags": ["arXiv", "论文", "学术", "paper", "research"],
+  "license": "MIT",
+  "repository": "https://github.com/Novoscan/novoscan-open",
+  "minNovoscanVersion": "1.0.0",
+  "entryPoint": "index.ts",
+  "permissions": ["network"],
+  "screenshots": [],
+  "pricing": "free"
+}

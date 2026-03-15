@@ -24,6 +24,9 @@ jobs:
       - name: ESLint 代码检查
         run: npm run lint -- --quiet || true
 
+      - name: 单元测试
+        run: npm test
+
       - name: 生产构建
         run: npm run build
         env:
@@ -107,3 +110,49 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
+  rust-wasm:
+    name: Rust WASM 构建 + 测试
+    runs-on: ubuntu-latest
+    # 仅当 Rust 相关文件变更时运行
+    if: |
+      github.event_name == 'push' ||
+      contains(github.event.pull_request.changed_files_names || '', 'rust/')
+    defaults:
+      run:
+        working-directory: rust/novoscan-core
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Rust stable + wasm32 target
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: 缓存 Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            rust/novoscan-core/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('rust/novoscan-core/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Rust 单元测试
+        run: cargo test
+
+      - name: 安装 wasm-pack
+        run: curl -sSf https://rustwasm.github.io/wasm-pack/installer/init.sh | sh
+
+      - name: WASM 构建 (Node.js)
+        run: wasm-pack build --target nodejs --out-dir ../../pkg/novoscan-core
+
+      - name: WASM 构建 (浏览器)
+        run: wasm-pack build --target web --out-dir ../../pkg/novoscan-core-web
+
+      - name: 验证 WASM 产物
+        run: |
+          echo "📦 Node.js WASM 包:"
+          ls -lh ../../pkg/novoscan-core/
+          echo "🌐 Browser WASM 包:"
+          ls -lh ../../pkg/novoscan-core-web/

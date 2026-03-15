@@ -112,6 +112,8 @@ services:
       RESEND_API_KEY: ${RESEND_API_KEY:-}
       ADMIN_SECRET: ${ADMIN_SECRET:-}
       FINOPS_PRICING: ${FINOPS_PRICING:-}
+      # ── Mock AI（默认开启，无需 API Key 即可体验完整分析流程）──
+      MOCK_AI: ${MOCK_AI:-true}
     depends_on:
       db:
         condition: service_healthy

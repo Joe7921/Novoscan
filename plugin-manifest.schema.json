@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://novoscan.cn/schemas/plugin-manifest.v1.json",
+  "title": "Novoscan Plugin Manifest",
+  "description": "Novoscan 插件元数据清单。每个 Agent 插件目录下的 plugin-manifest.json 须符合此 Schema。",
+  "type": "object",
+  "required": ["id", "name", "nameEn", "description", "version", "author", "category", "icon", "entryPoint", "permissions", "pricing"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema 引用 URL（IDE 自动补全用）"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "description": "唯一标识，kebab-case 格式，如 'patent-scout'"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50,
+      "description": "插件名称（中文）"
+    },
+    "nameEn": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "插件名称（英文）"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "一句话描述（中文）"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "语义化版本号，如 '1.0.0'"
+    },
+    "author": {
+      "type": "string",
+      "minLength": 1,
+      "description": "作者名称"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["academic", "industry", "specialized", "community"],
+      "description": "插件分类"
+    },
+    "icon": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4,
+      "description": "emoji 图标，如 '📜'"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 30 },
+      "maxItems": 10,
+      "default": [],
+      "description": "标签列表，用于搜索和筛选"
+    },
+    "license": {
+      "type": "string",
+      "default": "MIT",
+      "description": "开源许可证，如 'MIT'、'Apache-2.0'"
+    },
+    "repository": {
+      "type": "string",
+      "format": "uri",
+      "description": "源代码仓库地址"
+    },
+    "minNovoscanVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "最低兼容 Novoscan 版本号"
+    },
+    "entryPoint": {
+      "type": "string",
+      "default": "index.ts",
+      "description": "入口文件相对路径"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["network", "database", "file-system", "env-vars", "user-data"]
+      },
+      "description": "插件所需权限列表"
+    },
+    "screenshots": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 5,
+      "description": "截图/演示图片路径列表"
+    },
+    "pricing": {
+      "type": "string",
+      "enum": ["free", "paid", "freemium"],
+      "default": "free",
+      "description": "定价模式"
+    }
+  },
+  "additionalProperties": false
+}

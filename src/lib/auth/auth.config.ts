@@ -20,15 +20,19 @@ import Google from 'next-auth/providers/google';
  */
 export const authConfig: NextAuthConfig = {
     providers: [
-        // OAuth Providers（Edge-safe，不涉及 Node.js API）
-        GitHub({
-            clientId: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        }),
-        Google({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        }),
+        // OAuth Providers — 仅在密钥完整时注册（开源零配置部署无需 OAuth）
+        ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET
+            ? [GitHub({
+                clientId: process.env.GITHUB_CLIENT_ID,
+                clientSecret: process.env.GITHUB_CLIENT_SECRET,
+            })]
+            : []),
+        ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+            ? [Google({
+                clientId: process.env.GOOGLE_CLIENT_ID,
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            })]
+            : []),
     ],
 
     // 使用 JWT 策略（Credentials Provider 仅支持 JWT）

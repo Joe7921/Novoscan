@@ -1,0 +1,27 @@
+{
+  "name": "Novoscan",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "forwardPorts": [3000],
+  "postCreateCommand": "npm install && npm run setup -- --yes",
+  "postStartCommand": "npm run dev",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2
+      },
+      "extensions": []
+    }
+  },
+  "portsAttributes": {
+    "3000": {
+      "label": "Novoscan App",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}

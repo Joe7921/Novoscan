@@ -268,7 +268,8 @@ export default function RootLayout({
             `,
           }}
         />
-        {/* 百度自动推送 — 页面加载即通知百度收录 */}
+        {/* 百度自动推送 — 仅在 novoscan.cn 域名启用 */}
+        {SITE_URL.includes('novoscan.cn') && (
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -282,6 +283,7 @@ export default function RootLayout({
             `,
           }}
         />
+        )}
         {/* Google AdSense — 全局广告脚本（需配置 NEXT_PUBLIC_ADSENSE_CLIENT 环境变量） */}
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT && (
           <script

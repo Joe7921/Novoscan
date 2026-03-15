@@ -21,11 +21,10 @@ cd novoscan
 npm install
 ```
 
-### 3. 配置环境变量
+### 3. 初始化环境变量
 
 ```bash
-cp .env.example .env.local
-# 在 .env.local 中填入你的 API 密钥
+npm run setup   # 自动创建 .env.local，Mock AI 模式已开启
 ```
 
 ### 4. 启动开发服务器

@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../../plugin-manifest.schema.json",
+  "id": "github-trends",
+  "name": "GitHub 趋势分析师",
+  "nameEn": "GitHub Trends Analyst",
+  "description": "基于 GitHub 开源生态分析创新点的技术趋势、竞争态势和差异化空间",
+  "version": "1.0.0",
+  "author": "Novoscan Community",
+  "category": "industry",
+  "icon": "📈",
+  "tags": ["GitHub", "开源", "趋势", "open-source", "trends"],
+  "license": "MIT",
+  "repository": "https://github.com/Novoscan/novoscan-open",
+  "minNovoscanVersion": "1.0.0",
+  "entryPoint": "index.ts",
+  "permissions": ["network"],
+  "screenshots": [],
+  "pricing": "free"
+}

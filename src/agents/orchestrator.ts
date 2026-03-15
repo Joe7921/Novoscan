@@ -9,6 +9,7 @@ import { qualityGuard } from './qualityGuard';
 import { executeNovoDebate, createFallbackDebateRecord } from './debater';
 import { AIAnalysisResult } from '@/lib/ai-client';
 import type { AgentExecutionRecord, AgentResult } from '@/lib/db/schema';
+import { getActivePluginAgents } from '@/plugins/discovery';
 
 // ==================== 全员失败熔断错误 ====================
 
@@ -531,6 +532,56 @@ export async function analyzeWithMultiAgents(input: AgentInput): Promise<FinalRe
     ]);
     emitLog(`[Orchestrator] ✅ Layer1 关键路径完成 — 学术(${academicReview.confidence}/${academicReview.score}) + 产业(${industryAnalysis.confidence}/${industryAnalysis.score}) + 竞品(${competitorAnalysis.confidence}/${competitorAnalysis.score})`);
 
+    // ==================== 插件 Agent 增强（可选，默认关闭） ====================
+    // 通过 ENABLE_PLUGIN_AGENTS=true 环境变量控制开关
+    // 开启后在 Layer 1 完成后并行执行所有已注册的插件 Agent
+    // 单个插件超时 15 秒，失败不影响主流程
+    const PLUGIN_AGENT_TIMEOUT = 15000;
+    let pluginResults: Array<{ agentId: string; output: AgentOutput; durationMs: number }> | undefined;
+
+    if (process.env.ENABLE_PLUGIN_AGENTS === 'true') {
+        try {
+            const pluginAgents = getActivePluginAgents();
+            if (pluginAgents.length > 0) {
+                emitLog(`[Orchestrator] 🧩 插件增强启动：${pluginAgents.length} 个插件 Agent 并行执行（超时 ${PLUGIN_AGENT_TIMEOUT}ms）`);
+
+                const pluginPromises = pluginAgents.map(async (agent) => {
+                    const pluginStart = Date.now();
+                    try {
+                        const output = await runWithTimeout(
+                            (_signal) => agent.analyze(input),
+                            PLUGIN_AGENT_TIMEOUT,
+                            createFallbackAgentOutput(agent.name || agent.id, input),
+                            `插件:${agent.id}`,
+                            emitLog
+                        );
+                        return {
+                            agentId: agent.id,
+                            output,
+                            durationMs: Date.now() - pluginStart,
+                        };
+                    } catch (err: unknown) {
+                        const errMsg = err instanceof Error ? err.message : String(err);
+                        emitLog(`[Orchestrator] ⚠️ 插件 ${agent.id} 执行异常: ${errMsg}`);
+                        return {
+                            agentId: agent.id,
+                            output: createFallbackAgentOutput(agent.name || agent.id, input),
+                            durationMs: Date.now() - pluginStart,
+                        };
+                    }
+                });
+
+                pluginResults = await Promise.all(pluginPromises);
+                emitLog(`[Orchestrator] ✅ 插件增强完成：${pluginResults.length} 个插件 Agent 已执行`);
+            } else {
+                emitLog('[Orchestrator] 🧩 插件增强已开启，但无可用插件 Agent');
+            }
+        } catch (err: unknown) {
+            // 插件系统整体异常不影响主流程
+            emitLog(`[Orchestrator] ⚠️ 插件系统异常（不影响主流程）: ${err instanceof Error ? err.message : String(err)}`);
+        }
+    }
+
     // ==================== 熔断检测 L1：3 个核心 Agent 全部 fallback → AI API 完全不可用 ====================
     const l1Agents = [academicReview, industryAnalysis, competitorAnalysis];
     const l1FallbackCount = l1Agents.filter(a => a.isFallback).length;
@@ -786,6 +837,7 @@ export async function analyzeWithMultiAgents(input: AgentInput): Promise<FinalRe
         qualityCheck,
         executionRecord,
         memoryInsight,
+        pluginResults,
     };
 }
 

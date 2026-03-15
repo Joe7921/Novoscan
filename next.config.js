@@ -102,6 +102,11 @@ const nextConfig = {
             },
         ]
     },
+    // WASM 支持：为 Rust → WebAssembly 模块加载做准备
+    webpack: (config) => {
+        config.experiments = { ...config.experiments, asyncWebAssembly: true };
+        return config;
+    },
     eslint: {
         // ESLint 在构建期间跳过，避免虚假报告阻塞 CI
         // 已有的 no-explicit-any warnings 不影响运行，后续逐步修复

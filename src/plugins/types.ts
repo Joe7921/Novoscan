@@ -11,6 +11,7 @@
  */
 
 import type { AgentInput, AgentOutput } from '@/agents/types'
+import type { PluginManifest } from './marketplace-types'
 
 // ==================== 自定义 Agent 插件接口 ====================
 
@@ -85,6 +86,14 @@ export interface INovoAgent {
    * 即使 onDestroy 抛出异常，注销操作仍会完成（异常仅打印警告）。
    */
   onDestroy?(): Promise<void> | void
+
+  /**
+   * 插件市场元数据清单（可选）
+   *
+   * 关联该 Agent 的市场 manifest 信息，用于插件市场展示。
+   * 通常由插件目录下的 plugin-manifest.json 自动填充。
+   */
+  manifest?: PluginManifest
 }
 
 // ==================== 自定义数据源接口 ====================

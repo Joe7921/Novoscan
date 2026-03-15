@@ -18,18 +18,18 @@ cd Novoscan
 # 2. 复制环境变量模板
 cp .env.docker .env
 
-# 3. 编辑 .env，填入你的 AI API 密钥（至少需要一个）
-#    - DEEPSEEK_API_KEY / MINIMAX_API_KEY / MOONSHOT_API_KEY
-
-# 4. 启动所有服务
+# 3. 启动所有服务（Mock AI 默认开启，无需 API Key！）
 docker compose up -d
 
-# 5. 查看启动日志
+# 4. 查看启动日志
 docker compose logs -f
 
-# 6. 访问应用
+# 5. 访问应用
 # 🌐 http://localhost:3000
 ```
+
+> 🎉 **零配置即可体验！** Mock AI 模式已在 `.env.docker` 中默认开启。
+> 准备接入真实 AI？编辑 `.env`，将 `MOCK_AI` 改为 `false` 并填入至少一个 AI 模型密钥。
 
 ## 服务架构
 

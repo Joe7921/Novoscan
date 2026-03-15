@@ -238,6 +238,8 @@ const SearchHistory = dynamic(() => import('@/components/ui/SearchHistory'), {
 const LoginModal = dynamic(() => import('@/components/auth/LoginModal'), { ssr: false });
 const OnboardingOverlay = dynamic(() => import('@/components/home/OnboardingOverlay'), { ssr: false });
 const CelebrationModal = dynamic(() => import('@/components/home/CelebrationModal'), { ssr: false });
+const MockAIBanner = dynamic(() => import('@/components/home/MockAIBanner'), { ssr: false });
+const SelfHostCTA = dynamic(() => import('@/components/home/SelfHostCTA'), { ssr: false });
 import { createClient } from '@/utils/supabase/client';
 
 import { AppState, ModelProvider, Language, ScanMode } from '@/types';
@@ -1119,6 +1121,8 @@ export default function HomeClient() {
         {/* Input View */}
         {appState === AppState.INPUT && (
           <>
+            {/* Mock AI 模式提示横幅 */}
+            <MockAIBanner />
             <HeroSection
               idea={idea}
               setIdea={setIdea}
@@ -1286,6 +1290,9 @@ export default function HomeClient() {
           </>
         )}
       </main>
+
+      {/* 云端版自部署推广 CTA — 仅 novoscan.cn 显示 */}
+      {appState === AppState.INPUT && <SelfHostCTA />}
 
       {/* SEO Footer — 仅在首页展示 */}
       {appState === AppState.INPUT && <SiteFooter language={language} />}
