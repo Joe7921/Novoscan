@@ -16,6 +16,7 @@ test.describe('文档页', () => {
     // 设置桌面视口以确保侧边栏可见（lg 断点 = 1024px）
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/docs');
+    await page.waitForLoadState('networkidle');
     // 文档页侧边栏在 <aside> 元素中
     const sidebar = page.locator('aside');
     await expect(sidebar).toBeVisible({ timeout: 15_000 });

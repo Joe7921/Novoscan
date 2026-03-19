@@ -16,11 +16,12 @@ test.describe('首页', () => {
 
   test('搜索框存在且可输入', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('networkidle');
     // 搜索框可能是 textarea 或 input
     const searchInput = page.locator('textarea, input[type="text"]').first();
     await expect(searchInput).toBeVisible({ timeout: 15_000 });
     await searchInput.fill('测试输入');
-    await expect(searchInput).toHaveValue('测试输入');
+    await expect(searchInput).toHaveValue('测试输入', { timeout: 5_000 });
   });
 
   test('"开始分析" 或 "检查创新性" 按钮存在', async ({ page }) => {
