@@ -8,7 +8,7 @@
  * 零 API 消耗，纯本地计算。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 import type { PolishedCase } from './polisher';
 
 // ==================== 哈希工具 ====================
@@ -69,14 +69,14 @@ export async function deduplicateAndStore(
 
     try {
         if (urls.length > 0) {
-            const { data: urlMatches } = await supabaseAdmin
+            const { data: urlMatches } = await adminDb
                 .from('case_library')
                 .select('source_url')
                 .in('source_url', urls);
             existingUrls = new Set((urlMatches || []).map((r: { source_url: string }) => r.source_url));
         }
 
-        const { data: hashMatches } = await supabaseAdmin
+        const { data: hashMatches } = await adminDb
             .from('case_library')
             .select('content_hash')
             .in('content_hash', hashes);
@@ -103,7 +103,7 @@ export async function deduplicateAndStore(
 
         // 写入 Supabase
         try {
-            const { error } = await supabaseAdmin
+            const { error } = await adminDb
                 .from('case_library')
                 .insert({
                     title: caseItem.title,

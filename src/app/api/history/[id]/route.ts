@@ -1,8 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 /**
  * GET /api/history/[id]
@@ -15,8 +14,7 @@ export async function GET(
     { params }: { params: { id: string } }
 ) {
     try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await serverDb.auth.getUser();
 
         if (!user) {
             return NextResponse.json(
@@ -34,7 +32,7 @@ export async function GET(
         }
 
         // 查询记录（强制 user_id 匹配，防止越权访问）
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await adminDb
             .from('search_history')
             .select('*')
             .eq('id', id)
@@ -72,8 +70,7 @@ export async function DELETE(
     { params }: { params: { id: string } }
 ) {
     try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await serverDb.auth.getUser();
 
         if (!user) {
             return NextResponse.json(
@@ -91,7 +88,7 @@ export async function DELETE(
         }
 
         // 删除记录（强制 user_id 匹配，防止越权删除）
-        const { error } = await supabaseAdmin
+        const { error } = await adminDb
             .from('search_history')
             .delete()
             .eq('id', id)

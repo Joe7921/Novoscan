@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { db as serverDb, adminDb } from '@/lib/db/factory';
 import { requireAdminAuth } from '@/lib/security/apiSecurity';
 
 export async function GET() {
@@ -23,7 +23,7 @@ export async function GET() {
 
     try {
         // 1. 检查连接与 search_history 表
-        const { error: connError, count } = await supabase
+        const { error: connError, count } = await serverDb
             .from('search_history')
             .select('*', { count: 'exact', head: true });
 
@@ -35,7 +35,7 @@ export async function GET() {
 
         // 2. 读写测试 (Write Test)
         const testId = `health-check-${Date.now()}`;
-        const { error: writeError } = await supabaseAdmin
+        const { error: writeError } = await adminDb
             .from('search_history')
             .insert({
                 query: 'HEALTH_CHECK_TEST',
@@ -50,7 +50,7 @@ export async function GET() {
             message = `写操作失败: ${writeError.message}`;
         } else {
             // 清理测试数据
-            await supabaseAdmin
+            await adminDb
                 .from('search_history')
                 .delete()
                 .match({ query: 'HEALTH_CHECK_TEST' });
@@ -61,7 +61,7 @@ export async function GET() {
         const tables = ['search_history', 'agent_executions'];
         let allTablesExist = true;
         for (const table of tables) {
-            const { error } = await supabase.from(table).select('*', { head: true });
+            const { error } = await serverDb.from(table).select('*', { head: true });
             if (!error) {
                 checks.tables[table] = true;
             } else {

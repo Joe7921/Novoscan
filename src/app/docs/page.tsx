@@ -12,7 +12,7 @@ import {
     Cog, Briefcase, Sigma, Globe, Coins, Dna, Repeat,
     Share2, Radar, Timer, Bell, Plug, Code, FlaskConical
 } from 'lucide-react';
-import Navbar from '@/components/layout/Navbar';
+import WorkspaceShell from '@/components/layout/WorkspaceShell';
 import BottomTabBar from '@/components/layout/BottomTabBar';
 import { Language } from '@/types';
 
@@ -37,16 +37,16 @@ interface Chapter {
 
 const CHAPTERS: Chapter[] = [
     {
-        id: 'ch-brand', title: '品牌概览', icon: <BookOpen className="w-4 h-4" />, color: 'text-google-blue',
+        id: 'ch-brand', title: '品牌概览', icon: <BookOpen className="w-4 h-4" />, color: 'text-novo-blue',
         children: [
-            { id: 'overview', title: '什么是 Novoscan', icon: <BookOpen className="w-3.5 h-3.5" />, color: 'text-google-blue' },
-            { id: 'how-it-works', title: '工作原理', icon: <Cpu className="w-3.5 h-3.5" />, color: 'text-google-red' },
+            { id: 'overview', title: '什么是 Novoscan', icon: <BookOpen className="w-3.5 h-3.5" />, color: 'text-novo-blue' },
+            { id: 'how-it-works', title: '工作原理', icon: <Cpu className="w-3.5 h-3.5" />, color: 'text-novo-red' },
         ],
     },
     {
-        id: 'ch-novoscan', title: 'Novoscan 学术+产业查重', icon: <Sparkles className="w-4 h-4" />, color: 'text-google-blue',
+        id: 'ch-novoscan', title: 'Novoscan 学术+产业查重', icon: <Sparkles className="w-4 h-4" />, color: 'text-novo-blue',
         children: [
-            { id: 'novoscan-deep', title: 'Novoscan 深度解读', icon: <Sparkles className="w-3.5 h-3.5" />, color: 'text-google-blue' },
+            { id: 'novoscan-deep', title: 'Novoscan 深度解读', icon: <Sparkles className="w-3.5 h-3.5" />, color: 'text-novo-blue' },
             { id: 'flash-mode', title: 'Novoscan Flash 极速模式', icon: <Zap className="w-3.5 h-3.5" />, color: 'text-yellow-500' },
             { id: 'novo-discover', title: 'NovoDiscover 跨域探索', icon: <Globe className="w-3.5 h-3.5" />, color: 'text-purple-500' },
             { id: 'novo-debate', title: 'NovoDebate 辩论引擎', icon: <Repeat className="w-3.5 h-3.5" />, color: 'text-rose-500' },
@@ -165,13 +165,13 @@ export default function DocsPage() {
     }, []);
 
     return (
+        <WorkspaceShell>
         <div className="min-h-screen relative flex flex-col text-gray-900 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 max-w-[100vw] pb-20 lg:pb-0" style={{ overflowX: 'clip' }}>
             {/* 背景装饰 */}
-            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-google-blue/5 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute top-[40%] right-[-10%] w-[40%] h-[40%] bg-google-red/5 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] bg-google-yellow/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-novo-blue/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute top-[40%] right-[-10%] w-[40%] h-[40%] bg-novo-red/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] bg-novo-yellow/5 rounded-full blur-[120px] pointer-events-none" />
 
-            <Navbar language={language} setLanguage={(lang: Language) => setLanguage(lang)} />
 
             {/* 移动端目录切换按钮 — 滚动时自动折叠缩小 */}
             <div className={`lg:hidden sticky top-16 z-40 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md px-3 py-1.5' : 'bg-white px-4 py-3'} ${isMobileTocOpen ? 'border-transparent' : 'border-b border-gray-200'}`}>
@@ -181,8 +181,8 @@ export default function DocsPage() {
                 >
                     <div className="flex items-center gap-1.5">
                         {isMobileTocOpen
-                            ? <X className={`text-google-red transition-all duration-300 ${isScrolled ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
-                            : <Menu className={`text-google-blue transition-all duration-300 ${isScrolled ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
+                            ? <X className={`text-novo-red transition-all duration-300 ${isScrolled ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
+                            : <Menu className={`text-novo-blue transition-all duration-300 ${isScrolled ? 'w-3.5 h-3.5' : 'w-4 h-4'}`} />
                         }
                         <span className={isMobileTocOpen ? 'text-gray-900' : ''}>目录导航</span>
                     </div>
@@ -195,7 +195,7 @@ export default function DocsPage() {
                 </button>
 
                 {/* 阅读进度条 */}
-                <div className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-google-blue via-google-red to-google-yellow transition-all duration-150 rounded-full`}
+                <div className={`absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-novo-blue via-novo-red to-novo-yellow transition-all duration-150 rounded-full`}
                     style={{ width: `${scrollProgress * 100}%` }}
                 />
 
@@ -222,7 +222,7 @@ export default function DocsPage() {
                                                     key={s.id}
                                                     onClick={() => scrollToSection(s.id)}
                                                     className={`flex items-center gap-2 pl-7 pr-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-left w-full ${activeSection === s.id
-                                                        ? 'bg-google-blue/10 text-google-blue border border-google-blue/20 shadow-sm'
+                                                        ? 'bg-novo-blue/10 text-novo-blue border border-novo-blue/20 shadow-sm'
                                                         : 'text-gray-600 hover:bg-gray-50'
                                                         }`}
                                                 >
@@ -231,7 +231,7 @@ export default function DocsPage() {
                                                     {activeSection === s.id && (
                                                         <motion.div
                                                             layoutId="mobile-toc-indicator"
-                                                            className="w-1.5 h-1.5 rounded-full bg-google-blue flex-shrink-0"
+                                                            className="w-1.5 h-1.5 rounded-full bg-novo-blue flex-shrink-0"
                                                         />
                                                     )}
                                                 </button>
@@ -277,7 +277,7 @@ export default function DocsPage() {
                                                 {activeSection === s.id && (
                                                     <motion.div
                                                         layoutId="toc-indicator"
-                                                        className="ml-auto w-1.5 h-1.5 rounded-full bg-google-blue flex-shrink-0"
+                                                        className="ml-auto w-1.5 h-1.5 rounded-full bg-novo-blue flex-shrink-0"
                                                         transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
                                                     />
                                                 )}
@@ -294,7 +294,7 @@ export default function DocsPage() {
                 <main className="flex-1 min-w-0">
                     {/* 页面头部 */}
                     <div className="pt-8 pb-6">
-                        <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-google-blue font-bold text-sm transition-colors mb-6">
+                        <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-novo-blue font-bold text-sm transition-colors mb-6">
                             <ArrowLeft className="w-4 h-4" />
                             返回首页
                         </Link>
@@ -304,10 +304,10 @@ export default function DocsPage() {
                             transition={{ duration: 0.6 }}
                         >
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 bg-google-blue/10 rounded-xl flex items-center justify-center border border-google-blue/20">
-                                    <BookOpen className="w-5 h-5 text-google-blue" />
+                                <div className="w-10 h-10 bg-novo-blue/10 rounded-xl flex items-center justify-center border border-novo-blue/20">
+                                    <BookOpen className="w-5 h-5 text-novo-blue" />
                                 </div>
-                                <span className="text-xs font-bold text-google-blue/80 uppercase tracking-widest">Documentation</span>
+                                <span className="text-xs font-bold text-novo-blue/80 uppercase tracking-widest">Documentation</span>
                             </div>
                             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-gray-900 mb-3">
                                 Novoscan 官方文档
@@ -322,9 +322,9 @@ export default function DocsPage() {
 
                         {/* ========== 大章节一：品牌概览 ========== */}
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="text-xs font-black text-google-blue bg-google-blue/10 px-2.5 py-1 rounded-full">一</span>
+                            <span className="text-xs font-black text-novo-blue bg-novo-blue/10 px-2.5 py-1 rounded-full">一</span>
                             <span className="text-sm font-black text-gray-800 tracking-wide">品牌概览</span>
-                            <div className="flex-1 h-px bg-gradient-to-r from-google-blue/20 to-transparent" />
+                            <div className="flex-1 h-px bg-gradient-to-r from-novo-blue/20 to-transparent" />
                         </div>
 
                         {/* ==================== §1 什么是 Novoscan ==================== */}
@@ -343,7 +343,7 @@ export default function DocsPage() {
                             <h3 className="doc-h3 mt-8">三大业务线</h3>
                             <div className="grid sm:grid-cols-3 gap-4 mt-4">
                                 <div className="p-4 rounded-2xl border border-blue-200 bg-blue-50/40">
-                                    <div className="text-lg font-black text-google-blue">Novoscan</div>
+                                    <div className="text-lg font-black text-novo-blue">Novoscan</div>
                                     <div className="text-[10px] font-bold text-blue-400 uppercase tracking-wider mt-1">学术 + 产业创新查重</div>
                                     <p className="text-xs text-gray-600 mt-2 leading-relaxed">穿透百万级学术论文和产业信号网络，6 名 AI 专家交叉验证，输出量化创新指标和 NovoStarchart 雷达图。</p>
                                 </div>
@@ -408,9 +408,9 @@ export default function DocsPage() {
 
                         {/* ========== 大章节二：Novoscan 学术+产业查重 ========== */}
                         <div className="flex items-center gap-3 mb-6 mt-12">
-                            <span className="text-xs font-black text-google-blue bg-google-blue/10 px-2.5 py-1 rounded-full">二</span>
+                            <span className="text-xs font-black text-novo-blue bg-novo-blue/10 px-2.5 py-1 rounded-full">二</span>
                             <span className="text-sm font-black text-gray-800 tracking-wide">Novoscan 学术+产业查重</span>
-                            <div className="flex-1 h-px bg-gradient-to-r from-google-blue/20 to-transparent" />
+                            <div className="flex-1 h-px bg-gradient-to-r from-novo-blue/20 to-transparent" />
                         </div>
 
                         {/* ==================== §3.1 Novoscan 常规模式深度解读 ==================== */}
@@ -426,7 +426,7 @@ export default function DocsPage() {
                             <p className="doc-text">分析启动后，系统同时向学术和产业两条轨道发起并行检索：</p>
                             <div className="mt-4 space-y-4">
                                 <div>
-                                    <div className="text-xs font-black text-google-blue uppercase tracking-wider mb-2">学术轨道 · 4 源聚合</div>
+                                    <div className="text-xs font-black text-novo-blue uppercase tracking-wider mb-2">学术轨道 · 4 源聚合</div>
                                     <div className="grid sm:grid-cols-2 gap-3">
                                         <DataSourceCard name="OpenAlex" desc="覆盖 2.5 亿+ 学术作品的开放学术图谱，按相关度 + 引用量排序" color="blue" />
                                         <DataSourceCard name="arXiv" desc="全球最大预印本论文库，覆盖物理、数学、CS 等前沿领域" color="red" />
@@ -435,7 +435,7 @@ export default function DocsPage() {
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="text-xs font-black text-google-green uppercase tracking-wider mb-2">产业轨道 · 3 源信号</div>
+                                    <div className="text-xs font-black text-novo-green uppercase tracking-wider mb-2">产业轨道 · 3 源信号</div>
                                     <div className="grid sm:grid-cols-3 gap-3">
                                         <DataSourceCard name="Brave Search" desc="隐私优先网页搜索，捕获行业新闻和技术落地动态" color="orange" />
                                         <DataSourceCard name="SerpAPI" desc="Google 搜索结构化 API，获取产业报告和市场分析" color="blue" />
@@ -1844,7 +1844,7 @@ export default function DocsPage() {
                             <p className="text-sm text-gray-400 font-medium">
                                 © {new Date().getFullYear()} Novoscan · Powered by Multi-Agent Reasoning Engine
                             </p>
-                            <Link href="/" className="inline-flex items-center gap-2 mt-4 text-sm font-bold text-google-blue hover:underline">
+                            <Link href="/" className="inline-flex items-center gap-2 mt-4 text-sm font-bold text-novo-blue hover:underline">
                                 <ArrowLeft className="w-4 h-4" />
                                 返回首页开始分析
                             </Link>
@@ -1855,6 +1855,7 @@ export default function DocsPage() {
             </div >
             <BottomTabBar />
         </div >
+        </WorkspaceShell>
     );
 }
 
@@ -1880,9 +1881,9 @@ function DocSection({ id, children }: { id: string; children: React.ReactNode })
 
 function SectionHeader({ icon, color, title }: { icon: React.ReactNode; color: string; title: string }) {
     const colorMap: Record<string, string> = {
-        blue: 'bg-google-blue/10 text-google-blue border-google-blue/20',
-        red: 'bg-google-red/10 text-google-red border-google-red/20',
-        green: 'bg-google-green/10 text-google-green border-google-green/20',
+        blue: 'bg-novo-blue/10 text-novo-blue border-novo-blue/20',
+        red: 'bg-novo-red/10 text-novo-red border-novo-red/20',
+        green: 'bg-novo-green/10 text-novo-green border-novo-green/20',
         yellow: 'bg-yellow-100 text-yellow-600 border-yellow-200',
         purple: 'bg-purple-100 text-purple-600 border-purple-200',
         amber: 'bg-amber-100 text-amber-600 border-amber-200',
@@ -1903,9 +1904,9 @@ function SectionHeader({ icon, color, title }: { icon: React.ReactNode; color: s
 
 function FeatureCard({ icon, color, title, desc }: { icon: React.ReactNode; color: string; title: string; desc: string }) {
     const colorMap: Record<string, string> = {
-        blue: 'bg-google-blue/10 text-google-blue border-google-blue/20',
-        red: 'bg-google-red/10 text-google-red border-google-red/20',
-        green: 'bg-google-green/10 text-google-green border-google-green/20',
+        blue: 'bg-novo-blue/10 text-novo-blue border-novo-blue/20',
+        red: 'bg-novo-red/10 text-novo-red border-novo-red/20',
+        green: 'bg-novo-green/10 text-novo-green border-novo-green/20',
     };
     return (
         <div className="p-4 bg-white/95 rounded-2xl border border-gray-200/60 hover:shadow-md transition-shadow">
@@ -1920,10 +1921,10 @@ function FeatureCard({ icon, color, title, desc }: { icon: React.ReactNode; colo
 
 function PipelineStep({ step, title, desc, icon, color, isLast }: { step: number; title: string; desc: string; icon: React.ReactNode; color: string; isLast?: boolean }) {
     const colorMap: Record<string, string> = {
-        blue: 'bg-google-blue text-white',
-        red: 'bg-google-red text-white',
+        blue: 'bg-novo-blue text-white',
+        red: 'bg-novo-red text-white',
         yellow: 'bg-yellow-400 text-yellow-900',
-        green: 'bg-google-green text-white',
+        green: 'bg-novo-green text-white',
         purple: 'bg-purple-500 text-white',
     };
     return (
@@ -1947,7 +1948,7 @@ function PipelineStep({ step, title, desc, icon, color, isLast }: { step: number
 
 function ModeCard({ title, icon, color, path, features, desc }: { title: string; icon: React.ReactNode; color: string; path: string; features: string[]; desc: string }) {
     const colorMap: Record<string, { bg: string; border: string; icon: string; badge: string }> = {
-        blue: { bg: 'bg-google-blue/5', border: 'border-google-blue/20', icon: 'text-google-blue', badge: 'bg-google-blue/10 text-google-blue' },
+        blue: { bg: 'bg-novo-blue/5', border: 'border-novo-blue/20', icon: 'text-novo-blue', badge: 'bg-novo-blue/10 text-novo-blue' },
         yellow: { bg: 'bg-yellow-50', border: 'border-yellow-200', icon: 'text-yellow-500', badge: 'bg-yellow-100 text-yellow-700' },
         amber: { bg: 'bg-amber-50', border: 'border-amber-200', icon: 'text-amber-500', badge: 'bg-amber-100 text-amber-700' },
     };
@@ -1977,8 +1978,8 @@ function ModeCard({ title, icon, color, path, features, desc }: { title: string;
 
 function AgentCard({ name, nameEn, role, icon, color }: { name: string; nameEn: string; role: string; icon: string; color: string }) {
     const colorMap: Record<string, string> = {
-        blue: 'border-l-google-blue',
-        green: 'border-l-google-green',
+        blue: 'border-l-novo-blue',
+        green: 'border-l-novo-green',
         orange: 'border-l-orange-400',
         purple: 'border-l-purple-500',
         yellow: 'border-l-yellow-400',
@@ -2017,9 +2018,9 @@ function InfoBox({ variant, className = '', children }: { variant: 'note' | 'tip
 
 function DataSourceCard({ name, desc, color }: { name: string; desc: string; color: string }) {
     const colorMap: Record<string, string> = {
-        blue: 'border-l-google-blue',
-        red: 'border-l-google-red',
-        green: 'border-l-google-green',
+        blue: 'border-l-novo-blue',
+        red: 'border-l-novo-red',
+        green: 'border-l-novo-green',
         yellow: 'border-l-yellow-400',
         orange: 'border-l-orange-400',
         gray: 'border-l-gray-400',
@@ -2099,10 +2100,10 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 function HighlightCard({ num, title, color, problem, solution, details }: { num: number; title: string; color: string; problem: string; solution: string; details: string[] }) {
     const colorMap: Record<string, { num: string; border: string; bg: string; icon: string }> = {
-        blue: { num: 'bg-google-blue text-white', border: 'border-l-google-blue', bg: 'bg-blue-50/30', icon: 'text-google-blue' },
-        red: { num: 'bg-google-red text-white', border: 'border-l-google-red', bg: 'bg-red-50/30', icon: 'text-google-red' },
+        blue: { num: 'bg-novo-blue text-white', border: 'border-l-novo-blue', bg: 'bg-blue-50/30', icon: 'text-novo-blue' },
+        red: { num: 'bg-novo-red text-white', border: 'border-l-novo-red', bg: 'bg-red-50/30', icon: 'text-novo-red' },
         yellow: { num: 'bg-yellow-400 text-yellow-900', border: 'border-l-yellow-400', bg: 'bg-yellow-50/30', icon: 'text-yellow-600' },
-        green: { num: 'bg-google-green text-white', border: 'border-l-google-green', bg: 'bg-green-50/30', icon: 'text-google-green' },
+        green: { num: 'bg-novo-green text-white', border: 'border-l-novo-green', bg: 'bg-green-50/30', icon: 'text-novo-green' },
         purple: { num: 'bg-purple-500 text-white', border: 'border-l-purple-500', bg: 'bg-purple-50/30', icon: 'text-purple-500' },
     };
     const c = colorMap[color] || colorMap.blue;
@@ -2136,9 +2137,9 @@ function HighlightCard({ num, title, color, problem, solution, details }: { num:
 
 function DataChainItem({ layer, title, desc, color }: { layer: string; title: string; desc: string; color: string }) {
     const colorMap: Record<string, string> = {
-        blue: 'bg-google-blue text-white',
-        red: 'bg-google-red text-white',
-        green: 'bg-google-green text-white',
+        blue: 'bg-novo-blue text-white',
+        red: 'bg-novo-red text-white',
+        green: 'bg-novo-green text-white',
         yellow: 'bg-yellow-400 text-yellow-900',
     };
     return (

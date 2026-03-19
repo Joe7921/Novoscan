@@ -26,3 +26,10 @@ export {
 // 自动发现
 export type { DiscoveryResult, DiscoverySummary } from './discovery'
 export { autoDiscoverPlugins, registerPluginModule } from './discovery'
+
+// SDK 版本
+export { SDK_VERSION } from './sdk'
+
+// 插件桥接（PluginRegistry → AgentRegistry 自动同步）
+export { bridgePluginsToAgentRegistry, resetBridge } from './plugin-bridge'
+export type { BridgeResult } from './plugin-bridge'

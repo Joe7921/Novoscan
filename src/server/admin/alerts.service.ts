@@ -5,7 +5,7 @@
  * 也支持通过 API 动态设置。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 /** 预警配置 */
 export interface AlertConfig {
@@ -64,11 +64,11 @@ export async function getAlertsStatus(config?: AlertConfig): Promise<AlertsStatu
     todayStart.setHours(0, 0, 0, 0);
 
     const [apiCallsRes, todayQueriesRes, recentRecordsRes] = await Promise.all([
-        supabaseAdmin.from('api_call_logs').select('*')
+        adminDb.from('api_call_logs').select('*')
             .gte('called_at', todayStart.toISOString()).limit(10000),
-        supabaseAdmin.from('search_history').select('*', { count: 'exact', head: true })
+        adminDb.from('search_history').select('*', { count: 'exact', head: true })
             .gte('created_at', todayStart.toISOString()),
-        supabaseAdmin.from('search_history').select('result')
+        adminDb.from('search_history').select('result')
             .order('created_at', { ascending: false }).limit(100),
     ]);
 

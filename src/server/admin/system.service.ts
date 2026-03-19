@@ -4,7 +4,7 @@
  * 检查环境变量配置、数据库连接状态和各表行数统计。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 /** 环境变量检查项 */
 interface EnvCheckItem {
@@ -77,7 +77,7 @@ export async function getSystemHealth(): Promise<SystemHealthResult> {
     let dbStatus: SystemHealthResult['dbStatus'];
     try {
         const start = Date.now();
-        const { error } = await supabaseAdmin.from('search_history').select('id', { count: 'exact', head: true });
+        const { error } = await adminDb.from('search_history').select('id', { count: 'exact', head: true });
         const latency = Date.now() - start;
 
         dbStatus = error
@@ -91,7 +91,7 @@ export async function getSystemHealth(): Promise<SystemHealthResult> {
     const tableStats: TableStat[] = [];
     for (const tableName of TABLES_TO_CHECK) {
         try {
-            const { count, error } = await supabaseAdmin.from(tableName)
+            const { count, error } = await adminDb.from(tableName)
                 .select('*', { count: 'exact', head: true });
             tableStats.push({
                 name: tableName,

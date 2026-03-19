@@ -39,7 +39,7 @@ const DataSourceCoverage: React.FC<DataSourceCoverageProps> = ({
     const industrySources: SourceItem[] = [
         { id: 'github', name: 'GitHub', type: 'industry', icon: Code, count: 5210, time: '160ms', status: 'connected', color: 'text-slate-800', bgColor: 'bg-slate-200' },
         { id: 'brave', name: 'Brave Search', type: 'industry', icon: Search, count: 2140, time: '90ms', status: 'connected', color: 'text-orange-600', bgColor: 'bg-orange-100' },
-        { id: 'serpapi', name: 'SerpAPI (Google)', type: 'industry', icon: Cloud, count: 1280, time: '210ms', status: 'connected', color: 'text-google-blue', bgColor: 'bg-blue-100' },
+        { id: 'serpapi', name: 'SerpAPI (Google)', type: 'industry', icon: Cloud, count: 1280, time: '210ms', status: 'connected', color: 'text-novo-blue', bgColor: 'bg-blue-100' },
     ];
 
     const SourceCard = ({ source, delay }: { source: SourceItem, delay: number }) => (

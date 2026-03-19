@@ -8,10 +8,9 @@
  * 集成合作伙伴申请表单入口。
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { Sparkles, Mail, Handshake, ArrowRight } from 'lucide-react';
-import PartnerFormModal from '@/components/partner/PartnerFormModal';
+import { Sparkles, Mail } from 'lucide-react';
 
 interface SiteFooterProps {
     language?: 'zh' | 'en';
@@ -19,7 +18,6 @@ interface SiteFooterProps {
 
 export default function SiteFooter({ language = 'zh' }: SiteFooterProps) {
     const isZh = language === 'zh';
-    const [showPartnerForm, setShowPartnerForm] = useState(false);
 
     const sections = [
         {
@@ -101,43 +99,11 @@ export default function SiteFooter({ language = 'zh' }: SiteFooterProps) {
                                             </Link>
                                         </li>
                                     ))}
-                                    {/* 在"关于"栏追加合作伙伴入口 */}
-                                    {section.title === (isZh ? '关于' : 'About') && (
-                                        <li>
-                                            <button
-                                                onClick={() => setShowPartnerForm(true)}
-                                                className="group block text-left"
-                                            >
-                                                <span className="text-sm text-gray-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors font-medium">
-                                                    {isZh ? '成为合作伙伴' : 'Become a Partner'}
-                                                </span>
-                                                <span className="block text-[10px] text-gray-300 dark:text-slate-600 group-hover:text-gray-400 dark:group-hover:text-slate-500 transition-colors">
-                                                    {isZh ? '商务合作申请' : 'Partnership Application'}
-                                                </span>
-                                            </button>
-                                        </li>
-                                    )}
                                 </ul>
                             </div>
                         ))}
                     </div>
 
-                    {/* 合作伙伴 CTA 横幅 */}
-                    <div className="mt-10 pt-6 border-t border-gray-100/60 dark:border-[#1E293B]/60">
-                        <button
-                            onClick={() => setShowPartnerForm(true)}
-                            className="w-full group flex items-center justify-center gap-2 py-3 px-4 rounded-xl
-                                bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-500/10 dark:to-indigo-500/10
-                                hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-500/20 dark:hover:to-indigo-500/20
-                                border border-blue-100/80 dark:border-blue-500/20 transition-all duration-200"
-                        >
-                            <Handshake className="w-4 h-4 text-blue-500 dark:text-blue-400" />
-                            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                                {isZh ? '成为 Novoscan 合作伙伴' : 'Become a Novoscan Partner'}
-                            </span>
-                            <ArrowRight className="w-4 h-4 text-blue-400 dark:text-blue-500 group-hover:translate-x-0.5 transition-transform" />
-                        </button>
-                    </div>
 
                     {/* 底部版权 */}
                     <div className="mt-6 pt-6 border-t border-gray-100/60 dark:border-[#1E293B]/60 flex flex-col sm:flex-row items-center justify-between gap-2">
@@ -150,13 +116,6 @@ export default function SiteFooter({ language = 'zh' }: SiteFooterProps) {
                     </div>
                 </div>
             </footer>
-
-            {/* 合作伙伴申请表单弹窗 */}
-            <PartnerFormModal
-                isOpen={showPartnerForm}
-                onClose={() => setShowPartnerForm(false)}
-                language={language}
-            />
         </>
     );
 }

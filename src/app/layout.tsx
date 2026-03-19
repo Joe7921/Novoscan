@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { RegisterSW } from "@/components/pwa/register-sw";
 import dynamic from "next/dynamic";
-import { AuthSessionProvider } from "@/components/auth/AuthSessionProvider";
+
 // ParticleBackground 已从全局移至首页组件内，减少非首页的 Canvas 开销
 
 
@@ -32,23 +32,9 @@ export const metadata: Metadata = {
   description:
     '全网首个多智能体 AI 创新评估引擎。数十秒穿透 2.5 亿学术论文 + 全球产业动态，6 名 AI 专家交叉验证，输出量化创新评分。视探创新查重、商业分析、趋势监控一站式服务，免费体验。',
   keywords: [
-    // 核心品牌词
     'Novoscan', 'Bizscan', 'Clawscan', 'NovoTracker',
-    // 高搜索量热词
-    'AI创新查重', 'AI论文查新', 'AI商业分析', 'AI分析工具',
-    'AI查重工具', '创新评估', '专利查新', '多智能体',
-    // 蹭热度：论文查重关联词（超高搜索量）
-    '论文查重', '论文查重工具', '免费查重', '论文查新',
-    '查重软件', '论文重复率检测', '毕业论文查重', '论文原创性检测',
-    '论文降重', 'AI论文检测', '学术不端检测',
-    // 长尾词（竞争小、转化高）
-    'AI创新性检测', '研究课题查重', '技术方案评估', '创业想法可行性',
-    '多智能体AI平台', '论文创新性分析', '商业模式AI评估',
-    // 场景化热词
-    '毕业论文查新', '创业大赛评估', '科研基金申请', '产品创新分析',
-    '创新趋势追踪', '学术论文分析', '行业竞品分析', 'AI创新情报',
-    // 竞品关联词（截流）
-    '知网查重替代', '维普查重', '万方查重', 'AI查重免费',
+    'AI innovation check', 'multi-agent', 'innovation evaluation',
+    'academic search', 'industry analysis', 'open source',
   ],
   authors: [{ name: 'Novoscan Team' }],
   creator: 'Novoscan',
@@ -225,10 +211,7 @@ export default function RootLayout({
         <meta name="applicable-device" content="pc,mobile" />
         <meta name="MobileOptimized" content="width" />
         <meta name="HandheldFriendly" content="true" />
-        {/* 百度站长验证 */}
-        <meta name="baidu-site-verification" content="codeva-YrQmhqSfhf" />
-        {/* 360搜索验证 */}
-        {/* <meta name="360-site-verification" content="待填入" /> */}
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -268,37 +251,12 @@ export default function RootLayout({
             `,
           }}
         />
-        {/* 百度自动推送 — 仅在 novoscan.cn 域名启用 */}
-        {SITE_URL.includes('novoscan.cn') && (
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(){
-                var bp = document.createElement('script');
-                var curProtocol = window.location.protocol.split(':')[0];
-                bp.src = (curProtocol === 'https' ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js');
-                bp.defer = true;
-                document.head.appendChild(bp);
-              })();
-            `,
-          }}
-        />
-        )}
-        {/* Google AdSense — 全局广告脚本（需配置 NEXT_PUBLIC_ADSENSE_CLIENT 环境变量） */}
-        {process.env.NEXT_PUBLIC_ADSENSE_CLIENT && (
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT}`}
-            crossOrigin="anonymous"
-          />
-        )}
+
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-900 dark:text-slate-100 dark:bg-dark-base selection:bg-google-blue selection:text-white relative min-h-screen overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-900 dark:text-slate-100 dark:bg-dark-base selection:bg-novo-blue selection:text-white relative min-h-screen overflow-x-hidden`}
       >
-        <AuthSessionProvider>
           {children}
-        </AuthSessionProvider>
         <RouteProgress />
         <RegisterSW />
 

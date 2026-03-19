@@ -95,10 +95,10 @@ const InnovationDetailModal: React.FC<InnovationDetailModalProps> = ({
                             {/* 数据展示 */}
                             <div className="grid grid-cols-2 gap-3 mb-5">
                                 <ScoreTooltip type="novelty">
-                                    <div className="bg-gradient-to-br from-indigo-50 to-indigo-100/50 p-4 rounded-xl text-center hover:shadow-md transition-shadow cursor-help">
-                                        <div className="text-3xl font-bold text-indigo-600">{score}</div>
-                                        <div className="text-xs text-slate-500 mt-1 flex justify-center items-center gap-1">创新分 <Info className="w-3 h-3" /></div>
-                                    </div>
+                                    <span className="block bg-gradient-to-br from-indigo-50 to-indigo-100/50 p-4 rounded-xl text-center hover:shadow-md transition-shadow cursor-help">
+                                        <span className="block text-3xl font-bold text-indigo-600">{score}</span>
+                                        <span className="block text-xs text-slate-500 mt-1 flex justify-center items-center gap-1">创新分 <Info className="w-3 h-3" /></span>
+                                    </span>
                                 </ScoreTooltip>
                                 <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 p-4 rounded-xl text-center">
                                     <div className="text-3xl font-bold text-orange-500">{searchCount}</div>

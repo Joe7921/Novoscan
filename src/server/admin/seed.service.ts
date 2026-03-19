@@ -4,7 +4,7 @@
  * 注入带 [TEST] 标记的测试数据，便于验证运维功能。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 const TEST_PREFIX = '[TEST] ';
 
@@ -93,7 +93,7 @@ export async function injectTestData(): Promise<SeedResult> {
         },
     ];
 
-    const { error: searchErr } = await supabaseAdmin.from('search_history').insert(searchRecords);
+    const { error: searchErr } = await adminDb.from('search_history').insert(searchRecords);
     details.search_history = searchErr
         ? `失败: ${searchErr.message}`
         : `${searchRecords.length} 条记录`;
@@ -126,7 +126,7 @@ export async function injectTestData(): Promise<SeedResult> {
         });
     }
 
-    const { error: apiErr } = await supabaseAdmin.from('api_call_logs').insert(apiRecords);
+    const { error: apiErr } = await adminDb.from('api_call_logs').insert(apiRecords);
     if (apiErr) {
         details.api_call_logs = apiErr.message.includes('does not exist')
             ? '表不存在，跳过'
@@ -150,11 +150,11 @@ export async function cleanTestData(): Promise<SeedResult> {
     const details: Record<string, string> = {};
 
     // search_history
-    const { count: searchCount } = await supabaseAdmin.from('search_history')
+    const { count: searchCount } = await adminDb.from('search_history')
         .select('*', { count: 'exact', head: true })
         .like('query', `${TEST_PREFIX}%`);
 
-    const { error: searchErr } = await supabaseAdmin.from('search_history')
+    const { error: searchErr } = await adminDb.from('search_history')
         .delete()
         .like('query', `${TEST_PREFIX}%`);
 
@@ -163,12 +163,12 @@ export async function cleanTestData(): Promise<SeedResult> {
         : `已清除 ${searchCount || 0} 条`;
 
     // api_call_logs
-    const { count: apiCount } = await supabaseAdmin.from('api_call_logs')
+    const { count: apiCount } = await adminDb.from('api_call_logs')
         .select('*', { count: 'exact', head: true })
         .like('call_type', `${TEST_PREFIX}%`);
 
     if (apiCount !== null) {
-        const { error: apiErr } = await supabaseAdmin.from('api_call_logs')
+        const { error: apiErr } = await adminDb.from('api_call_logs')
             .delete()
             .like('call_type', `${TEST_PREFIX}%`);
 

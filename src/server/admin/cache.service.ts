@@ -4,7 +4,7 @@
  * 基于 search_history 表的缓存统计和清理。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 /** 缓存分段统计 */
 export interface CacheBracket {
@@ -32,12 +32,12 @@ export async function getCacheStats(): Promise<CacheStatsResult> {
     const now = Date.now();
 
     const [totalRes, last24hRes, last7dRes, last30dRes] = await Promise.all([
-        supabaseAdmin.from('search_history').select('*', { count: 'exact', head: true }),
-        supabaseAdmin.from('search_history').select('*', { count: 'exact', head: true })
+        adminDb.from('search_history').select('*', { count: 'exact', head: true }),
+        adminDb.from('search_history').select('*', { count: 'exact', head: true })
             .gte('created_at', new Date(now - 24 * 3600000).toISOString()),
-        supabaseAdmin.from('search_history').select('*', { count: 'exact', head: true })
+        adminDb.from('search_history').select('*', { count: 'exact', head: true })
             .gte('created_at', new Date(now - 7 * 86400000).toISOString()),
-        supabaseAdmin.from('search_history').select('*', { count: 'exact', head: true })
+        adminDb.from('search_history').select('*', { count: 'exact', head: true })
             .gte('created_at', new Date(now - 30 * 86400000).toISOString()),
     ]);
 
@@ -69,10 +69,10 @@ export async function clearCache(options: {
     const { all = false, olderThanHours = 24 } = options;
 
     if (all) {
-        const { count } = await supabaseAdmin.from('search_history')
+        const { count } = await adminDb.from('search_history')
             .select('*', { count: 'exact', head: true });
 
-        const { error } = await supabaseAdmin.from('search_history').delete().neq('id', 0);
+        const { error } = await adminDb.from('search_history').delete().neq('id', 0);
         return {
             deletedCount: error ? 0 : (count || 0),
             success: !error,
@@ -82,11 +82,11 @@ export async function clearCache(options: {
 
     const cutoff = new Date(Date.now() - olderThanHours * 3600000);
 
-    const { count } = await supabaseAdmin.from('search_history')
+    const { count } = await adminDb.from('search_history')
         .select('*', { count: 'exact', head: true })
         .lt('created_at', cutoff.toISOString());
 
-    const { error } = await supabaseAdmin.from('search_history')
+    const { error } = await adminDb.from('search_history')
         .delete()
         .lt('created_at', cutoff.toISOString());
 

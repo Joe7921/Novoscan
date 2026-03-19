@@ -4,7 +4,7 @@
  * 管理 feature_access 表的用户权限。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 /** 用户权限记录 */
 export interface UserAccessEntry {
@@ -24,7 +24,7 @@ export interface UserListResult {
  * 列出有权限记录的用户
  */
 export async function listUsers(limit = 100): Promise<UserListResult> {
-    const { data, error } = await supabaseAdmin.from('feature_access')
+    const { data, error } = await adminDb.from('feature_access')
         .select('user_id, feature_name, granted_at, granted_by, is_active')
         .order('granted_at', { ascending: false })
         .limit(limit);
@@ -48,7 +48,7 @@ export async function listUsers(limit = 100): Promise<UserListResult> {
 export async function grantAdmin(userId: string): Promise<{ success: boolean; message: string }> {
     if (!userId) return { success: false, message: '请提供 user-id' };
 
-    const { error } = await supabaseAdmin.from('feature_access').upsert({
+    const { error } = await adminDb.from('feature_access').upsert({
         user_id: userId,
         feature_name: 'admin',
         is_active: true,
@@ -66,7 +66,7 @@ export async function grantAdmin(userId: string): Promise<{ success: boolean; me
 export async function revokeAdmin(userId: string): Promise<{ success: boolean; message: string }> {
     if (!userId) return { success: false, message: '请提供 user-id' };
 
-    const { error } = await supabaseAdmin.from('feature_access')
+    const { error } = await adminDb.from('feature_access')
         .update({ is_active: false })
         .eq('user_id', userId)
         .eq('feature_name', 'admin');

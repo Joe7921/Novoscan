@@ -69,7 +69,7 @@ export function getWasmStatus(): { loaded: boolean; version: string | null; erro
 // ==================== 质量守卫评分引擎 ====================
 
 import type { ArbitrationResult, AgentOutput, QualityCheckResult, DebateRecord } from '@/agents/types';
-import { qualityGuard as tsQualityGuard } from '@/agents/qualityGuard';
+import { qualityGuard as tsQualityGuard } from '@/agents/quality-guard';
 
 /**
  * 质量守卫评分检查（WASM 加速版，自动降级）

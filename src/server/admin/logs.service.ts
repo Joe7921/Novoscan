@@ -4,7 +4,7 @@
  * 分页查询 search_history 和 api_call_logs。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 /** 单条执行日志 */
 export interface ExecutionLogEntry {
@@ -44,12 +44,12 @@ export async function getExecutionLogs(options: {
     const offset = (page - 1) * limit;
 
     // 总条数
-    const { count } = await supabaseAdmin.from('search_history')
+    const { count } = await adminDb.from('search_history')
         .select('*', { count: 'exact', head: true });
     const totalPages = Math.ceil((count || 0) / limit);
 
     // 分页数据
-    const { data, error } = await supabaseAdmin.from('search_history')
+    const { data, error } = await adminDb.from('search_history')
         .select('id, query, model_provider, search_time_ms, created_at, result')
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
@@ -90,7 +90,7 @@ export async function getExecutionLogs(options: {
  * 获取 API 失败记录
  */
 export async function getApiFailures(limit = 15): Promise<ApiFailureEntry[]> {
-    const { data, error } = await supabaseAdmin.from('api_call_logs')
+    const { data, error } = await adminDb.from('api_call_logs')
         .select('*')
         .eq('is_success', false)
         .order('called_at', { ascending: false })

@@ -5,7 +5,7 @@
  * 数据来源：search_history + api_call_logs
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 /** KPI 统计结果 */
 export interface KpiStats {
@@ -40,10 +40,10 @@ export async function getKpiStats(): Promise<KpiStats> {
 
     // 并行查询
     const [totalRes, recent7Res, apiCallsRes] = await Promise.all([
-        supabaseAdmin.from('search_history').select('*', { count: 'exact', head: true }),
-        supabaseAdmin.from('search_history').select('created_at, search_time_ms')
+        adminDb.from('search_history').select('*', { count: 'exact', head: true }),
+        adminDb.from('search_history').select('created_at, search_time_ms')
             .gte('created_at', sevenDaysAgo.toISOString()),
-        supabaseAdmin.from('api_call_logs').select('provider, estimated_tokens, response_time_ms, is_success, called_at')
+        adminDb.from('api_call_logs').select('provider, estimated_tokens, response_time_ms, is_success, called_at')
             .gte('called_at', sevenDaysAgo.toISOString())
             .limit(10000),
     ]);

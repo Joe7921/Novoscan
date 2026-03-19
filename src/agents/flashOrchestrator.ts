@@ -11,10 +11,10 @@
  * 预计耗时：~70s（对比常规模式 ~230s）
  */
 import { AgentInput, AgentOutput, ArbitrationResult, QualityCheckResult, DebateRecord } from './types';
-import { academicReviewer } from './academicReviewer';
-import { industryAnalyst } from './industryAnalyst';
-import { competitorDetective } from './competitorDetective';
-import { innovationEvaluator } from './innovationEvaluator';
+import { academicReviewer } from './academic-reviewer';
+import { industryAnalyst } from './industry-analyst';
+import { competitorDetective } from './competitor-detective';
+import { innovationEvaluator } from './innovation-evaluator';
 import {
     createFallbackAgentOutput,
     mapScoreToRecommendation,

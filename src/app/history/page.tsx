@@ -1,10 +1,9 @@
 'use client';
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
 import { db } from '@/lib/db';
 import { Clock, FileText, ArrowRight, Lock, Search, Trash2, X, Calendar, GitCompareArrows, CheckSquare, Square } from 'lucide-react';
-import Navbar from '@/components/layout/Navbar';
+import WorkspaceShell from '@/components/layout/WorkspaceShell';
 import BottomTabBar from '@/components/layout/BottomTabBar';
 
 
@@ -48,8 +47,7 @@ export default function HistoryPage() {
 
     async function loadHistory() {
         setLoading(true);
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await serverDb.auth.getUser();
 
         if (!user?.id) {
             setHistory([]);
@@ -60,7 +58,7 @@ export default function HistoryPage() {
         // 并行：检查 premium 权限 + 查总数
         const [premiumRes, countRes] = await Promise.all([
             fetch('/api/user-access?feature=premium').then(r => r.json()).catch(() => ({ access: false })),
-            supabase
+            serverDb
                 .from('search_history')
                 .select('id', { count: 'exact', head: true })
                 .eq('user_id', user.id),
@@ -72,7 +70,7 @@ export default function HistoryPage() {
 
         const limit = hasPremium ? PREMIUM_LIMIT : FREE_LIMIT;
 
-        const { data } = await supabase
+        const { data } = await serverDb
             .from('search_history')
             .select('*')
             .eq('user_id', user.id)
@@ -160,10 +158,10 @@ export default function HistoryPage() {
     }
 
     return (
+        <WorkspaceShell>
         <div className="min-h-screen bg-slate-50 font-sans pb-20 lg:pb-0">
-            <Navbar />
 
-            <div className="max-w-4xl mx-auto p-6 pt-24">
+            <div className="max-w-4xl mx-auto p-6 pt-8">
                 {/* 标题行 */}
                 <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
                     <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-800">
@@ -512,5 +510,6 @@ export default function HistoryPage() {
 
             <BottomTabBar />
         </div>
+        </WorkspaceShell>
     );
 }

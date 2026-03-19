@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 import type { UserDomainInterest } from '@/lib/supabase';
 
 /**
@@ -10,7 +10,7 @@ import type { UserDomainInterest } from '@/lib/supabase';
  * 3. 更新用户画像统计（user_profiles）
  * 4. 查询用户 Top N 兴趣（供广告定投使用）
  *
- * 所有写入操作使用 supabaseAdmin（service_role），绕过 RLS。
+ * 所有写入操作使用 adminDb（service_role），绕过 RLS。
  */
 
 // ==================== 记录搜索事件 ====================
@@ -33,7 +33,7 @@ interface SearchEventInput {
 export async function recordSearchEvent(input: SearchEventInput): Promise<void> {
     try {
         // 1. 写入事件日志
-        const { error: eventErr } = await supabaseAdmin.from('user_search_events').insert({
+        const { error: eventErr } = await adminDb.from('user_search_events').insert({
             user_id: input.userId || null,
             anonymous_id: input.anonymousId || null,
             query: input.query,
@@ -73,7 +73,7 @@ export async function recordSearchEvent(input: SearchEventInput): Promise<void> 
  */
 async function upsertDomainInterest(userId: string, domainId: string, subDomainId?: string): Promise<void> {
     // 尝试查询已有记录
-    const { data: existing } = await supabaseAdmin
+    const { data: existing } = await adminDb
         .from('user_domain_interests')
         .select('id, weight')
         .eq('user_id', userId)
@@ -83,7 +83,7 @@ async function upsertDomainInterest(userId: string, domainId: string, subDomainI
 
     if (existing) {
         // 已有 → 权重 +1，更新 last_hit_at
-        await supabaseAdmin
+        await adminDb
             .from('user_domain_interests')
             .update({
                 weight: (existing.weight || 1) + 1,
@@ -92,7 +92,7 @@ async function upsertDomainInterest(userId: string, domainId: string, subDomainI
             .eq('id', existing.id);
     } else {
         // 新建
-        await supabaseAdmin.from('user_domain_interests').insert({
+        await adminDb.from('user_domain_interests').insert({
             user_id: userId,
             domain_id: domainId,
             sub_domain_id: subDomainId || null,
@@ -108,7 +108,7 @@ async function upsertDomainInterest(userId: string, domainId: string, subDomainI
  */
 async function updateProfileStats(userId: string): Promise<void> {
     // 查询该用户权重最高的学科
-    const { data: topInterest } = await supabaseAdmin
+    const { data: topInterest } = await adminDb
         .from('user_domain_interests')
         .select('domain_id, sub_domain_id, weight')
         .eq('user_id', userId)
@@ -117,7 +117,7 @@ async function updateProfileStats(userId: string): Promise<void> {
         .maybeSingle();
 
     // upsert 用户画像
-    const { error } = await supabaseAdmin.from('user_profiles').upsert({
+    const { error } = await adminDb.from('user_profiles').upsert({
         id: userId,
         top_domain_id: topInterest?.domain_id || null,
         top_sub_domain_id: topInterest?.sub_domain_id || null,
@@ -132,14 +132,14 @@ async function updateProfileStats(userId: string): Promise<void> {
     }
 
     // 递增 search_count（RPC 或 raw SQL 更安全，这里用 read-then-write 简化）
-    const { data: profile } = await supabaseAdmin
+    const { data: profile } = await adminDb
         .from('user_profiles')
         .select('search_count')
         .eq('id', userId)
         .single();
 
     if (profile) {
-        await supabaseAdmin
+        await adminDb
             .from('user_profiles')
             .update({ search_count: (profile.search_count || 0) + 1 })
             .eq('id', userId);
@@ -152,7 +152,7 @@ async function updateProfileStats(userId: string): Promise<void> {
  * 获取用户 Top N 学科兴趣（按权重排序）
  */
 export async function getTopInterests(userId: string, limit = 5): Promise<UserDomainInterest[]> {
-    const { data } = await supabaseAdmin
+    const { data } = await adminDb
         .from('user_domain_interests')
         .select('*')
         .eq('user_id', userId)
@@ -166,7 +166,7 @@ export async function getTopInterests(userId: string, limit = 5): Promise<UserDo
  * 获取用户画像
  */
 export async function getUserProfile(userId: string) {
-    const { data } = await supabaseAdmin
+    const { data } = await adminDb
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
@@ -179,7 +179,7 @@ export async function getUserProfile(userId: string) {
  * 获取用户最近搜索涉及的不重复领域（按最近时间排序）
  */
 export async function getRecentDomains(userId: string, limit = 5): Promise<string[]> {
-    const { data } = await supabaseAdmin
+    const { data } = await adminDb
         .from('user_search_events')
         .select('domain_id')
         .eq('user_id', userId)

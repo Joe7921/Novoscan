@@ -11,7 +11,7 @@
  * 环境变量 MCP_API_KEYS 格式：key1:email1,key2:email2
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 import { checkFeatureAccess } from '@/lib/stubs';
 
 // ==================== 环境变量 Key 加载 ====================
@@ -73,7 +73,7 @@ export async function validateMcpKey(apiKey: string): Promise<McpAuthResult> {
 
     // ---- 1. 查 Supabase ----
     try {
-        const { data: keyRecord, error } = await supabaseAdmin
+        const { data: keyRecord, error } = await adminDb
             .from('mcp_api_keys')
             .select('*')
             .eq('api_key', trimmedKey)
@@ -97,7 +97,7 @@ export async function validateMcpKey(apiKey: string): Promise<McpAuthResult> {
             // 检查每日限额
             const today = new Date().toISOString().slice(0, 10);
             if (keyRecord.daily_limit > 0) {
-                const { count } = await supabaseAdmin
+                const { count } = await adminDb
                     .from('mcp_usage_log')
                     .select('*', { count: 'exact', head: true })
                     .eq('api_key_id', keyRecord.id)
@@ -115,7 +115,7 @@ export async function validateMcpKey(apiKey: string): Promise<McpAuthResult> {
 
                 // 记录使用日志
                 try {
-                    await supabaseAdmin.from('mcp_usage_log').insert({
+                    await adminDb.from('mcp_usage_log').insert({
                         api_key_id: keyRecord.id,
                         user_email: keyRecord.user_email,
                         query_preview: '(logged)',

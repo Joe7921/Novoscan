@@ -1,4 +1,4 @@
-import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { db as serverDb, adminDb } from '@/lib/db/factory';
 
 /**
  * 记录两个创新点被同时查看/搜索的关系（共现）
@@ -15,14 +15,14 @@ export async function recordCoOccurrence(
 
     try {
         // 检查是否已有关系（双向查找，使用安全的参数化查询）
-        const { data: asSource } = await supabase
+        const { data: asSource } = await serverDb
             .from('innovation_relations')
             .select('id, co_search_count')
             .eq('source_id', idA)
             .eq('target_id', idB)
             .maybeSingle();
 
-        const existing = asSource || (await supabase
+        const existing = asSource || (await serverDb
             .from('innovation_relations')
             .select('id, co_search_count')
             .eq('source_id', idB)
@@ -31,7 +31,7 @@ export async function recordCoOccurrence(
 
         if (existing) {
             // 更新共现次数
-            await supabaseAdmin
+            await adminDb
                 .from('innovation_relations')
                 .update({
                     co_search_count: (existing.co_search_count || 0) + 1,
@@ -41,7 +41,7 @@ export async function recordCoOccurrence(
             console.log('[RelationService] 关联次数+1:', idA, '↔', idB);
         } else {
             // 创建新关系
-            const { error } = await supabaseAdmin.from('innovation_relations').insert({
+            const { error } = await adminDb.from('innovation_relations').insert({
                 source_id: idA,
                 target_id: idB,
                 relation_type: 'related',
@@ -87,7 +87,7 @@ export async function getRelatedInnovations(
         const invId = String(innovationId);
 
         // 查找作为 source 的关系
-        const { data: asSource } = await supabase
+        const { data: asSource } = await serverDb
             .from('innovation_relations')
             .select('target_id, co_search_count')
             .eq('source_id', invId)
@@ -95,7 +95,7 @@ export async function getRelatedInnovations(
             .limit(limit);
 
         // 查找作为 target 的关系
-        const { data: asTarget } = await supabase
+        const { data: asTarget } = await serverDb
             .from('innovation_relations')
             .select('source_id, co_search_count')
             .eq('target_id', invId)
@@ -118,7 +118,7 @@ export async function getRelatedInnovations(
         if (relatedIds.size === 0) return [];
 
         // 批量获取创新点详情
-        const { data: innovations } = await supabase
+        const { data: innovations } = await serverDb
             .from('innovations')
             .select('*')
             .in('innovation_id', Array.from(relatedIds));

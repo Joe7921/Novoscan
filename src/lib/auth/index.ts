@@ -6,7 +6,7 @@
  */
 
 /** 当前认证提供者 */
-export const AUTH_PROVIDER = (process.env.NEXT_PUBLIC_AUTH_PROVIDER || process.env.AUTH_PROVIDER || 'supabase') as 'nextauth' | 'supabase';
+export const AUTH_PROVIDER = (process.env.NEXT_PUBLIC_AUTH_PROVIDER || process.env.AUTH_PROVIDER || 'none') as 'nextauth' | 'supabase' | 'none';
 
 /** 是否使用 NextAuth 模式 */
 export const isNextAuth = AUTH_PROVIDER === 'nextauth';

@@ -4,7 +4,7 @@
  * 从 search_history 的 result.executionRecord.agents 提取各 Agent 的运行指标。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 const AGENT_NAMES = ['academicReviewer', 'industryAnalyst', 'competitorDetective', 'innovationEvaluator', 'arbitrator'] as const;
 
@@ -49,7 +49,7 @@ export interface AgentPerformanceResult {
  * 获取 Agent 性能水位
  */
 export async function getAgentPerformance(sampleSize = 300): Promise<AgentPerformanceResult> {
-    const { data, error } = await supabaseAdmin.from('search_history')
+    const { data, error } = await adminDb.from('search_history')
         .select('result')
         .order('created_at', { ascending: false })
         .limit(sampleSize);

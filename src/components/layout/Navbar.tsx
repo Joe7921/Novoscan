@@ -8,8 +8,7 @@ import { Language } from '@/types';
 import { translations } from '../../locales/translations';
 import { Sparkles, Clock, Briefcase } from 'lucide-react';
 import { ProjectIcon } from '../icons/ProjectIcon';
-import AuthButton from '@/components/auth/AuthButton';
-import { useAuthSession } from '@/components/auth/AuthSessionProvider';
+
 import ThemeToggle from './ThemeToggle';
 
 interface NavbarProps {
@@ -21,7 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({ language = 'zh', setLanguage }) => {
     const t = translations[language];
     const [hoveredPath, setHoveredPath] = useState<string | null>(null);
     const pathname = usePathname();
-    const { user: authUser } = useAuthSession();
+
 
     // 桌面导航项定义（已移除云端专属的 skill-check 和 tracker）
     const searchLinks = [
@@ -95,7 +94,7 @@ const Navbar: React.FC<NavbarProps> = ({ language = 'zh', setLanguage }) => {
                     </div>
                 </Link>
 
-                {/* ===== 移动端右侧：语言切换 + 登录 ===== */}
+                {/* ===== 移动端右侧：语言切换 ===== */}
                 <div className="lg:hidden flex items-center gap-2">
                     {/* 语言切换（紧凑型） */}
                     <div className="flex bg-gray-100 dark:bg-dark-surface p-0.5 rounded-full border border-gray-200 dark:border-[#1E293B]">
@@ -114,7 +113,6 @@ const Navbar: React.FC<NavbarProps> = ({ language = 'zh', setLanguage }) => {
                             中文
                         </button>
                     </div>
-                    <AuthButton />
                 </div>
 
                 {/* ===== 桌面端导航 ===== */}
@@ -171,8 +169,7 @@ const Navbar: React.FC<NavbarProps> = ({ language = 'zh', setLanguage }) => {
                         {/* 明暗模式切换 */}
                         <ThemeToggle />
 
-                        {/* 登录/用户按钮 */}
-                        <AuthButton />
+
                     </div>
                 </div>
             </div>

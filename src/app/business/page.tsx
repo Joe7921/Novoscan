@@ -8,7 +8,7 @@ import {
   GitBranch, BrainCircuit, Network, Lock, Server,
   CheckCircle2, ArrowUpRight, Mail, Sparkles, ChevronRight,
 } from 'lucide-react';
-import Navbar from '@/components/layout/Navbar';
+import WorkspaceShell from '@/components/layout/WorkspaceShell';
 import SiteFooter from '@/components/layout/SiteFooter';
 
 /* =====================================================================
@@ -160,9 +160,9 @@ const ARCH_LAYERS = [
 
 export default function BusinessPage() {
   return (
+    <WorkspaceShell>
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50/30 to-white">
-      {/* 导航栏 */}
-      <Navbar />
+
 
       {/* ====== Hero ====== */}
       <section className="relative overflow-hidden">
@@ -499,8 +499,8 @@ export default function BusinessPage() {
         </div>
       </section>
 
-      {/* Footer */}
       <SiteFooter language="zh" />
     </div>
+    </WorkspaceShell>
   );
 }

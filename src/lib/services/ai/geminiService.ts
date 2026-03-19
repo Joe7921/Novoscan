@@ -299,8 +299,8 @@ export const analyzeResearchIdea = async (idea: string, language: Language): Pro
         const backupAi = createGeminiClient(BACKUP_API_KEY);
         const result = await doAnalyze(backupAi);
         // 异步记录 failover 事件，供巡检脚本检测
-        import('@/lib/supabase').then(async ({ supabaseAdmin }) => {
-          await supabaseAdmin.from('api_call_logs').insert({
+        import('@/lib/db/factory').then(async ({ adminDb }) => {
+          await adminDb.from('api_call_logs').insert({
             provider: 'gemini-failover', is_success: true,
             call_type: 'analyze', error_message: `主Key失败: ${errMsg}`,
             called_at: new Date().toISOString(),
@@ -358,8 +358,8 @@ export const sendMessageToChat = async (message: string, history: { role: 'user'
       const backupAi = createGeminiClient(BACKUP_API_KEY);
       const result = await doChat(backupAi);
       // 异步记录 failover 事件
-      import('@/lib/supabase').then(async ({ supabaseAdmin }) => {
-        await supabaseAdmin.from('api_call_logs').insert({
+      import('@/lib/db/factory').then(async ({ adminDb }) => {
+        await adminDb.from('api_call_logs').insert({
           provider: 'gemini-failover', is_success: true,
           call_type: 'chat', error_message: `主Key失败: ${errMsg}`,
           called_at: new Date().toISOString(),

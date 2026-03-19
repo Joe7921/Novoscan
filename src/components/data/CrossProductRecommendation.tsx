@@ -255,7 +255,7 @@ function BizscanCard({ rec, query, report, isZh, router }: {
             const marketLabel = BIZSCAN_MARKET_OPTIONS.find(o => o.id === selectedMarket)?.contextHint || '';
             const strategyLabel = BIZSCAN_STRATEGY_OPTIONS.find(o => o.id === selectedStrategy)?.contextHint || '';
 
-            const res = await fetch('/api/cross-recommend', {
+            const res = await fetch('/api/data/cross-recommend', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

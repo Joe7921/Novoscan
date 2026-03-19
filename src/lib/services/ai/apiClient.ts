@@ -2,7 +2,7 @@ import { getCachedResult, setCachedResult } from '../../localCache';
 
 // 前端调用Next.js API路由
 export async function searchDualTrack(keywords: string[], domain: string) {
-    const res = await fetch('/api/dual-track', {
+    const res = await fetch('/api/analysis/dual-track', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ keywords, domain })
@@ -35,7 +35,7 @@ export async function analyzeWithAI(
         }
     }
 
-    const res = await fetch('/api/analyze', {
+    const res = await fetch('/api/analysis/full', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query, domain, language, modelProvider, domainId, subDomainId, domainHint, privacyMode: privacyMode || false }),
@@ -122,7 +122,7 @@ export async function analyzeFlash(
     privacyMode?: boolean,
     signal?: AbortSignal
 ) {
-    const res = await fetch('/api/flash-analyze', {
+    const res = await fetch('/api/analysis/flash', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query, domain, language, modelProvider, domainId, subDomainId, domainHint, privacyMode: privacyMode || false }),
@@ -180,7 +180,7 @@ export async function generateFollowUp(
     language: string = 'zh',
     modelProvider: string = 'deepseek'
 ) {
-    const res = await fetch('/api/followup', {
+    const res = await fetch('/api/analysis/followup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -220,7 +220,7 @@ export async function refineWithFollowUp(
     privacyMode: boolean = false,
     parentSearchId?: string
 ) {
-    const res = await fetch('/api/followup', {
+    const res = await fetch('/api/analysis/followup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -309,7 +309,7 @@ export async function retryAgents(
     subDomainId?: string,
     existingAgentResults?: Record<string, unknown>,
 ): Promise<{ success: boolean; results: Record<string, unknown>; successCount: number; failureDetails?: Record<string, string> }> {
-    const res = await fetch('/api/agent-retry', {
+    const res = await fetch('/api/analysis/agent-retry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -349,7 +349,7 @@ export async function fullRetryAgents(
     domainId?: string,
     subDomainId?: string,
 ): Promise<Record<string, unknown>> {
-    const res = await fetch('/api/agent-retry', {
+    const res = await fetch('/api/analysis/agent-retry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -399,7 +399,7 @@ export async function partialRetryAgents(
     subDomainId?: string,
     existingAgentResults?: Record<string, unknown>,
 ): Promise<Record<string, unknown>> {
-    const res = await fetch('/api/agent-retry', {
+    const res = await fetch('/api/analysis/agent-retry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

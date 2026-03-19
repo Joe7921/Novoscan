@@ -4,64 +4,232 @@
 
 /* 
   =========================================
-      ANTIGRAVITY DESIGN SYSTEM CSS
+      NOVOSCAN DESIGN TOKEN SYSTEM
+      对标 Dify 的完全可定制架构
   =========================================
 */
+
+/* ========== 亮色模式 Design Token ========== */
 :root {
+  /* === Brand 品牌色 === */
+  --novo-brand-primary: #4285F4;       /* Novo Blue */
+  --novo-brand-secondary: #7C3AED;     /* 渐变终点紫 */
+  --novo-brand-red: #EA4335;           /* Novo Red */
+  --novo-brand-yellow: #FBBC05;        /* Novo Yellow */
+  --novo-brand-green: #34A853;         /* Novo Green */
+
+  /* === Surface 表面系统 === */
+  --novo-bg-base: #ffffff;
+  --novo-bg-surface: #f9fafb;          /* gray-50 */
+  --novo-bg-elevated: #ffffff;
+  --novo-bg-overlay: rgba(0, 0, 0, 0.5);
+  --novo-bg-hover: #f3f4f6;           /* gray-100 */
+  --novo-bg-active: #e5e7eb;          /* gray-200 */
+  --novo-bg-input: #ffffff;
+
+  /* === Text 文字 === */
+  --novo-text-primary: #111827;        /* gray-900 */
+  --novo-text-secondary: #6b7280;      /* gray-500 */
+  --novo-text-muted: #9ca3af;          /* gray-400 */
+  --novo-text-disabled: #d1d5db;       /* gray-300 */
+  --novo-text-inverse: #ffffff;
+  --novo-text-link: #4285F4;
+
+  /* === Border 边框 === */
+  --novo-border-default: #e5e7eb;      /* gray-200 */
+  --novo-border-light: rgba(229, 231, 235, 0.6);
+  --novo-border-strong: #d1d5db;       /* gray-300 */
+  --novo-border-focus: #4285F4;
+  --novo-border-error: #EA4335;
+
+  /* === Accent 语义色 === */
+  --novo-accent-primary: #4285F4;
+  --novo-accent-primary-hover: #3b78e0;
+  --novo-accent-primary-light: rgba(66, 133, 244, 0.1);
+  --novo-accent-success: #34A853;
+  --novo-accent-success-light: rgba(52, 168, 83, 0.1);
+  --novo-accent-warning: #FBBC05;
+  --novo-accent-warning-light: rgba(251, 188, 5, 0.1);
+  --novo-accent-danger: #EA4335;
+  --novo-accent-danger-light: rgba(234, 67, 53, 0.1);
+  --novo-accent-info: #8B5CF6;
+  --novo-accent-info-light: rgba(139, 92, 246, 0.1);
+
+  /* === Shadow 阴影 === */
+  --novo-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --novo-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --novo-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --novo-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --novo-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --novo-shadow-glow: 0 0 20px rgba(66, 133, 244, 0.15);
+
+  /* === Spacing 间距比例 === */
+  --novo-space-unit: 4px;
+  --novo-space-xs: 4px;
+  --novo-space-sm: 8px;
+  --novo-space-md: 16px;
+  --novo-space-lg: 24px;
+  --novo-space-xl: 32px;
+  --novo-space-2xl: 48px;
+  --novo-space-3xl: 64px;
+
+  /* === Radius 圆角 === */
+  --novo-radius-sm: 6px;
+  --novo-radius-md: 10px;
+  --novo-radius-lg: 16px;
+  --novo-radius-xl: 24px;
+  --novo-radius-2xl: 32px;
+  --novo-radius-full: 9999px;
+
+  /* === Typography 字体 === */
+  --novo-font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --novo-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --novo-font-size-xs: 0.75rem;      /* 12px */
+  --novo-font-size-sm: 0.875rem;     /* 14px */
+  --novo-font-size-base: 1rem;       /* 16px */
+  --novo-font-size-lg: 1.125rem;     /* 18px */
+  --novo-font-size-xl: 1.25rem;      /* 20px */
+  --novo-font-size-2xl: 1.5rem;      /* 24px */
+  --novo-font-size-3xl: 1.875rem;    /* 30px */
+  --novo-font-size-4xl: 2.25rem;     /* 36px */
+
+  /* === Transition 动画 === */
+  --novo-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --novo-transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --novo-transition-slow: 500ms cubic-bezier(0.22, 0.68, 0.35, 1.0);
+
+  /* === Sidebar 侧边栏 === */
+  --novo-sidebar-width: 240px;
+  --novo-sidebar-width-collapsed: 64px;
+  --novo-sidebar-bg: #ffffff;
+  --novo-sidebar-border: #e5e7eb;
+  --novo-sidebar-text: #6b7280;
+  --novo-sidebar-text-active: #111827;
+  --novo-sidebar-item-hover: #f3f4f6;
+  --novo-sidebar-item-active: rgba(66, 133, 244, 0.08);
+
+  /* === Topbar 顶部栏 === */
+  --novo-topbar-height: 56px;
+  --novo-topbar-bg: #ffffff;
+  --novo-topbar-border: #e5e7eb;
+
+  /* === 兼容旧变量（严格匹配原始 globals.css 色值） === */
   --background: #ffffff;
   --foreground: #111111;
-  /* Brand colors exposed for CSS use if needed */
-  --google-blue: #4285F4;
-  --google-red: #EA4335;
-  --google-yellow: #FBBC05;
-  --google-green: #34A853;
+  --novo-blue: #4285F4;
+  --novo-red: #EA4335;
+  --novo-yellow: #FBBC05;
+  --novo-green: #34A853;
 }
 
-/* ============ 旗舰级暗色模式 ============ */
-/* 仅当用户通过 ThemeToggle 手动切换时生效（html.dark），
-   不修改任何现有亮色主题变量和样式。
-   
-   设计语言：深海蓝三层表面系统
+/* ========== 旗舰级暗色模式 Design Token ========== */
+/* 设计语言：深海蓝三层表面系统
    Base:     #0B1120 — 页面背景
    Surface:  #131B2E — 卡片/容器
    Elevated: #1A2540 — 悬浮/弹窗 */
 html.dark {
-  --background: #0B1120;
-  --foreground: #F1F5F9;
-  --card-bg: #131B2E;
-  --card-border: #1E293B;
-  --elevated-bg: #1A2540;
-  --elevated-border: #334155;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
+  /* === Brand 品牌色（暗色下微调亮度） === */
+  --novo-brand-primary: #60A5FA;       /* blue-400 */
+  --novo-brand-secondary: #A78BFA;     /* violet-400 */
+  --novo-brand-red: #FB7185;           /* rose-400 */
+  --novo-brand-yellow: #FBBF24;        /* amber-400 */
+  --novo-brand-green: #34D399;         /* emerald-400 */
+
+  /* === Surface 表面系统（深海蓝三层） === */
+  --novo-bg-base: #0B1120;
+  --novo-bg-surface: #131B2E;
+  --novo-bg-elevated: #1A2540;
+  --novo-bg-overlay: rgba(0, 0, 0, 0.7);
+  --novo-bg-hover: #1E293B;
+  --novo-bg-active: #334155;
+  --novo-bg-input: #131B2E;
+
+  /* === Text 文字 === */
+  --novo-text-primary: #F1F5F9;        /* slate-100 */
+  --novo-text-secondary: #94A3B8;      /* slate-400 */
+  --novo-text-muted: #64748B;          /* slate-500 */
+  --novo-text-disabled: #475569;       /* slate-600 */
+  --novo-text-inverse: #0B1120;
+  --novo-text-link: #60A5FA;
+
+  /* === Border 边框 === */
+  --novo-border-default: #1E293B;
+  --novo-border-light: rgba(30, 41, 59, 0.6);
+  --novo-border-strong: #334155;
+  --novo-border-focus: #60A5FA;
+  --novo-border-error: #FB7185;
+
+  /* === Accent 语义色（暗色下高亮） === */
+  --novo-accent-primary: #60A5FA;
+  --novo-accent-primary-hover: #93C5FD;
+  --novo-accent-primary-light: rgba(96, 165, 250, 0.15);
+  --novo-accent-success: #34D399;
+  --novo-accent-success-light: rgba(52, 211, 153, 0.15);
+  --novo-accent-warning: #FBBF24;
+  --novo-accent-warning-light: rgba(251, 191, 36, 0.15);
+  --novo-accent-danger: #FB7185;
+  --novo-accent-danger-light: rgba(251, 113, 133, 0.15);
+  --novo-accent-info: #A78BFA;
+  --novo-accent-info-light: rgba(167, 139, 250, 0.15);
+
+  /* === Shadow 阴影（暗色更强） === */
+  --novo-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --novo-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --novo-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --novo-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --novo-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --novo-shadow-glow: 0 0 20px rgba(96, 165, 250, 0.2);
+
+  /* === Sidebar === */
+  --novo-sidebar-bg: #0B1120;
+  --novo-sidebar-border: #1E293B;
+  --novo-sidebar-text: #94A3B8;
+  --novo-sidebar-text-active: #F1F5F9;
+  --novo-sidebar-item-hover: #1A2540;
+  --novo-sidebar-item-active: rgba(96, 165, 250, 0.1);
+
+  /* === Topbar === */
+  --novo-topbar-bg: #0B1120;
+  --novo-topbar-border: #1E293B;
+
+  /* === 兼容旧变量 === */
+  --background: var(--novo-bg-base);
+  --foreground: var(--novo-text-primary);
+  --card-bg: var(--novo-bg-surface);
+  --card-border: var(--novo-border-default);
+  --elevated-bg: var(--novo-bg-elevated);
+  --elevated-border: var(--novo-border-strong);
+  --text-secondary: var(--novo-text-secondary);
+  --text-muted: var(--novo-text-muted);
+
   color-scheme: dark;
 }
 
+/* ========== 全局基础样式 ========== */
 html.dark body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--novo-bg-base);
+  color: var(--novo-text-primary);
 }
 
-/* 暗色模式下 selection 高亮 */
 html.dark ::selection {
   background: rgba(96, 165, 250, 0.3);
   color: #F1F5F9;
 }
 
-/* 暗色模式下滚动条 */
+/* 暗色模式滚动条 */
 html.dark ::-webkit-scrollbar {
   width: 6px;
   background: transparent;
 }
 html.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--novo-border-strong);
   border-radius: 3px;
 }
 html.dark ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
 
-/* 暗色模式平滑过渡 — 切换时不闪烁 */
+/* 暗色模式平滑过渡 */
 html {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -72,20 +240,19 @@ html body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--novo-font-sans);
   overflow-x: hidden;
   scroll-behavior: smooth;
-  /* Extreme white space: remove any default margins that might interfere */
   margin: 0;
   padding: 0;
 }
 
+/* ========== 工具类 ========== */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
 
-  /* 隐藏滚动条（跨浏览器兼容） */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -96,7 +263,6 @@ body {
   }
 }
 
-/* 移动端安全区域适配（刘海屏、底部横条） */
 @supports (padding: env(safe-area-inset-bottom)) {
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom);
@@ -104,8 +270,7 @@ body {
 }
 
 @layer utilities {
-
-  /* Premium Aesthetics: Glassmorphism（性能优化：移除 backdrop-blur，用高不透明度替代） */
+  /* Glassmorphism（性能优化：无 backdrop-blur，用高不透明度替代） */
   .glassmorphism {
     @apply bg-white/95 border border-white/40 shadow-sm;
   }
@@ -114,30 +279,104 @@ body {
     @apply bg-gray-900/95 border border-gray-700/50 shadow-sm text-white;
   }
 
-  /* Premium Shadow */
+  /* Premium Shadow — 使用 Design Token */
   .premium-shadow {
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 0 3px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--novo-shadow-md);
   }
 
   .premium-shadow-hover {
-    box-shadow: 0 10px 40px -5px rgba(0, 0, 0, 0.08), 0 0 5px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--novo-shadow-lg);
   }
 
   /* Smooth transitions */
   .transition-premium {
     @apply transition-all duration-300 ease-out;
   }
+
+  /* === Novo Design Token 快捷工具类 === */
+  .novo-card {
+    background: var(--novo-bg-surface);
+    border: 1px solid var(--novo-border-default);
+    border-radius: var(--novo-radius-lg);
+    box-shadow: var(--novo-shadow-sm);
+    transition: all var(--novo-transition-normal);
+  }
+  .novo-card:hover {
+    box-shadow: var(--novo-shadow-md);
+    border-color: var(--novo-border-strong);
+  }
+
+  .novo-surface {
+    background: var(--novo-bg-surface);
+    border: 1px solid var(--novo-border-default);
+  }
+
+  .novo-elevated {
+    background: var(--novo-bg-elevated);
+    border: 1px solid var(--novo-border-strong);
+    box-shadow: var(--novo-shadow-lg);
+  }
+
+  .novo-input {
+    background: var(--novo-bg-input);
+    border: 1px solid var(--novo-border-default);
+    border-radius: var(--novo-radius-md);
+    color: var(--novo-text-primary);
+    transition: border-color var(--novo-transition-fast), box-shadow var(--novo-transition-fast);
+  }
+  .novo-input:focus {
+    border-color: var(--novo-border-focus);
+    box-shadow: 0 0 0 3px var(--novo-accent-primary-light);
+    outline: none;
+  }
+
+  .novo-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    border-radius: var(--novo-radius-md);
+    transition: all var(--novo-transition-fast);
+    cursor: pointer;
+    border: none;
+  }
+  .novo-btn-primary {
+    background: var(--novo-accent-primary);
+    color: var(--novo-text-inverse);
+    box-shadow: var(--novo-shadow-sm);
+  }
+  .novo-btn-primary:hover {
+    background: var(--novo-accent-primary-hover);
+    box-shadow: var(--novo-shadow-md);
+  }
+  .novo-btn-secondary {
+    background: var(--novo-bg-surface);
+    color: var(--novo-text-primary);
+    border: 1px solid var(--novo-border-default);
+  }
+  .novo-btn-secondary:hover {
+    background: var(--novo-bg-hover);
+    border-color: var(--novo-border-strong);
+  }
+  .novo-btn-ghost {
+    background: transparent;
+    color: var(--novo-text-secondary);
+  }
+  .novo-btn-ghost:hover {
+    background: var(--novo-bg-hover);
+    color: var(--novo-text-primary);
+  }
 }
 
-/* 渐变文字兼容性回退 — 安卓/鸿蒙部分浏览器不支持 background-clip: text */
+/* 渐变文字兼容性回退 */
 .gradient-text-brand {
   color: #2563eb;
-  /* 回退纯色 blue-600 */
 }
 
 @supports (-webkit-background-clip: text) or (background-clip: text) {
   .gradient-text-brand {
-    background: linear-gradient(to right, #2563eb, #7c3aed);
+    background: linear-gradient(to right, var(--novo-accent-primary), var(--novo-accent-info));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -145,10 +384,8 @@ body {
   }
 }
 
-/* 通用渐变文字裁剪 — 配合 Tailwind bg-gradient-to-* 使用
-   不支持 background-clip: text 的浏览器将忽略裁剪，文字以 Tailwind 的 text-* 色显示 */
 .gradient-text-clip {
-  /* 默认不做任何事，文字保持原色 */
+  /* 默认不做任何事 */
 }
 
 @supports (-webkit-background-clip: text) or (background-clip: text) {
@@ -160,16 +397,14 @@ body {
   }
 }
 
-/* ============ 页面过渡动画 ============ */
-/* 替代 framer-motion 的全局过渡，避免 ~50KB JS 体积 */
-/* 注意：不使用 filter: blur() — 在 iOS Safari 中 filter 会创建新的 containing block，
-   导致内部 sticky/overflow 失效，页面无法滚动。 */
+/* ========== 动画系统 ========== */
+
+/* 页面进入 */
 @keyframes page-enter {
   from {
     opacity: 0;
     transform: translateY(15px) scale(0.99);
   }
-
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -180,34 +415,25 @@ body {
   animation: page-enter 0.4s cubic-bezier(0.22, 0.68, 0.35, 1.0) both;
 }
 
-/* ============ 页面过渡 ============ */
-/* 性能优化：移除了全屏 backdrop-filter: blur(6px) 覆盖层，
-   该效果每次路由切换都对整个视口执行模糊运算，是路由切换掉帧的直接原因。
-   现在仅保留 opacity + transform 过渡，零 GPU 开销。 */
-
-/* ============ 加载进度条动画 ============ */
+/* 加载进度条 */
 @keyframes loading-bar {
   0% {
     transform: translateX(-100%);
   }
-
   50% {
     transform: translateX(100%);
   }
-
   100% {
     transform: translateX(250%);
   }
 }
 
-/* ============ 替代 framer-motion 的通用 CSS 动画 ============ */
-/* 从下方淡入上移 — 替代 initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} */
+/* 从下方淡入上移 */
 @keyframes fade-in-up {
   from {
     opacity: 0;
     transform: translateY(12px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -218,12 +444,11 @@ body {
   animation: fade-in-up 0.5s cubic-bezier(0.22, 0.68, 0.35, 1.0) both;
 }
 
-/* 纯淡入 — 替代 initial={{ opacity: 0 }} animate={{ opacity: 1 }} */
+/* 纯淡入 */
 @keyframes fade-in {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -233,13 +458,12 @@ body {
   animation: fade-in 0.6s ease-out both;
 }
 
-/* 缩放淡入 — 替代 initial={{ scale: 0.9, opacity: 0 }} */
+/* 缩放淡入 */
 @keyframes scale-in {
   from {
     opacity: 0;
     transform: scale(0.9);
   }
-
   to {
     opacity: 1;
     transform: scale(1);
@@ -250,13 +474,12 @@ body {
   animation: scale-in 0.6s cubic-bezier(0.22, 0.68, 0.35, 1.0) both;
 }
 
-/* 交错入场 — 替代 framer-motion stagger + spring */
+/* 交错入场 */
 @keyframes stagger-in {
   from {
     opacity: 0;
     transform: translateY(20px) scale(0.97);
   }
-
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -267,8 +490,23 @@ body {
   animation: stagger-in 0.5s cubic-bezier(0.22, 0.68, 0.35, 1.0) both;
 }
 
-/* ============ 系统动效削弱支持 ============ */
-/* 当用户在系统设置中开启"减少动效"时，禁用所有无限循环动画和过渡，释放 GPU */
+/* === 侧边栏滑入动画 === */
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.3s cubic-bezier(0.22, 0.68, 0.35, 1.0) both;
+}
+
+/* ========== 系统动效削弱支持 ========== */
 @media (prefers-reduced-motion: reduce) {
   .animate-float-slow,
   .animate-float-medium,
@@ -277,7 +515,8 @@ body {
   .animate-fade-in-up,
   .animate-fade-in,
   .animate-scale-in,
-  .animate-stagger-in {
+  .animate-stagger-in,
+  .animate-slide-in-left {
     animation: none !important;
   }
 

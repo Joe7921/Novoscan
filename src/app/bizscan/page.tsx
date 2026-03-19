@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Navbar from '@/components/layout/Navbar';
+import WorkspaceShell from '@/components/layout/WorkspaceShell';
 import BottomTabBar from '@/components/layout/BottomTabBar';
 import BizscanForm from '@/components/bizscan/BizscanForm';
 import BizscanAnalyzing from '@/components/bizscan/BizscanAnalyzing';
@@ -11,10 +11,7 @@ import OpenClawBridgeModal from '@/components/bizscan/OpenClawBridgeModal';
 import ClawscanBridgeReport from '@/components/bizscan/ClawscanBridgeReport';
 import { AppState, Language, ModelProvider } from '@/types';
 import { ArrowLeft } from 'lucide-react';
-import LoginModal from '@/components/auth/LoginModal';
-import dynamic from 'next/dynamic';
-const AdPlacement = dynamic(() => import('@/components/ads/AdPlacement'), { ssr: false });
-import { createClient } from '@/utils/supabase/client';
+
 import type { BizscanReport as BizscanReportType } from '@/types/bizscan';
 import type { ClawscanReport as ClawscanReportType } from '@/types/clawscan';
 import InnovationDNAMap from '@/components/innovation/InnovationDNAMap';
@@ -53,45 +50,38 @@ function BizscanPageInner() {
     const [reportData, setReportData] = useState<BizscanReportType | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [showLoginModal, setShowLoginModal] = useState(false);
+
     const [isPrivateMode, setIsPrivateMode] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [authReady, setAuthReady] = useState(false);
+
     const [selectedModel, setSelectedModel] = useState<ModelProvider>('minimax');
 
-    // 初始化：鉴权检查 + 读取用户首选模型偏好
+    // 初始化：读取已登录用户的首选模型偏好（开源版无登录限制）
     useEffect(() => {
-        const initAuth = async () => {
+        const initPreferences = async () => {
             try {
-                const supabase = createClient();
-                const { data: { user } } = await supabase.auth.getUser();
-                setAuthReady(true);
+                const { data: { user } } = await serverDb.auth.getUser();
 
-                if (!user) {
-                    // 匿名用户：立即弹出登录提示
-                    setShowLoginModal(true);
-                    return;
-                }
-
-                // 已登录用户：读取首选模型偏好
-                try {
-                    const res = await fetch('/api/user-preferences');
-                    const json = await res.json();
-                    if (json.success && json.profile?.preferredModel) {
-                        const validModels: ModelProvider[] = ['deepseek', 'minimax', 'moonshot'];
-                        if (validModels.includes(json.profile.preferredModel)) {
-                            setSelectedModel(json.profile.preferredModel as ModelProvider);
+                if (user) {
+                    // 已登录用户：读取首选模型偏好
+                    try {
+                        const res = await fetch('/api/user-preferences');
+                        const json = await res.json();
+                        if (json.success && json.profile?.preferredModel) {
+                            const validModels: ModelProvider[] = ['deepseek', 'minimax', 'moonshot'];
+                            if (validModels.includes(json.profile.preferredModel)) {
+                                setSelectedModel(json.profile.preferredModel as ModelProvider);
+                            }
                         }
+                    } catch (e) {
+                        console.warn('[Bizscan] 读取首选模型失败', e);
                     }
-                } catch (e) {
-                    console.warn('[Bizscan] 读取首选模型失败', e);
                 }
             } catch (e) {
-                console.warn('[Bizscan] 鉴权检查失败', e);
-                setAuthReady(true);
+                console.warn('[Bizscan] 初始化失败', e);
             }
         };
-        initAuth();
+        initPreferences();
     }, []);
 
     // SSE 进度数据（传给 BizscanAnalyzing）
@@ -174,30 +164,6 @@ function BizscanPageInner() {
         setErrorMessage(null);
 
         try {
-            // 登录及使用次数拦截逻辑（带超时保护）
-            let user = null;
-            try {
-                const supabase = createClient();
-                const authResult = await Promise.race([
-                    supabase.auth.getUser(),
-                    new Promise<{ data: { user: null } }>((resolve) =>
-                        setTimeout(() => resolve({ data: { user: null } }), 5000)
-                    ),
-                ]);
-                user = authResult.data.user;
-            } catch (authErr) {
-                console.warn('[Bizscan] 认证检查失败，跳过登录验证:', authErr);
-            }
-
-            if (!user) {
-                const usedCount = parseInt(localStorage.getItem('novoscan_free_count') || '0', 10);
-                if (usedCount >= 3) {
-                    setShowLoginModal(true);
-                    setIsLoading(false);
-                    return;
-                }
-                localStorage.setItem('novoscan_free_count', String(usedCount + 1));
-            }
 
             // 认证通过，进入分析状态
             setIsAnalyzing(true);
@@ -344,6 +310,7 @@ function BizscanPageInner() {
     };
 
     return (
+        <WorkspaceShell language={language}>
         <div className="min-h-screen relative flex flex-col text-gray-900 bg-transparent overflow-x-hidden max-w-[100vw] pb-20 lg:pb-0">
             {/* Antigravity 抽象背景球 — 静态渐变替代 blur+float 动画，零 GPU 开销 */}
             <div
@@ -356,8 +323,6 @@ function BizscanPageInner() {
                     `,
                 }}
             />
-
-            <Navbar language={language} setLanguage={(lang: Language) => setLanguage(lang)} />
 
             <main className="flex-grow flex flex-col items-center justify-start p-4 sm:p-6 relative z-10 w-full">
 
@@ -405,10 +370,6 @@ function BizscanPageInner() {
                             selectedModel={selectedModel}
                             setSelectedModel={setSelectedModel}
                         />
-                        {/* 广告位 — Bizscan 表单下方 */}
-                        <div className="w-full max-w-4xl mt-8">
-                            <AdPlacement variant="card" language={language} />
-                        </div>
                     </>
                 )}
 
@@ -451,24 +412,12 @@ function BizscanPageInner() {
                             </div>
                         )}
 
-                        {/* 广告位 — Bizscan 报告底部 */}
-                        <div className="w-full max-w-5xl mt-8">
-                            <AdPlacement variant="inline" language={language} />
-                        </div>
                     </>
                 )}
 
             </main>
 
-            <LoginModal
-                isOpen={showLoginModal}
-                onClose={() => {
-                    setShowLoginModal(false);
-                    // 匿名用户关闭弹窗时返回上一页
-                    if (authReady) window.history.back();
-                }}
-                language={language}
-            />
+
 
             {/* OpenClaw 桥接弹窗 */}
             <OpenClawBridgeModal
@@ -479,6 +428,7 @@ function BizscanPageInner() {
             />
             <BottomTabBar />
         </div>
+        </WorkspaceShell>
     );
 }
 

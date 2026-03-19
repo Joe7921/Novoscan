@@ -1,9 +1,11 @@
 /**
- * 数据库工厂 — 根据环境变量创建对应的数据库适配器
+ * 数据库工厂 — 可扩展的适配器注册与实例化
  *
  * 通过 DATABASE_PROVIDER 环境变量选择数据库后端：
- *   - 'supabase'（默认）：使用 Supabase JS SDK
+ *   - 'noop'（默认）：不使用数据库，所有操作静默返回空数据
+ *   - 'supabase'：使用 Supabase JS SDK
  *   - 'postgres'：使用原生 PostgreSQL（需安装 pg 包）
+ *   - 自定义：通过 registerDatabaseAdapter() 注册企业自有适配器
  *
  * 使用方式：
  * ```typescript
@@ -15,18 +17,51 @@
  * // 管理员操作（绕过 RLS）
  * const { error } = await adminDb.from('innovations').insert({ ... });
  * ```
+ *
+ * 企业自定义适配器：
+ * ```typescript
+ * import { registerDatabaseAdapter } from '@/lib/db/factory';
+ * registerDatabaseAdapter('mysql', () => new MySQLAdapter(process.env.MYSQL_URL!));
+ * // 然后设 DATABASE_PROVIDER=mysql
+ * ```
  */
 
 import type { IDatabase, IQueryBuilder } from './IDatabase';
-import { SupabaseAdapter } from './SupabaseAdapter';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { NoopAdapter } from './NoopAdapter';
+import { MemoryAdapter } from './MemoryAdapter';
 
-/** 支持的数据库提供者类型 */
-export type DatabaseProvider = 'supabase' | 'postgres';
+/** 支持的数据库提供者类型（内置 + 自定义） */
+export type DatabaseProvider = 'noop' | 'memory' | 'sqlite' | 'supabase' | 'postgres' | string;
+
+// ==================== 适配器注册表 ====================
+
+/** 已注册的自定义适配器工厂 */
+const adapterRegistry = new Map<string, () => IDatabase>();
+
+/**
+ * 注册自定义数据库适配器
+ *
+ * 企业用户可实现 IDatabase 接口并注册，然后通过
+ * DATABASE_PROVIDER 环境变量切换使用。
+ *
+ * @example
+ * ```typescript
+ * import { registerDatabaseAdapter } from '@/lib/db/factory';
+ * import { MySQLAdapter } from './MySQLAdapter';
+ *
+ * registerDatabaseAdapter('mysql', () => new MySQLAdapter(process.env.MYSQL_URL!));
+ * ```
+ */
+export function registerDatabaseAdapter(name: string, factory: () => IDatabase): void {
+  adapterRegistry.set(name, factory);
+  console.info(`[DB Factory] 已注册自定义适配器: ${name}`);
+}
+
+// ==================== 内部工厂 ====================
 
 /** 获取当前配置的提供者 */
 function getProvider(): DatabaseProvider {
-  return (process.env.DATABASE_PROVIDER || 'supabase') as DatabaseProvider;
+  return (process.env.DATABASE_PROVIDER || 'noop') as DatabaseProvider;
 }
 
 /**
@@ -71,18 +106,104 @@ function createLazyPostgresProxy(): IDatabase {
 }
 
 /**
+ * Supabase 延迟代理
+ *
+ * 仅在 DATABASE_PROVIDER=supabase 时才加载 Supabase SDK，
+ * 避免 @supabase/supabase-js 成为硬性运行时依赖。
+ */
+function createLazySupabaseProxy(useAdmin: boolean): IDatabase {
+  let adapter: IDatabase | null = null;
+
+  const loadAdapter = (): IDatabase => {
+    if (adapter) return adapter;
+
+    try {
+      // eslint-disable-next-line no-eval
+      const supabaseMod = eval("require('@/lib/supabase')");
+      // eslint-disable-next-line no-eval
+      const adapterMod = eval("require('./SupabaseAdapter')");
+      const client = useAdmin ? supabaseMod.adminDb : supabaseMod.supabase;
+      adapter = new adapterMod.SupabaseAdapter(client);
+      return adapter!;
+    } catch (e: unknown) {
+      const errMsg = e instanceof Error ? e.message : String(e);
+      throw new Error(
+        `[DB Factory] 无法加载 SupabaseAdapter: ${errMsg}。` +
+        '请确保已配置 NEXT_PUBLIC_SUPABASE_URL 和 SUPABASE_SERVICE_ROLE_KEY 环境变量'
+      );
+    }
+  };
+
+  return {
+    from<T = any>(table: string): IQueryBuilder<T> {
+      return loadAdapter().from<T>(table);
+    },
+  };
+}
+
+// ==================== 公开工厂方法 ====================
+
+/**
+ * SQLite 延迟代理
+ *
+ * 仅在 DATABASE_PROVIDER=sqlite 时才加载 SqliteAdapter，
+ * 避免 better-sqlite3 成为硬性依赖。
+ */
+function createLazySqliteProxy(): IDatabase {
+  let adapter: IDatabase | null = null;
+
+  const loadAdapter = (): IDatabase => {
+    if (adapter) return adapter;
+
+    const dbPath = process.env.SQLITE_PATH || './data/novoscan.db';
+
+    try {
+      // eslint-disable-next-line no-eval
+      const mod = eval("require('./SqliteAdapter')");
+      adapter = new mod.SqliteAdapter(dbPath);
+      return adapter!;
+    } catch (e: unknown) {
+      const errMsg = e instanceof Error ? e.message : String(e);
+      throw new Error(
+        `[DB Factory] 无法加载 SqliteAdapter: ${errMsg}。` +
+        '请确保已安装 better-sqlite3：npm install better-sqlite3'
+      );
+    }
+  };
+
+  return {
+    from<T = any>(table: string): IQueryBuilder<T> {
+      return loadAdapter().from<T>(table);
+    },
+  };
+}
+
+// ==================== 公开工厂方法 ====================
+
+/**
  * 创建匿名权限数据库实例（受 RLS 限制）
  * 适用于客户端安全的只读查询
  */
 export function createDatabase(): IDatabase {
   const provider = getProvider();
 
-  if (provider === 'postgres') {
-    return createLazyPostgresProxy();
-  }
+  // 优先查自定义注册表
+  const customFactory = adapterRegistry.get(provider);
+  if (customFactory) return customFactory();
 
-  // 默认使用 Supabase
-  return new SupabaseAdapter(supabase);
+  switch (provider) {
+    case 'postgres':
+      return createLazyPostgresProxy();
+    case 'sqlite':
+      return createLazySqliteProxy();
+    case 'supabase':
+      return createLazySupabaseProxy(false);
+    case 'memory':
+      return new MemoryAdapter();
+    case 'noop':
+    default:
+      return new NoopAdapter();
+  }
 }
 
 /**
@@ -92,11 +213,23 @@ export function createDatabase(): IDatabase {
 export function createAdminDatabase(): IDatabase {
   const provider = getProvider();
 
-  if (provider === 'postgres') {
-    return createLazyPostgresProxy();
-  }
+  // 优先查自定义注册表
+  const customFactory = adapterRegistry.get(provider);
+  if (customFactory) return customFactory();
 
-  return new SupabaseAdapter(supabaseAdmin);
+  switch (provider) {
+    case 'postgres':
+      return createLazyPostgresProxy();
+    case 'sqlite':
+      return createLazySqliteProxy();
+    case 'supabase':
+      return createLazySupabaseProxy(true);
+    case 'memory':
+      return new MemoryAdapter();
+    case 'noop':
+    default:
+      return new NoopAdapter();
+  }
 }
 
 // ==================== 单例导出 ====================

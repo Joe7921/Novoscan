@@ -39,7 +39,7 @@ export default function ShareButton({
     const [shareUrl, setShareUrl] = useState<string>('');
     const [showPanel, setShowPanel] = useState(false);
     const [copied, setCopied] = useState(false);
-    const [rewardToast, setRewardToast] = useState(false);
+
     const [showQrModal, setShowQrModal] = useState(false);
     const qrCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -106,19 +106,7 @@ export default function ShareButton({
             setState('success');
             setShowPanel(true);
 
-            // 分享成功后奖励 5 积分
-            try {
-                const rewardRes = await fetch('/api/wallet', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: 5, description: '分享报告奖励' }),
-                });
-                const rewardData = await rewardRes.json();
-                if (rewardData.success) {
-                    setRewardToast(true);
-                    setTimeout(() => setRewardToast(false), 3000);
-                }
-            } catch { /* 积分奖励失败不影响分享流程 */ }
+
         } catch (err) {
             console.error('[ShareButton] 分享失败:', err);
             setState('error');
@@ -323,14 +311,7 @@ export default function ShareButton({
                 </ModalPortal>
             )}
 
-            {/* 积分奖励 Toast */}
-            {rewardToast && (
-                <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[200] animate-fade-in-up" role="alert" aria-live="polite">
-                    <div className="px-5 py-3 bg-emerald-600/90 text-white text-sm font-bold rounded-2xl shadow-2xl border border-emerald-400/30 flex items-center gap-2">
-                        ✨ +5 积分奖励已到账！
-                    </div>
-                </div>
-            )}
+
         </>
     );
 }

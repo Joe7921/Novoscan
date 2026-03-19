@@ -8,7 +8,7 @@ import {
     shouldTriggerDebate,
     calculateScoreAdjustment,
     createFallbackDebateRecord,
-} from '../debater';
+} from '../debate';
 import type { AgentOutput, DebateExchange } from '../types';
 
 // ==================== 工厂函数 ====================

@@ -121,7 +121,7 @@ const SpotlightTrend: React.FC<SpotlightTrendProps> = ({ language, innovations, 
                 className="mb-4 cursor-pointer group"
                 onClick={() => onKeywordClick?.(spotlight.keyword)}
             >
-                <h4 className="text-lg font-black text-gray-900 group-hover:text-google-blue transition-colors leading-snug mb-2 break-words" style={{ wordBreak: 'break-word' }}>
+                <h4 className="text-lg font-black text-gray-900 group-hover:text-novo-blue transition-colors leading-snug mb-2 break-words" style={{ wordBreak: 'break-word' }}>
                     {spotlight.keyword}
                 </h4>
                 <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold border bg-white/95 ${domainInfo.colorClasses.text} ${domainInfo.colorClasses.border}`}>

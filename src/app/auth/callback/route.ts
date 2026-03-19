@@ -1,8 +1,6 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-
 /**
  * OAuth 回调路由。
  * Google/GitHub 授权成功后，Supabase 会重定向到此 URL 并携带 code 参数。
@@ -15,8 +13,7 @@ export async function GET(request: Request) {
     const next = searchParams.get('next') ?? '/';
 
     if (code) {
-        const supabase = createClient();
-        const { error, data } = await supabase.auth.exchangeCodeForSession(code);
+        const { error, data } = await serverDb.auth.exchangeCodeForSession(code);
 
         if (!error && data?.user) {
             // 将 next 中不安全的绝对路径变为相对路径

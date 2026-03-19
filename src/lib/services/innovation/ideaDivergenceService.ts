@@ -11,7 +11,7 @@
  *   gap < -10   →  💡 负向偏差（实际超过自我认知）
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 import { callAIRaw } from '@/lib/ai-client';
 
 // ==================== 类型定义 ====================
@@ -176,7 +176,7 @@ ${dimSummary}
 export async function analyzeDivergence(userId: string): Promise<DivergenceReport | null> {
     try {
         // 读取画像
-        const { data: profile, error } = await supabaseAdmin
+        const { data: profile, error } = await adminDb
             .from('user_idea_profile')
             .select('*')
             .eq('user_id', userId)
@@ -241,7 +241,7 @@ export async function analyzeDivergence(userId: string): Promise<DivergenceRepor
         };
 
         // 缓存到数据库
-        await supabaseAdmin
+        await adminDb
             .from('user_idea_profile')
             .update({
                 divergence_report: report as unknown as Record<string, unknown>,

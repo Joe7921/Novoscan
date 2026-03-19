@@ -7,7 +7,7 @@ import {
   ArrowLeft, Puzzle, Database, Activity, RefreshCw, CheckCircle2,
   XCircle, AlertTriangle, Server, Code2, Globe
 } from 'lucide-react';
-import Navbar from '@/components/layout/Navbar';
+import WorkspaceShell from '@/components/layout/WorkspaceShell';
 import BottomTabBar from '@/components/layout/BottomTabBar';
 import type { Language } from '@/types';
 
@@ -89,14 +89,13 @@ export default function DevDashboard() {
   }
 
   return (
+    <WorkspaceShell>
     <div className="min-h-screen bg-[#0a0a0f] text-gray-100 flex flex-col" style={{ overflowX: 'clip' }}>
       {/* 背景 */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-emerald-600/5 rounded-full blur-[150px]" />
         <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[150px]" />
       </div>
-
-      <Navbar language={language} setLanguage={() => {}} />
 
       <main className="relative z-10 flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 pb-24 lg:pb-8">
         {/* 头部 */}
@@ -311,5 +310,6 @@ export default function DevDashboard() {
 
       <BottomTabBar />
     </div>
+    </WorkspaceShell>
   );
 }

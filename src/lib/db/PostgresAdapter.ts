@@ -234,6 +234,27 @@ class PostgresQueryBuilder<T = any> implements IQueryBuilder<T> {
     return this;
   }
 
+  in(column: string, values: unknown[]): IQueryBuilder<T> {
+    if (values.length === 0) {
+      // 空数组 → 永假条件（无匹配）
+      this._wheres.push({ sql: 'FALSE', value: null });
+    } else {
+      // 生成 "column" IN ($1, $2, ...) — 使用特殊占位符标记
+      this._wheres.push({
+        sql: `__IN__${column}__${values.length}__`,
+        value: values,
+      });
+    }
+    return this;
+  }
+
+  match(query: Record<string, unknown>): IQueryBuilder<T> {
+    for (const [column, value] of Object.entries(query)) {
+      this._wheres.push({ sql: `${quoteIdent(column)} = $%IDX%`, value });
+    }
+    return this;
+  }
+
   // ---- 排序与分页 ----
 
   order(column: string, options?: { ascending?: boolean }): IQueryBuilder<T> {
@@ -290,6 +311,23 @@ class PostgresQueryBuilder<T = any> implements IQueryBuilder<T> {
       const conditions: string[] = [];
 
       for (const w of this._wheres) {
+        // 处理 FALSE 占位（空 IN 查询）
+        if (w.sql === 'FALSE') {
+          conditions.push('FALSE');
+          continue;
+        }
+        // 处理 IN 查询标记: __IN__column__count__
+        const inMatch = w.sql.match(/^__IN__(.+)__(\d+)__$/);
+        if (inMatch) {
+          const col = quoteIdent(inMatch[1]);
+          const count = parseInt(inMatch[2], 10);
+          const values = w.value as unknown[];
+          const placeholders = values.map(() => `$${paramIdx++}`).join(', ');
+          conditions.push(`${col} IN (${placeholders})`);
+          params.push(...values);
+          continue;
+        }
+        // 常规条件
         conditions.push(w.sql.replace('$%IDX%', `$${paramIdx}`));
         params.push(w.value);
         paramIdx++;

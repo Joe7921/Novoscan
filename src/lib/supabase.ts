@@ -1,37 +1,14 @@
-﻿import { createClient } from '@supabase/supabase-js';
+/**
+ * 数据库类型定义
+ *
+ * 定义项目中使用的所有数据表的 TypeScript 类型。
+ * 这些类型与具体的数据库后端无关，适用于所有 IDatabase 适配器。
+ *
+ * ⚠️ 本文件仅包含类型定义，不包含任何数据库客户端实例。
+ * 数据库访问请通过 '@/lib/db/factory' 的 db / adminDb 单例。
+ */
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-// 构建时环境变量可能缺失。使用本地回退地址 —— createClient 在创建时不会发起网络请求，
-// 因此 "http://localhost:0" 在构建阶段完全安全；运行时 Vercel 会注入真实环境变量。
-const FALLBACK_URL = 'http://localhost:0';
-const FALLBACK_KEY = 'fallback-key-for-build-only';
-
-if (!supabaseUrl || !supabaseAnonKey) {
-    console.warn('[Supabase] 环境变量缺失，请检查 NEXT_PUBLIC_SUPABASE_URL 和 NEXT_PUBLIC_SUPABASE_ANON_KEY');
-}
-
-// 供客户端使用的匿名全量权限实例 (受 RLS 限制)
-export const supabase = createClient(
-    supabaseUrl || FALLBACK_URL,
-    supabaseAnonKey || FALLBACK_KEY
-);
-
-// 供服务端使用的管理员权限实例 (绕过 RLS 限制，必须仅在 Server API 中使用)
-export const supabaseAdmin = createClient(
-    supabaseUrl || FALLBACK_URL,
-    supabaseServiceKey || supabaseAnonKey || FALLBACK_KEY,
-    {
-        auth: {
-            autoRefreshToken: false,
-            persistSession: false
-        }
-    }
-);
-
-// =============== TypeScript 类型定义 ===============
+// =============== 创新点知识库 ===============
 
 /** 创新点知识库 - 主表 */
 export interface Innovation {
@@ -69,6 +46,8 @@ export interface DailyTrend {
     created_at?: string;
 }
 
+// =============== 搜索 ===============
+
 /** 搜索缓存（云端） */
 export interface SearchCache {
     id?: number;
@@ -81,7 +60,7 @@ export interface SearchCache {
     created_at?: string;
 }
 
-/** 搜索日志（本地 Dexie 也会用到这个结构） */
+/** 搜索日志 */
 export interface SearchLog {
     id?: number;
     query_text: string;
@@ -91,9 +70,11 @@ export interface SearchLog {
     searched_at: string;
 }
 
+// =============== 用户 ===============
+
 /** 用户画像主表 */
 export interface UserProfile {
-    id: string;                    // UUID, 关联 auth.users.id
+    id: string;
     display_name?: string;
     avatar_url?: string;
     preferred_language?: string;
@@ -101,7 +82,7 @@ export interface UserProfile {
     top_domain_id?: string;
     top_sub_domain_id?: string;
     search_count?: number;
-    points?: number;               // 用户点数余额
+    points?: number;
     last_search_at?: string;
     created_at?: string;
     updated_at?: string;
@@ -136,33 +117,33 @@ export interface UserSearchEvent {
 export interface PointTransaction {
     id?: number;
     user_id: string;
-    amount: number;                // 正数=收入，负数=支出
+    amount: number;
     type: 'earn' | 'spend' | 'admin' | 'redeem';
     description?: string;
     created_at?: string;
 }
 
-// =============== CaseVault 案例库类型 ===============
+// =============== CaseVault 案例库 ===============
 
 /** 案例库主表 */
 export interface CaseLibraryEntry {
     id?: number;
-    title: string;                 // 案例标题
-    summary: string;               // AI 润色后的摘要
-    original_content: string;      // 原始采集内容
-    source_url: string | null;     // 来源 URL
+    title: string;
+    summary: string;
+    original_content: string;
+    source_url: string | null;
     source_type: 'wechat' | 'web' | 'github' | 'clawhub' | 'user_idea';
-    industry: string;              // 行业分类
-    tags: string[];                // 标签数组
-    capabilities: string[];        // 核心能力点
-    technology_stack: string[];    // 技术栈
-    deployment_scale?: string;     // 部署规模
+    industry: string;
+    tags: string[];
+    capabilities: string[];
+    technology_stack: string[];
+    deployment_scale?: string;
     maturity: 'concept' | 'poc' | 'production' | 'scale';
-    quality_score: number;         // AI 评分 0-100
-    content_hash: string;          // 内容哈希（去重用）
-    author?: string;               // 作者/来源
-    publish_date?: string;         // 发布日期
-    harvested_at: string;          // 采集时间
+    quality_score: number;
+    content_hash: string;
+    author?: string;
+    publish_date?: string;
+    harvested_at: string;
     created_at?: string;
     updated_at?: string;
 }
@@ -177,4 +158,3 @@ export interface IndustryGraphNode {
     metadata?: Record<string, unknown>;
     created_at?: string;
 }
-

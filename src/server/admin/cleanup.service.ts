@@ -4,7 +4,7 @@
  * 清理过期的 api_call_logs 和 search_history 数据。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 /** 清理预览项 */
 export interface CleanupPreviewItem {
@@ -31,7 +31,7 @@ export async function getCleanupPreview(olderThanDays = 90): Promise<CleanupPrev
     const items: CleanupPreviewItem[] = [];
 
     for (const { name, timeCol, label } of CLEANUP_TARGETS) {
-        const { count, error } = await supabaseAdmin.from(name)
+        const { count, error } = await adminDb.from(name)
             .select('*', { count: 'exact', head: true })
             .lt(timeCol, cutoffStr);
 
@@ -54,7 +54,7 @@ export async function executeCleanup(olderThanDays = 90): Promise<CleanupResult>
 
     for (const { name, timeCol, label } of CLEANUP_TARGETS) {
         // 先统计
-        const { count } = await supabaseAdmin.from(name)
+        const { count } = await adminDb.from(name)
             .select('*', { count: 'exact', head: true })
             .lt(timeCol, cutoffStr);
 
@@ -65,7 +65,7 @@ export async function executeCleanup(olderThanDays = 90): Promise<CleanupResult>
         }
 
         // 执行删除
-        const { error } = await supabaseAdmin.from(name)
+        const { error } = await adminDb.from(name)
             .delete()
             .lt(timeCol, cutoffStr);
 

@@ -1,0 +1,66 @@
+{
+  "id": "industry-focus",
+  "name": "产业重点扫描",
+  "nameEn": "Industry Focus Scan",
+  "version": "1.0.0",
+  "description": "产业分析 + 竞品侦探 → 仲裁 → 质量检查，跳过学术审查，适合商业化可行性评估",
+  "descriptionEn": "Industry analysis + competitor detective → arbitration → quality check. Skips academic review, ideal for commercialization feasibility assessment.",
+  "icon": "🏭",
+  "author": "Novoscan Team",
+  "isPreset": true,
+
+  "nodes": [
+    {
+      "id": "parallel-l1",
+      "type": "parallel",
+      "label": "Layer 1 并行（产业+竞品）",
+      "childNodeIds": ["node-industry", "node-competitor"],
+      "position": { "x": 300, "y": 100 }
+    },
+    {
+      "id": "node-industry",
+      "type": "agent",
+      "agentId": "industry-analyst",
+      "role": "standard",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 200, "y": 250 }
+    },
+    {
+      "id": "node-competitor",
+      "type": "agent",
+      "agentId": "competitor-detective",
+      "role": "standard",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 400, "y": 250 }
+    },
+    {
+      "id": "node-arbitrator",
+      "type": "agent",
+      "agentId": "arbitrator",
+      "role": "arbitrator",
+      "timeout": 60000,
+      "fallbackStrategy": "default",
+      "position": { "x": 300, "y": 400 },
+      "comment": "仅接收产业和竞品报告"
+    },
+    {
+      "id": "node-quality",
+      "type": "quality",
+      "label": "质量把关",
+      "icon": "🛡️",
+      "position": { "x": 300, "y": 550 }
+    }
+  ],
+
+  "edges": [
+    { "source": "parallel-l1", "target": "node-arbitrator" },
+    { "source": "node-arbitrator", "target": "node-quality" }
+  ],
+
+  "config": {
+    "totalTimeout": 180000,
+    "circuitBreakerThreshold": 2,
+    "estimatedDuration": "1-2 分钟",
+    "estimatedDurationSec": 90
+  }
+}

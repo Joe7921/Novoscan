@@ -4,7 +4,7 @@
  * 测试质量守卫的纯逻辑检查：评分一致性、证据覆盖、降级检测、自动修正等
  */
 import { describe, it, expect } from 'vitest';
-import { qualityGuard } from '../qualityGuard';
+import { qualityGuard } from '../quality-guard';
 import type { AgentOutput, ArbitrationResult, DebateRecord } from '../types';
 
 // ==================== 工厂函数 ====================

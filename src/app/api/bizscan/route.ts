@@ -15,7 +15,6 @@ import { parseBusinessIdea } from '@/server/bizscan/idea-parser';
 import { gatherMarketSignals } from '@/server/bizscan/data-sources';
 import { evaluateBusinessIdea } from '@/server/bizscan/evaluator';
 import { recordSearchEvent } from '@/lib/services/user/userPreferenceService';
-import { createClient } from '@/utils/supabase/server';
 import { checkRateLimit, safeErrorResponse } from '@/lib/security/apiSecurity';
 
 import { NextResponse } from 'next/server';
@@ -68,7 +67,6 @@ export async function POST(request: Request) {
         // 获取当前登录用户（如有）
         let currentUserId: string | undefined;
         try {
-            const supabaseAuth = await createClient();
             const { data: { user } } = await supabaseAuth.auth.getUser();
             currentUserId = user?.id;
         } catch { /* 未登录，忽略 */ }

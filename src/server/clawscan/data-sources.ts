@@ -10,7 +10,7 @@
 import { searchBrave } from '@/server/industry/brave';
 import { searchSerpAPI } from '@/server/industry/serpapi';
 import { searchGithubCached } from '@/server/industry/github';
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 import type {
     RegistrySkill,
     WebSearchResult,
@@ -298,7 +298,7 @@ async function searchCaseVault(keywords: string[]): Promise<CaseStudy[]> {
     try {
         // 使用关键词构建模糊搜索条件
         const searchTerm = keywords.slice(0, 3).join(' ');
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await adminDb
             .from('case_library')
             .select('title, source_url, summary, source_type, quality_score, capabilities, technology_stack, deployment_scale')
             .gte('quality_score', 30)

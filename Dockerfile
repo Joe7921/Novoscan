@@ -4,7 +4,7 @@
 # ============================================================
 
 # ────────────────────── Stage 1: 安装依赖 ──────────────────────
-FROM node:18-alpine AS deps
+FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
@@ -13,7 +13,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # ────────────────────── Stage 2: 构建应用 ──────────────────────
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -24,16 +24,18 @@ COPY . .
 ARG NEXT_PUBLIC_SUPABASE_URL=""
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=""
 ARG NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+ARG NEXT_PUBLIC_AUTH_ENABLED="false"
 
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_AUTH_ENABLED=$NEXT_PUBLIC_AUTH_ENABLED
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
 
 # ────────────────────── Stage 3: 生产运行 ──────────────────────
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production

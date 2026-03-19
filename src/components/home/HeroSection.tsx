@@ -60,7 +60,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         >
             <div className="text-center mb-10 sm:mb-16 lg:mb-12">
                 <div
-                    className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-google-blue/10 border border-google-blue/20 dark:border-blue-500/30 text-google-blue dark:text-blue-400 text-xs sm:text-sm font-bold mb-6 sm:mb-8 lg:mb-12 mx-auto animate-scale-in"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-novo-blue/10 border border-novo-blue/20 dark:border-blue-500/30 text-novo-blue dark:text-blue-400 text-xs sm:text-sm font-bold mb-6 sm:mb-8 lg:mb-12 mx-auto animate-scale-in"
                     style={{ animationDelay: '0.2s' }}
                 >
                     <ProjectIcon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -70,7 +70,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-black tracking-tighter text-center uppercase leading-[1.2] sm:leading-[1.1] text-gray-900 dark:text-white mb-6 sm:mb-8 overflow-visible relative">
                     {/* 暗色光晕背景 */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-full bg-blue-500/20 blur-[100px] -z-10 hidden dark:block opacity-0 animate-fade-in" style={{ animationDelay: '0.8s' }} />
-                    {t.titleStart}<span className="text-google-blue dark:text-blue-400 drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]">{t.titleEnd}</span>
+                    {t.titleStart}<span className="text-novo-blue dark:text-blue-400 drop-shadow-sm dark:drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]">{t.titleEnd}</span>
                 </h1>
 
                 <p className="text-base sm:text-xl md:text-2xl text-gray-500 dark:text-slate-400 max-w-[1440px] mx-auto font-medium tracking-tight px-4 sm:px-0">
@@ -193,7 +193,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                         >
                             <span className="relative z-10 flex items-center gap-2">
                                 {selectedModel === option.id && (
-                                    <span className="w-2.5 h-2.5 rounded-full bg-google-green dark:bg-emerald-400 shadow-[0_0_8px_rgba(52,168,83,0.5)] dark:shadow-[0_0_8px_rgba(52,211,153,0.5)]" aria-hidden="true" />
+                                    <span className="w-2.5 h-2.5 rounded-full bg-novo-green dark:bg-emerald-400 shadow-[0_0_8px_rgba(52,168,83,0.5)] dark:shadow-[0_0_8px_rgba(52,211,153,0.5)]" aria-hidden="true" />
                                 )}
                                 <span>{option.name}</span>
                             </span>
@@ -204,7 +204,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 
             {error && (
                 <div
-                    className="mt-8 p-4 bg-google-red/10 dark:bg-rose-500/10 text-google-red dark:text-rose-400 rounded-3xl border border-google-red/20 dark:border-rose-500/20 flex items-center justify-center gap-3 font-bold mx-4 sm:mx-0 animate-fade-in-up"
+                    className="mt-8 p-4 bg-novo-red/10 dark:bg-rose-500/10 text-novo-red dark:text-rose-400 rounded-3xl border border-novo-red/20 dark:border-rose-500/20 flex items-center justify-center gap-3 font-bold mx-4 sm:mx-0 animate-fade-in-up"
                 >
                     <AlertCircle className="w-6 h-6 flex-shrink-0" />
                     {error}

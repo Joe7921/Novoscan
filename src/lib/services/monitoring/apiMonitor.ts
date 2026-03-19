@@ -198,8 +198,8 @@ export function getRecentCalls(limit = 20): CallRecord[] {
 
 async function logApiCall(data: Record<string, unknown>): Promise<void> {
     try {
-        const { supabaseAdmin } = await import('@/lib/supabase');
-        const { error } = await supabaseAdmin.from('api_call_logs').insert(data);
+        const { adminDb } = await import('@/lib/db/factory');
+        const { error } = await adminDb.from('api_call_logs').insert(data);
         if (error) {
             console.error('[ApiMonitor] 写入 Supabase 日志失败:', error.message);
         }

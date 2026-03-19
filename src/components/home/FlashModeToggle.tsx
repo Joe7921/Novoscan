@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { Zap, Shield } from 'lucide-react';
 import type { ScanMode, Language } from '@/types';
 
@@ -48,13 +47,12 @@ export default function FlashModeToggle({ scanMode, onModeChange, language }: Fl
                             }
                         `}
                     >
-                        {isActive && (
-                            <motion.div
-                                layoutId="scanModeIndicator"
-                                className={`absolute inset-0 bg-gradient-to-r ${mode.color} rounded-full`}
-                                transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                            />
-                        )}
+                        {/* 用纯 CSS transition 替代 framer-motion layoutId，避免 SSR hydration 不匹配 */}
+                        <div
+                            className={`absolute inset-0 bg-gradient-to-r ${mode.color} rounded-full transition-all duration-300 ease-out ${
+                                isActive ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
+                            }`}
+                        />
 
                         <span className="relative z-10 flex items-center gap-1">
                             <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive && mode.id === 'flash' ? 'animate-pulse' : ''}`} />

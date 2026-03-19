@@ -66,7 +66,7 @@ const DomainSelector: React.FC<DomainSelectorProps> = ({
                         {isZh ? '（可选）' : '(Optional)'}
                     </span>
                 </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-google-green/10 border border-google-green/20 text-google-green text-[10px] sm:text-xs font-bold">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-novo-green/10 border border-novo-green/20 text-novo-green text-[10px] sm:text-xs font-bold">
                     <Sparkles className="w-3 h-3" />
                     <span>{isZh ? '选择学科可提升精度约 30%' : 'Selecting a domain improves accuracy ~30%'}</span>
                 </div>

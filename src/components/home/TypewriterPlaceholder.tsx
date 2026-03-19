@@ -83,7 +83,7 @@ export default function TypewriterPlaceholder({ language, isActive }: Typewriter
         <div className="absolute inset-0 flex items-start pointer-events-none px-4 pt-4 sm:pt-5">
             <span className="text-gray-400/70 text-sm sm:text-base font-medium truncate">
                 {text}
-                <span className="animate-pulse text-google-blue/60">|</span>
+                <span className="animate-pulse text-novo-blue/60">|</span>
             </span>
         </div>
     );

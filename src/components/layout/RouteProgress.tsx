@@ -40,7 +40,7 @@ export default function RouteProgress() {
     return (
         <div className="fixed top-0 left-0 right-0 z-[9999] pointer-events-none">
             <div
-                className="h-[2px] bg-gradient-to-r from-google-blue via-blue-400 to-cyan-400 rounded-full transition-all duration-300 ease-out"
+                className="h-[2px] bg-gradient-to-r from-novo-blue via-blue-400 to-cyan-400 rounded-full transition-all duration-300 ease-out"
                 style={{
                     width: `${progress}%`,
                     opacity: loading ? 1 : 0,

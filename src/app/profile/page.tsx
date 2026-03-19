@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { useAuthSession } from '@/components/auth/AuthSessionProvider';
 import type { AuthUser } from '@/lib/auth/get-current-user';
 import { DOMAIN_REGISTRY } from '@/lib/constants/domains';
 import {
@@ -12,11 +11,11 @@ import {
     ChevronDown, HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from '@/components/layout/Navbar';
+import WorkspaceShell from '@/components/layout/WorkspaceShell';
 import BottomTabBar from '@/components/layout/BottomTabBar';
 import Link from 'next/link';
 import { MODEL_OPTIONS } from '@/types';
-import LoginModal from '@/components/auth/LoginModal';
+
 
 // ==================== 类型定义 ====================
 
@@ -79,7 +78,7 @@ const cardVariants = {
 // ==================== 主组件 ====================
 
 export default function ProfilePage() {
-    const { user: authUser, loading: authLoading } = useAuthSession();
+    // 开源版无需登录，直接加载设置页面
     const [prefsData, setPrefsData] = useState<UserPreferencesData | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -104,23 +103,16 @@ export default function ProfilePage() {
 
     // ---- 获取偏好数据 ----
     useEffect(() => {
-        if (authLoading || !authUser) {
-            if (!authLoading) setLoading(false);
-            return;
-        }
         const fetchData = async () => {
             try {
                 const res = await fetch('/api/user-preferences');
                 const json = await res.json();
                 if (json.success) {
                     setPrefsData(json);
-                    // 填充编辑字段
                     if (json.profile) {
-                        setEditName(json.profile.displayName || authUser.name || '');
+                        setEditName(json.profile.displayName || '');
                         setEditLang(json.profile.preferredLanguage || 'zh');
                         setEditModel(json.profile.preferredModel || 'minimax');
-                    } else {
-                        setEditName(authUser.name || '');
                     }
                 }
             } catch (e) {
@@ -130,12 +122,11 @@ export default function ProfilePage() {
             }
         };
         fetchData();
-    }, [authLoading, authUser]);
+    }, []);
 
 
     // ---- 获取通知设置 ----
     useEffect(() => {
-        if (authLoading || !authUser) return;
         const fetchNotifSettings = async () => {
             try {
                 const res = await fetch('/api/notification-settings');
@@ -149,16 +140,15 @@ export default function ProfilePage() {
             } catch { /* 静默 */ }
         };
         fetchNotifSettings();
-    }, [authLoading, authUser]);
+    }, []);
 
     // ---- 检查管理员权限 ----
     useEffect(() => {
-        if (authLoading || !authUser) return;
         fetch('/api/auth/check-access?feature=admin')
             .then(r => r.json())
             .then(d => { if (d.hasAccess) setIsAdmin(true); })
             .catch(() => { });
-    }, [authLoading, authUser]);
+    }, []);
 
     // ---- 保存通知设置 ----
     const handleSaveNotif = async () => {
@@ -223,43 +213,26 @@ export default function ProfilePage() {
         });
     }, [prefsData]);
 
-    // ==================== 未登录状态：直接显示登录弹窗 ====================
-    if (!authLoading && !authUser) {
-        return (
-            <div className="min-h-screen bg-slate-50 font-sans">
-                <Navbar />
-                <div className="flex items-center justify-center pt-40">
-                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-                </div>
-                <LoginModal
-                    isOpen={true}
-                    onClose={() => window.history.back()}
-                />
-                <BottomTabBar />
-            </div>
-        );
-    }
-
     // ==================== 加载状态 ====================
     if (loading) {
         return (
+            <WorkspaceShell>
             <div className="min-h-screen bg-slate-50 font-sans">
-                <Navbar />
                 <div className="flex items-center justify-center pt-40">
                     <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
                     <span className="ml-3 text-gray-500 font-medium">加载中...</span>
                 </div>
                 <BottomTabBar />
             </div>
+            </WorkspaceShell>
         );
     }
 
     // ==================== 用户信息提取 ====================
-    const avatarUrl = authUser?.image;
-    const displayName = editName || authUser?.name || authUser?.email?.split('@')[0] || '用户';
-    const email = authUser?.email || '';
-    const provider = 'oauth'; // 简化处理，不依赖 Supabase 特有字段
-    const createdAt = ''; // 创建时间由偏好数据提供，不依赖 Supabase user 对象
+    const displayName = editName || '用户';
+    const email = '';
+    const provider = 'local';
+    const createdAt = '';
 
     const searchCount = prefsData?.profile?.searchCount || 0;
     const lastSearchAt = prefsData?.profile?.lastSearchAt || null;
@@ -267,11 +240,11 @@ export default function ProfilePage() {
     const topDomain = topDomainId ? getDomainInfo(topDomainId) : null;
 
     return (
+        <WorkspaceShell>
         <div className="min-h-screen bg-slate-50 font-sans">
-            <Navbar />
 
             <motion.div
-                className="max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-16"
+                className="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-16"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -296,18 +269,9 @@ export default function ProfilePage() {
 
                             <div className="relative z-10 flex flex-col items-center text-center pt-4">
                                 {/* 头像 */}
-                                {avatarUrl ? (
-                                    <img
-                                        src={avatarUrl}
-                                        alt={displayName}
-                                        className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg"
-                                        referrerPolicy="no-referrer"
-                                    />
-                                ) : (
-                                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-2xl font-black border-4 border-white shadow-lg">
-                                        {displayName.charAt(0).toUpperCase()}
-                                    </div>
-                                )}
+                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-2xl font-black border-4 border-white shadow-lg">
+                                    {displayName.charAt(0).toUpperCase()}
+                                </div>
 
                                 <h2 className="text-xl font-bold text-gray-900 mt-4">{displayName}</h2>
 
@@ -591,7 +555,7 @@ export default function ProfilePage() {
                                     <div className="p-4 rounded-xl bg-blue-50/40 border border-blue-100">
                                         <div className="flex items-center gap-2 text-sm text-blue-700 font-semibold">
                                             <Mail className="w-4 h-4" />
-                                            预警将发送至：{authUser?.email || '您的登录邮箱'}
+                                            与您的登录邮箱
                                         </div>
                                         <p className="text-xs text-blue-500/70 mt-1">无需额外配置，系统会自动使用您的登录邮箱</p>
                                     </div>
@@ -734,5 +698,6 @@ export default function ProfilePage() {
             </motion.div>
             <BottomTabBar />
         </div>
+        </WorkspaceShell>
     );
 }

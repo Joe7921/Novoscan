@@ -79,6 +79,16 @@ class SupabaseQueryBuilder<T = any> implements IQueryBuilder<T> {
     return this;
   }
 
+  in(column: string, values: unknown[]): IQueryBuilder<T> {
+    this.builder = this.builder.in(column, values);
+    return this;
+  }
+
+  match(query: Record<string, unknown>): IQueryBuilder<T> {
+    this.builder = this.builder.match(query);
+    return this;
+  }
+
   order(column: string, options?: { ascending?: boolean }): IQueryBuilder<T> {
     this.builder = this.builder.order(column, options);
     return this;

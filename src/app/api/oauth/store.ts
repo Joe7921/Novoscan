@@ -10,7 +10,7 @@
  * - 定期自动清理过期 code
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 // ==================== 内存回退 ====================
 const memoryStore = new Map<string, { apiKey: string; expiresAt: number }>();
@@ -38,7 +38,7 @@ async function canUseSupabase(): Promise<boolean> {
     if (useSupabase !== null) return useSupabase;
     try {
         // 尝试查询 oauth_codes 表是否存在
-        const { error } = await supabaseAdmin
+        const { error } = await adminDb
             .from('oauth_codes')
             .select('code')
             .limit(0);
@@ -71,7 +71,7 @@ export const codeStore = {
 
         if (await canUseSupabase()) {
             try {
-                await supabaseAdmin.from('oauth_codes').upsert({
+                await adminDb.from('oauth_codes').upsert({
                     code,
                     api_key: entry.apiKey,
                     expires_at: new Date(entry.expiresAt).toISOString(),
@@ -86,7 +86,7 @@ export const codeStore = {
     async get(code: string): Promise<CodeEntry | undefined> {
         if (await canUseSupabase()) {
             try {
-                const { data } = await supabaseAdmin
+                const { data } = await adminDb
                     .from('oauth_codes')
                     .select('api_key, expires_at')
                     .eq('code', code)
@@ -111,7 +111,7 @@ export const codeStore = {
 
         if (await canUseSupabase()) {
             try {
-                await supabaseAdmin.from('oauth_codes').delete().eq('code', code);
+                await adminDb.from('oauth_codes').delete().eq('code', code);
             } catch {
                 // 静默
             }

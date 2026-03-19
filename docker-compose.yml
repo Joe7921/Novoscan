@@ -2,16 +2,14 @@
 # Novoscan — Docker Compose 一键启动
 #
 # 用法：
-#   1. 复制 .env.docker 为 .env  →  cp .env.docker .env
-#   2. 编辑 .env 填入你的 API 密钥
-#   3. 启动服务              →  docker compose up -d
-#   4. 查看日志              →  docker compose logs -f
-#   5. 停止服务              →  docker compose down
-#   6. 停止并清除数据卷       →  docker compose down -v
+#   1. cp .env.docker .env
+#   2. 编辑 .env 填入 AI 密钥（可选，默认 Mock 模式）
+#   3. docker compose up -d
+#   4. 打开 http://localhost:3000
 #
 # 服务访问：
 #   - Novoscan UI:  http://localhost:3000
-#   - PostgreSQL:   localhost:5432 (用户名/密码见 .env)
+#   - PostgreSQL:   localhost:5432
 #   - Redis:        localhost:6379
 # ============================================================
 
@@ -29,9 +27,7 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      # 初始化脚本（首次启动时自动执行，按文件名排序）
       - ./migrations:/docker-entrypoint-initdb.d:ro
-      # 数据持久化
       - novoscan-pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-novoscan}"]
@@ -63,57 +59,38 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        # 构建时注入 NEXT_PUBLIC_* 变量（嵌入客户端 bundle）
-        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+        NEXT_PUBLIC_AUTH_ENABLED: ${NEXT_PUBLIC_AUTH_ENABLED:-false}
     container_name: novoscan-app
     restart: unless-stopped
     ports:
       - "${APP_PORT:-3000}:3000"
     environment:
       NODE_ENV: production
-      # ── 站点配置 ──
+      # ── 站点 ──
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
-      # ── 数据库（Docker 内部网络连接） ──
+      # ── 数据库（Docker 内部网络）──
       DATABASE_URL: postgresql://${POSTGRES_USER:-novoscan}:${POSTGRES_PASSWORD:-novoscan_secret_2026}@db:5432/${POSTGRES_DB:-novoscan}
-      DATABASE_PROVIDER: ${DATABASE_PROVIDER:-postgres}
-      # ── Redis（Docker 内部网络连接） ──
-      REDIS_URL: redis://redis:6379
-      # ── 认证 ──
+      DATABASE_PROVIDER: postgres
+      # ── 认证（默认关闭）──
+      AUTH_ENABLED: ${AUTH_ENABLED:-false}
+      NEXT_PUBLIC_AUTH_ENABLED: ${NEXT_PUBLIC_AUTH_ENABLED:-false}
       AUTH_PROVIDER: ${AUTH_PROVIDER:-nextauth}
       AUTH_SECRET: ${AUTH_SECRET:-please-change-me-in-production}
-      # ── Supabase（可选：指向外部 Supabase 云或留空使用 IndexedDB）──
-      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
-      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
-      # ── AI 模型密钥 ──
+      # ── Mock AI ──
+      MOCK_AI: ${MOCK_AI:-true}
+      # ── AI 密钥 ──
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
       DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
       MINIMAX_API_KEY: ${MINIMAX_API_KEY:-}
-      MINIMAX_BASE_URL: ${MINIMAX_BASE_URL:-https://api.minimax.chat}
-      MINIMAX_MODEL: ${MINIMAX_MODEL:-minimax-text-01}
       MOONSHOT_API_KEY: ${MOONSHOT_API_KEY:-}
-      # ── 搜索数据源 ──
+      # ── 数据源 ──
       BRAVE_API_KEY: ${BRAVE_API_KEY:-}
       SERPAPI_KEY: ${SERPAPI_KEY:-}
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
-      # ── 学术数据源 ──
       CORE_API_KEY: ${CORE_API_KEY:-}
       OPENALEX_EMAIL: ${OPENALEX_EMAIL:-}
       CROSSREF_EMAIL: ${CROSSREF_EMAIL:-}
-      # ── Upstash Redis（可选 — Docker 部署时可留空，使用内存回退） ──
-      UPSTASH_REDIS_REST_URL: ${UPSTASH_REDIS_REST_URL:-}
-      UPSTASH_REDIS_REST_TOKEN: ${UPSTASH_REDIS_REST_TOKEN:-}
-      # ── 其他可选配置 ──
-      CRON_SECRET: ${CRON_SECRET:-}
-      CRON_WEBHOOK_URL: ${CRON_WEBHOOK_URL:-}
-      MCP_API_KEYS: ${MCP_API_KEYS:-}
-      RESEND_API_KEY: ${RESEND_API_KEY:-}
-      ADMIN_SECRET: ${ADMIN_SECRET:-}
-      FINOPS_PRICING: ${FINOPS_PRICING:-}
-      # ── Mock AI（默认开启，无需 API Key 即可体验完整分析流程）──
-      MOCK_AI: ${MOCK_AI:-true}
     depends_on:
       db:
         condition: service_healthy

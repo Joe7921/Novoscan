@@ -10,7 +10,7 @@
 import { searchOpenAlex, type OpenAlexPaper } from '@/server/academic/openalex';
 import { extractDNAVector, storeDNAVector } from './innovationDNA';
 import { classifyDomain } from './domainClassifier';
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 import { createHash } from 'crypto';
 
 // ==================== 配置 ====================
@@ -65,7 +65,7 @@ function generateHash(text: string): string {
  * 检查 query_hash 是否已存在于 innovation_dna 表中
  */
 async function isAlreadyHarvested(queryHash: string): Promise<boolean> {
-    const { data } = await supabaseAdmin
+    const { data } = await adminDb
         .from('innovation_dna')
         .select('id')
         .eq('query_hash', queryHash)
@@ -122,7 +122,7 @@ async function harvestPaper(
         };
 
         // 存入数据库
-        const { error } = await supabaseAdmin
+        const { error } = await adminDb
             .from('innovation_dna')
             .upsert({
                 query,
@@ -227,7 +227,7 @@ export async function harvestAndStore(): Promise<HarvestResult> {
     const duration = Date.now() - startTime;
 
     // 查询最终表行数
-    const { count } = await supabaseAdmin
+    const { count } = await adminDb
         .from('innovation_dna')
         .select('*', { count: 'exact', head: true });
 

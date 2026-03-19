@@ -6,7 +6,7 @@
  * 按 Provider / 日期维度计算费用。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 // ==================== 费率配置 ====================
 
@@ -109,7 +109,7 @@ export async function getCostsOverview(days = 7): Promise<CostsOverviewResult> {
     const since = new Date(Date.now() - days * 86400000);
     const pricing = getCostsPricing();
 
-    const { data, error } = await supabaseAdmin.from('api_call_logs')
+    const { data, error } = await adminDb.from('api_call_logs')
         .select('provider, estimated_tokens, is_success, called_at')
         .gte('called_at', since.toISOString())
         .limit(50000);
@@ -182,7 +182,7 @@ export async function getCostsByDay(days = 7): Promise<CostsByDayResult> {
     const since = new Date(Date.now() - days * 86400000);
     const pricing = getCostsPricing();
 
-    const { data, error } = await supabaseAdmin.from('api_call_logs')
+    const { data, error } = await adminDb.from('api_call_logs')
         .select('provider, estimated_tokens, called_at')
         .gte('called_at', since.toISOString())
         .order('called_at', { ascending: true })

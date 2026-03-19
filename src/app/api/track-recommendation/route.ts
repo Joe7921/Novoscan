@@ -7,9 +7,7 @@ export const dynamic = 'force-dynamic';
  * 用于分析推荐系统转化率和优化推荐策略。
  */
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
-import { createClient } from '@/utils/supabase/server';
-
+import { adminDb } from '@/lib/db/factory';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
@@ -28,14 +26,13 @@ export async function POST(request: Request) {
         // 获取用户 ID（可选）
         let userId: string | undefined;
         try {
-            const supabaseAuth = await createClient();
             const { data: { user } } = await supabaseAuth.auth.getUser();
             userId = user?.id;
         } catch { /* 匿名用户 */ }
 
         // 写入追踪表（静默失败，不影响用户体验）
         try {
-            await supabaseAdmin.from('recommendation_clicks').insert({
+            await adminDb.from('recommendation_clicks').insert({
                 product_id: productId,
                 query: query.slice(0, 500),
                 strength,

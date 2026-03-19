@@ -52,7 +52,7 @@ export const ScoreTooltip: React.FC<ScoreTooltipProps> = ({
     const details = type === 'custom' ? { title: title || '评分说明', desc: description || '' } : getScoreDetails(type);
 
     return (
-        <div
+        <span
             className={`relative inline-flex items-center group cursor-help ${className}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -88,6 +88,6 @@ export const ScoreTooltip: React.FC<ScoreTooltipProps> = ({
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </span>
     );
 };

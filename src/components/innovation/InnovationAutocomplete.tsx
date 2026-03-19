@@ -139,7 +139,7 @@ const InnovationAutocomplete: React.FC<InnovationAutocompleteProps> = ({
             {/* 加载指示器 */}
             {isLoading && (
                 <div className="absolute top-4 right-4">
-                    <div className="w-5 h-5 border-2 border-gray-200 border-t-google-blue rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-gray-200 border-t-novo-blue rounded-full animate-spin" />
                 </div>
             )}
 
@@ -192,7 +192,7 @@ const InnovationAutocomplete: React.FC<InnovationAutocompleteProps> = ({
                 <div className="absolute left-0 right-0 sm:left-0 sm:right-0 -mx-3 sm:mx-0 top-full mt-4 bg-white/95 rounded-2xl sm:rounded-3xl shadow-[0_20px_60px_-15px_rgba(31,38,135,0.15)] border border-white/60 overflow-hidden z-[100] transform origin-top transition-all">
                     <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-50 bg-gray-50/50">
                         <span className="text-[10px] sm:text-xs font-bold text-gray-400 flex items-center gap-2 tracking-widest uppercase">
-                            <Sparkles className="w-3.5 h-3.5 text-google-blue" />
+                            <Sparkles className="w-3.5 h-3.5 text-novo-blue" />
                             {isZh ? '知识网络联想' : 'Knowledge Network Suggestions'}
                         </span>
                     </div>
@@ -203,7 +203,7 @@ const InnovationAutocomplete: React.FC<InnovationAutocompleteProps> = ({
                                 onClick={() => handleSelect(item.keyword)}
                                 onMouseEnter={() => setActiveIndex(index)}
                                 className={`w-full px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-4 text-left transition-colors border-l-4 ${index === activeIndex
-                                    ? 'bg-gray-50 border-google-blue'
+                                    ? 'bg-gray-50 border-novo-blue'
                                     : 'bg-white/95 border-transparent hover:bg-gray-50/80 hover:border-gray-200'
                                     }`}
                             >
@@ -211,7 +211,7 @@ const InnovationAutocomplete: React.FC<InnovationAutocompleteProps> = ({
                                 <Search className="text-gray-300 w-4 h-4 hidden sm:block flex-shrink-0" />
 
                                 {/* 关键词 */}
-                                <span className={`flex-1 w-full sm:w-auto text-sm sm:text-base md:text-lg font-bold truncate transition-colors ${index === activeIndex ? 'text-google-blue' : 'text-gray-900'
+                                <span className={`flex-1 w-full sm:w-auto text-sm sm:text-base md:text-lg font-bold truncate transition-colors ${index === activeIndex ? 'text-novo-blue' : 'text-gray-900'
                                     }`}>
                                     {item.keyword}
                                 </span>
@@ -250,7 +250,7 @@ const InnovationAutocomplete: React.FC<InnovationAutocompleteProps> = ({
                         <span className="text-[10px] sm:text-xs font-semibold text-gray-400 sm:hidden">
                             {isZh ? '点击以选择' : 'Tap to select'}
                         </span>
-                        <span className="text-[10px] sm:text-xs font-bold text-google-blue bg-google-blue/10 px-2 py-1 rounded-md">
+                        <span className="text-[10px] sm:text-xs font-bold text-novo-blue bg-novo-blue/10 px-2 py-1 rounded-md">
                             {suggestions.length} {isZh ? '个结果' : 'results'}
                         </span>
                     </div>

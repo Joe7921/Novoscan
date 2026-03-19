@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 import { partnerFormSchema, COOPERATION_LABELS, type CooperationType } from '@/lib/schemas/partnerSchema';
 import { checkRateLimit, safeErrorResponse } from '@/lib/security/apiSecurity';
 
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
         const data = parsed.data;
 
         // 3. Supabase 入库
-        const { error: dbError } = await supabaseAdmin
+        const { error: dbError } = await adminDb
             .from('partner_applications')
             .insert({
                 company_name: data.company_name,

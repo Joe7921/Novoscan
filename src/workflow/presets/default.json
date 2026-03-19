@@ -1,0 +1,121 @@
+{
+  "id": "novoscan-default",
+  "name": "Novoscan 默认管线",
+  "nameEn": "Novoscan Default Pipeline",
+  "version": "1.0.0",
+  "description": "完整的七源双轨多 Agent 分析管线，包含 4 位专家 + 辩论 + 仲裁 + 质量把关",
+  "descriptionEn": "Full 7-source dual-track multi-agent pipeline with 4 experts + debate + arbitration + quality guard",
+  "icon": "🚀",
+  "author": "Novoscan Team",
+  "isPreset": true,
+
+  "nodes": [
+    {
+      "id": "parallel-l1",
+      "type": "parallel",
+      "label": "Layer 1 并行专家",
+      "childNodeIds": ["node-academic", "node-industry", "node-competitor", "node-cross-domain"],
+      "position": { "x": 400, "y": 100 },
+      "comment": "4 位 L1 专家并行执行，其中跨域侦察兵为非关键路径（后台运行，L3 前汇合）"
+    },
+    {
+      "id": "node-academic",
+      "type": "agent",
+      "agentId": "academic-reviewer",
+      "role": "standard",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 100, "y": 250 }
+    },
+    {
+      "id": "node-industry",
+      "type": "agent",
+      "agentId": "industry-analyst",
+      "role": "standard",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 300, "y": 250 }
+    },
+    {
+      "id": "node-competitor",
+      "type": "agent",
+      "agentId": "competitor-detective",
+      "role": "standard",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 500, "y": 250 }
+    },
+    {
+      "id": "node-cross-domain",
+      "type": "agent",
+      "agentId": "cross-domain-scout",
+      "role": "standard",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 700, "y": 250 },
+      "comment": "非关键路径，后台运行"
+    },
+    {
+      "id": "node-innovation",
+      "type": "agent",
+      "agentId": "innovation-evaluator",
+      "role": "cross",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 400, "y": 400 },
+      "comment": "Layer 2：交叉质疑，依赖 L1 全部关键路径输出"
+    },
+    {
+      "id": "cond-debate",
+      "type": "condition",
+      "condition": {
+        "field": "fallbackCount",
+        "operator": "<",
+        "value": 2
+      },
+      "trueTarget": "node-debate",
+      "falseTarget": "node-arbitrator",
+      "label": "是否触发辩论？",
+      "position": { "x": 400, "y": 550 },
+      "comment": "≥2 个 Agent fallback 则跳过辩论（用假数据辩论无意义）"
+    },
+    {
+      "id": "node-debate",
+      "type": "debate",
+      "timeout": 45000,
+      "minScoreDivergence": 20,
+      "label": "NovoDebate 对抗辩论",
+      "icon": "⚔️",
+      "position": { "x": 250, "y": 700 }
+    },
+    {
+      "id": "node-arbitrator",
+      "type": "agent",
+      "agentId": "arbitrator",
+      "role": "arbitrator",
+      "timeout": 90000,
+      "fallbackStrategy": "default",
+      "position": { "x": 400, "y": 850 },
+      "comment": "Layer 3：整合全部报告 + 辩论记录 + 跨域结果"
+    },
+    {
+      "id": "node-quality",
+      "type": "quality",
+      "label": "质量把关",
+      "icon": "🛡️",
+      "position": { "x": 400, "y": 1000 },
+      "comment": "Layer 4：逻辑一致性检查 + 自动修正"
+    }
+  ],
+
+  "edges": [
+    { "source": "parallel-l1", "target": "node-innovation", "label": "L1 → L2" },
+    { "source": "node-innovation", "target": "cond-debate", "label": "L2 → 条件" },
+    { "source": "cond-debate", "target": "node-debate", "label": "fallback < 2" },
+    { "source": "cond-debate", "target": "node-arbitrator", "label": "fallback ≥ 2（跳过辩论）" },
+    { "source": "node-debate", "target": "node-arbitrator", "label": "辩论 → 仲裁" },
+    { "source": "node-arbitrator", "target": "node-quality", "label": "仲裁 → 质量" }
+  ],
+
+  "config": {
+    "totalTimeout": 380000,
+    "circuitBreakerThreshold": 3,
+    "estimatedDuration": "3-6 分钟",
+    "estimatedDurationSec": 240
+  }
+}

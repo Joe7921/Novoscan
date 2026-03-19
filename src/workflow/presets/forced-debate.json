@@ -1,0 +1,93 @@
+{
+  "id": "forced-debate",
+  "name": "强制辩论模式",
+  "nameEn": "Forced Debate Mode",
+  "version": "1.0.0",
+  "description": "完整 4 位专家 + 强制触发辩论（不检查评分差异） → 仲裁 → 质量检查，适合需要深度交叉验证的重要课题",
+  "descriptionEn": "Full 4-expert pipeline with forced debate trigger (ignoring score divergence) → arbitration → quality. Best for critical topics needing thorough cross-validation.",
+  "icon": "⚖️",
+  "author": "Novoscan Team",
+  "isPreset": true,
+
+  "nodes": [
+    {
+      "id": "parallel-l1",
+      "type": "parallel",
+      "label": "Layer 1 并行专家",
+      "childNodeIds": ["node-academic", "node-industry", "node-competitor"],
+      "position": { "x": 300, "y": 100 }
+    },
+    {
+      "id": "node-academic",
+      "type": "agent",
+      "agentId": "academic-reviewer",
+      "role": "standard",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 100, "y": 250 }
+    },
+    {
+      "id": "node-industry",
+      "type": "agent",
+      "agentId": "industry-analyst",
+      "role": "standard",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 300, "y": 250 }
+    },
+    {
+      "id": "node-competitor",
+      "type": "agent",
+      "agentId": "competitor-detective",
+      "role": "standard",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 500, "y": 250 }
+    },
+    {
+      "id": "node-innovation",
+      "type": "agent",
+      "agentId": "innovation-evaluator",
+      "role": "cross",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 300, "y": 400 }
+    },
+    {
+      "id": "node-debate",
+      "type": "debate",
+      "timeout": 60000,
+      "minScoreDivergence": 0,
+      "label": "强制辩论",
+      "icon": "⚔️",
+      "position": { "x": 300, "y": 550 },
+      "comment": "minScoreDivergence=0 表示无论评分差异多少都强制触发辩论"
+    },
+    {
+      "id": "node-arbitrator",
+      "type": "agent",
+      "agentId": "arbitrator",
+      "role": "arbitrator",
+      "timeout": 90000,
+      "fallbackStrategy": "default",
+      "position": { "x": 300, "y": 700 }
+    },
+    {
+      "id": "node-quality",
+      "type": "quality",
+      "label": "质量把关",
+      "icon": "🛡️",
+      "position": { "x": 300, "y": 850 }
+    }
+  ],
+
+  "edges": [
+    { "source": "parallel-l1", "target": "node-innovation" },
+    { "source": "node-innovation", "target": "node-debate" },
+    { "source": "node-debate", "target": "node-arbitrator" },
+    { "source": "node-arbitrator", "target": "node-quality" }
+  ],
+
+  "config": {
+    "totalTimeout": 360000,
+    "circuitBreakerThreshold": 3,
+    "estimatedDuration": "4-7 分钟",
+    "estimatedDurationSec": 300
+  }
+}

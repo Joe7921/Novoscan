@@ -35,7 +35,7 @@ const MODE_CONFIG: Record<ViewMode, { icon: React.ElementType; labelZh: string; 
         labelEn: 'Innovation',
         subtitleZh: '高创新项目',
         subtitleEn: 'High Innovation',
-        color: 'text-google-blue',
+        color: 'text-novo-blue',
     },
     trending: {
         icon: Flame,
@@ -43,7 +43,7 @@ const MODE_CONFIG: Record<ViewMode, { icon: React.ElementType; labelZh: string; 
         labelEn: 'Trending',
         subtitleZh: '热门趋势',
         subtitleEn: 'Trending',
-        color: 'text-google-red',
+        color: 'text-novo-red',
     },
     hidden: {
         icon: Compass,
@@ -51,7 +51,7 @@ const MODE_CONFIG: Record<ViewMode, { icon: React.ElementType; labelZh: string; 
         labelEn: 'Hidden Gems',
         subtitleZh: '冷门宝藏',
         subtitleEn: 'Hidden Gems',
-        color: 'text-google-yellow',
+        color: 'text-novo-yellow',
     },
     rising: {
         icon: TrendingUp,
@@ -64,9 +64,9 @@ const MODE_CONFIG: Record<ViewMode, { icon: React.ElementType; labelZh: string; 
 };
 
 const getScoreStyle = (score: number) => {
-    if (score >= 85) return 'text-google-green bg-google-green/10 border-google-green/20';
-    if (score >= 70) return 'text-google-blue bg-google-blue/10 border-google-blue/20';
-    if (score >= 50) return 'text-yellow-600 bg-google-yellow/20 border-google-yellow/30';
+    if (score >= 85) return 'text-novo-green bg-novo-green/10 border-novo-green/20';
+    if (score >= 70) return 'text-novo-blue bg-novo-blue/10 border-novo-blue/20';
+    if (score >= 50) return 'text-yellow-600 bg-novo-yellow/20 border-novo-yellow/30';
     return 'text-gray-500 bg-gray-100 border-gray-200';
 };
 
@@ -120,7 +120,7 @@ const TrendingInnovations: React.FC<TrendingInnovationsProps> = ({ language, onK
                 // 性能优化：通过 API 路由获取数据（服务端查询 + 60s 缓存），
                 // 不再从客户端直连 Supabase
                 try {
-                    const res = await fetch(`/api/innovations?sort=${mode}&limit=20`);
+                    const res = await fetch(`/api/data/innovations?sort=${mode}&limit=20`);
                     const json = await res.json();
                     data = json.innovations || [];
                 } catch {
@@ -210,10 +210,10 @@ const TrendingInnovations: React.FC<TrendingInnovationsProps> = ({ language, onK
                         {loading ? (
                             <div className="text-center py-12">
                                 <div className="animate-pulse flex space-x-3 justify-center">
-                                    <div className="h-3 w-3 bg-google-blue rounded-full"></div>
-                                    <div className="h-3 w-3 bg-google-red rounded-full flex-[0_0_auto] delay-100"></div>
-                                    <div className="h-3 w-3 bg-google-yellow rounded-full flex-[0_0_auto] delay-200"></div>
-                                    <div className="h-3 w-3 bg-google-green rounded-full flex-[0_0_auto] delay-300"></div>
+                                    <div className="h-3 w-3 bg-novo-blue rounded-full"></div>
+                                    <div className="h-3 w-3 bg-novo-red rounded-full flex-[0_0_auto] delay-100"></div>
+                                    <div className="h-3 w-3 bg-novo-yellow rounded-full flex-[0_0_auto] delay-200"></div>
+                                    <div className="h-3 w-3 bg-novo-green rounded-full flex-[0_0_auto] delay-300"></div>
                                 </div>
                             </div>
                         ) : displayed.length === 0 ? (
@@ -233,16 +233,16 @@ const TrendingInnovations: React.FC<TrendingInnovationsProps> = ({ language, onK
                                     <motion.div
                                         variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
                                         key={inv.innovation_id || inv.keyword || index}
-                                        className="flex flex-col p-5 rounded-3xl bg-white/95 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:border-google-blue/40 transition-all duration-300 cursor-pointer group/item relative overflow-hidden h-full"
+                                        className="flex flex-col p-5 rounded-3xl bg-white/95 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:border-novo-blue/40 transition-all duration-300 cursor-pointer group/item relative overflow-hidden h-full"
                                         onClick={() => setSelectedInnovation(inv)}
                                     >
                                         {/* Decorative background gradient fade */}
                                         <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-gray-50/80 to-transparent rounded-full -mr-16 -mt-16 group-hover/item:from-blue-50/50 transition-colors pointer-events-none" />
 
                                         <div className="flex items-start justify-between relative z-10 w-full mb-3 gap-2">
-                                            <span className={`w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-black flex-shrink-0 ${index === 0 ? 'bg-gradient-to-br from-google-red to-red-600 text-white shadow-md shadow-google-red/20 border-google-red/50' :
-                                                index === 1 ? 'bg-gradient-to-br from-google-blue to-blue-600 text-white shadow-md shadow-google-blue/20 border-google-blue/50' :
-                                                    index === 2 ? 'bg-gradient-to-br from-google-yellow to-yellow-500 text-white shadow-md shadow-google-yellow/20 border-google-yellow/50' :
+                                            <span className={`w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-black flex-shrink-0 ${index === 0 ? 'bg-gradient-to-br from-novo-red to-red-600 text-white shadow-md shadow-novo-red/20 border-novo-red/50' :
+                                                index === 1 ? 'bg-gradient-to-br from-novo-blue to-blue-600 text-white shadow-md shadow-novo-blue/20 border-novo-blue/50' :
+                                                    index === 2 ? 'bg-gradient-to-br from-novo-yellow to-yellow-500 text-white shadow-md shadow-novo-yellow/20 border-novo-yellow/50' :
                                                         'bg-gray-50 text-gray-500 border border-gray-200'
                                                 }`}>
                                                 #{index + 1}
@@ -259,7 +259,7 @@ const TrendingInnovations: React.FC<TrendingInnovationsProps> = ({ language, onK
                                         </div>
 
                                         <div className="relative z-10 flex-grow mb-4 flex items-center">
-                                            <h4 className="text-[16px] font-extrabold text-gray-800 group-hover/item:text-google-blue transition-colors line-clamp-3 leading-snug break-words" style={{ wordBreak: 'break-word' }}>
+                                            <h4 className="text-[16px] font-extrabold text-gray-800 group-hover/item:text-novo-blue transition-colors line-clamp-3 leading-snug break-words" style={{ wordBreak: 'break-word' }}>
                                                 {inv.keyword}
                                             </h4>
                                         </div>
@@ -292,7 +292,7 @@ const TrendingInnovations: React.FC<TrendingInnovationsProps> = ({ language, onK
                                             <div className="flex flex-col items-end">
                                                 <span className="text-[9px] uppercase tracking-wider font-extrabold text-gray-400 mb-1">{isZh ? '搜索热度' : 'Searches'}</span>
                                                 <span className="text-[14px] font-black text-gray-700 flex items-center gap-1.5 group-hover/item:text-gray-900 transition-colors">
-                                                    <Search className="w-3.5 h-3.5 text-gray-400 group-hover/item:text-google-blue transition-colors" />
+                                                    <Search className="w-3.5 h-3.5 text-gray-400 group-hover/item:text-novo-blue transition-colors" />
                                                     {inv.search_count || 0}
                                                 </span>
                                             </div>
@@ -341,7 +341,7 @@ const TrendingInnovations: React.FC<TrendingInnovationsProps> = ({ language, onK
             )}
 
             <div className="mt-8 pt-4 border-t border-gray-100 text-xs font-bold text-gray-400 flex items-center gap-2">
-                <Info className="w-4 h-4 text-google-blue" />
+                <Info className="w-4 h-4 text-novo-blue" />
                 {mode === 'rising'
                     ? (isZh ? '势能指标基于用户检索事件的时间窗口聚合分析' : 'Momentum is calculated from time-windowed search event aggregation')
                     : (isZh

@@ -1,13 +1,17 @@
 /**
- * 数据库抽象层 — 统一接口定义
+ * Novoscan 通用数据库抽象层
  *
- * 提供与 Supabase 链式 API 对齐的查询构建器接口，
- * 使不同数据库后端（Supabase、PostgreSQL、SQLite）可以被替换。
+ * 提供与数据库后端无关的链式查询构建器接口。
+ * 任何数据库（PostgreSQL、MySQL、SQLite、MongoDB 等）
+ * 均可通过实现此接口接入 Novoscan。
+ *
+ * 企业用户可自行实现 IDatabase 接口，通过 factory.ts 的
+ * registerDatabaseAdapter() 注册自定义适配器。
  */
 
 // ==================== 查询结果类型 ====================
 
-/** 标准查询结果（与 Supabase PostgrestResponse 对齐） */
+/** 标准查询结果 */
 export interface DbResult<T> {
   data: T[] | null;
   error: DbError | null;
@@ -32,8 +36,8 @@ export interface DbError {
 /**
  * 链式查询构建器接口
  *
- * 与 Supabase 的 PostgrestFilterBuilder 对齐，
  * 支持 select → filter → order → limit → execute 的链式调用模式。
+ * 所有数据库适配器必须实现此接口的全部方法。
  */
 export interface IQueryBuilder<T = any> {
   /** 指定要查询的列 */
@@ -58,8 +62,12 @@ export interface IQueryBuilder<T = any> {
   contains(column: string, value: unknown): IQueryBuilder<T>;
   /** 全文检索 */
   textSearch(column: string, query: string, options?: { type?: string }): IQueryBuilder<T>;
-  /** OR 组合过滤 */
+  /** OR 组合过滤（格式：'col1.eq.val1,col2.eq.val2'） */
   or(filters: string): IQueryBuilder<T>;
+  /** IN 查询（匹配列值在给定数组中） */
+  in(column: string, values: unknown[]): IQueryBuilder<T>;
+  /** 多字段精确匹配 */
+  match(query: Record<string, unknown>): IQueryBuilder<T>;
 
   // ---- 排序与分页 ----
   /** 排序 */

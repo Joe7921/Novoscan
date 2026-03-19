@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { generateProfessionalReport } from '@/server/report/reportWriter';
 import { checkRateLimit, safeErrorResponse } from '@/lib/security/apiSecurity';
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 // Vercel 超时配置：降级同步生成仍需要 120 秒
 export const maxDuration = 120;
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
         // 1. 优先从数据库缓存中获取预生成的报告
         try {
-            const { data: cached } = await supabaseAdmin
+            const { data: cached } = await adminDb
                 .from('search_history')
                 .select('professional_report')
                 .eq('query', query)
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
         console.log(`[Report API] 报告生成完成，使用模型: ${professionalReport.usedModel}`);
 
         // 3. 异步回写缓存（不阻塞响应）
-        supabaseAdmin
+        adminDb
             .from('search_history')
             .update({ professional_report: professionalReport })
             .eq('query', query)

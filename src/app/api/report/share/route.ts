@@ -18,8 +18,6 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { shareReport } from '@/lib/services/export/shareService';
-import { createClient } from '@/utils/supabase/server';
-
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
@@ -44,8 +42,7 @@ export async function POST(request: NextRequest) {
         // 获取当前用户（可选）
         let userId: string | undefined;
         try {
-            const supabase = await createClient();
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await serverDb.auth.getUser();
             userId = user?.id;
         } catch {
             // 匿名用户也可以分享

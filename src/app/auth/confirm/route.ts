@@ -1,8 +1,6 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-
 /**
  * Magic Link 邮箱登录确认路由。
  * 当用户点击邮件中的 Magic Link 时，Supabase 会重定向到此 URL，
@@ -15,8 +13,7 @@ export async function GET(request: Request) {
     const next = searchParams.get('next') ?? '/';
 
     if (token_hash && type) {
-        const supabase = createClient();
-        const { error, data } = await supabase.auth.verifyOtp({
+        const { error, data } = await serverDb.auth.verifyOtp({
             type,
             token_hash,
         });

@@ -23,25 +23,25 @@ interface BizscanReportProps {
 
 const GRADE_CONFIG = {
     S: { color: 'text-purple-600', bg: 'bg-purple-50', border: 'border-purple-200', ring: 'ring-purple-400', label: '颠覆性创新' },
-    A: { color: 'text-google-green', bg: 'bg-google-green/10', border: 'border-google-green/30', ring: 'ring-google-green', label: '高度创新' },
-    B: { color: 'text-google-blue', bg: 'bg-google-blue/10', border: 'border-google-blue/30', ring: 'ring-google-blue', label: '具备创新' },
-    C: { color: 'text-google-yellow', bg: 'bg-amber-50', border: 'border-amber-200', ring: 'ring-amber-400', label: '创新一般' },
-    D: { color: 'text-google-red', bg: 'bg-google-red/10', border: 'border-google-red/30', ring: 'ring-google-red', label: '创新不足' },
+    A: { color: 'text-novo-green', bg: 'bg-novo-green/10', border: 'border-novo-green/30', ring: 'ring-novo-green', label: '高度创新' },
+    B: { color: 'text-novo-blue', bg: 'bg-novo-blue/10', border: 'border-novo-blue/30', ring: 'ring-novo-blue', label: '具备创新' },
+    C: { color: 'text-novo-yellow', bg: 'bg-amber-50', border: 'border-amber-200', ring: 'ring-amber-400', label: '创新一般' },
+    D: { color: 'text-novo-red', bg: 'bg-novo-red/10', border: 'border-novo-red/30', ring: 'ring-novo-red', label: '创新不足' },
 };
 
 const DIMENSION_META = {
     semanticNovelty: { label: '语义新颖度', icon: Lightbulb, color: 'text-amber-500', bg: 'bg-amber-500' },
-    competitiveLandscape: { label: '竞争态势', icon: Target, color: 'text-google-blue', bg: 'bg-google-blue' },
-    marketGap: { label: '市场空白', icon: TrendingUp, color: 'text-google-green', bg: 'bg-google-green' },
+    competitiveLandscape: { label: '竞争态势', icon: Target, color: 'text-novo-blue', bg: 'bg-novo-blue' },
+    marketGap: { label: '市场空白', icon: TrendingUp, color: 'text-novo-green', bg: 'bg-novo-green' },
     feasibility: { label: '可行性', icon: Shield, color: 'text-purple-500', bg: 'bg-purple-500' },
 };
 
 const SATURATION_LABELS: Record<string, { label: string; color: string }> = {
-    'oversaturated': { label: '过度饱和', color: 'text-google-red' },
+    'oversaturated': { label: '过度饱和', color: 'text-novo-red' },
     'crowded': { label: '竞争拥挤', color: 'text-orange-500' },
-    'moderate': { label: '适度竞争', color: 'text-google-yellow' },
-    'emerging': { label: '新兴市场', color: 'text-google-blue' },
-    'blue-ocean': { label: '蓝海市场', color: 'text-google-green' },
+    'moderate': { label: '适度竞争', color: 'text-novo-yellow' },
+    'emerging': { label: '新兴市场', color: 'text-novo-blue' },
+    'blue-ocean': { label: '蓝海市场', color: 'text-novo-green' },
 };
 
 const TREND_LABELS: Record<string, { label: string; icon: typeof TrendingUp }> = {
@@ -52,9 +52,9 @@ const TREND_LABELS: Record<string, { label: string; icon: typeof TrendingUp }> =
 };
 
 const THREAT_CONFIG: Record<string, { color: string; bg: string; label: string }> = {
-    high: { color: 'text-google-red', bg: 'bg-google-red/10', label: '高威胁' },
+    high: { color: 'text-novo-red', bg: 'bg-novo-red/10', label: '高威胁' },
     medium: { color: 'text-amber-600', bg: 'bg-amber-50', label: '中等威胁' },
-    low: { color: 'text-google-green', bg: 'bg-google-green/10', label: '低威胁' },
+    low: { color: 'text-novo-green', bg: 'bg-novo-green/10', label: '低威胁' },
 };
 
 // 入场动画变体
@@ -191,7 +191,7 @@ export default function BizscanReport({ reportData }: BizscanReportProps) {
                         <Cpu className="w-3.5 h-3.5" />
                         竞品发现
                     </div>
-                    <div className="text-2xl font-black text-google-blue">
+                    <div className="text-2xl font-black text-novo-blue">
                         {reportData.metadata.competitorsFound}
                     </div>
                 </div>
@@ -200,7 +200,7 @@ export default function BizscanReport({ reportData }: BizscanReportProps) {
                         <Clock className="w-3.5 h-3.5" />
                         分析耗时
                     </div>
-                    <div className="text-2xl font-black text-google-green">
+                    <div className="text-2xl font-black text-novo-green">
                         {(reportData.metadata.searchTimeMs / 1000).toFixed(1)}s
                     </div>
                 </div>
@@ -284,10 +284,10 @@ export default function BizscanReport({ reportData }: BizscanReportProps) {
                                                     <span className="font-bold text-gray-900">{meta.label}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-black border ${dim.grade === 'A' ? 'text-google-green bg-google-green/10 border-google-green/20' :
-                                                        dim.grade === 'B' ? 'text-google-blue bg-google-blue/10 border-google-blue/20' :
+                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-black border ${dim.grade === 'A' ? 'text-novo-green bg-novo-green/10 border-novo-green/20' :
+                                                        dim.grade === 'B' ? 'text-novo-blue bg-novo-blue/10 border-novo-blue/20' :
                                                             dim.grade === 'C' ? 'text-amber-600 bg-amber-50 border-amber-200' :
-                                                                'text-google-red bg-google-red/10 border-google-red/20'
+                                                                'text-novo-red bg-novo-red/10 border-novo-red/20'
                                                         }`}>
                                                         {dim.grade}
                                                     </span>
@@ -341,7 +341,7 @@ export default function BizscanReport({ reportData }: BizscanReportProps) {
                         <motion.div variants={itemVariants}>
                             <AntigravityCard className="!p-6 space-y-4">
                                 <h3 className="text-xl font-bold flex items-center gap-2">
-                                    <Target className="w-6 h-6 text-google-blue" />
+                                    <Target className="w-6 h-6 text-novo-blue" />
                                     竞品对标分析 ({reportData.competitors.length})
                                 </h3>
                                 <div className="space-y-3">
@@ -455,9 +455,9 @@ export default function BizscanReport({ reportData }: BizscanReportProps) {
                                     <Shield className="w-6 h-6 text-emerald-500" />
                                     交叉验证报告
                                     {reportData.consensusLevel && (
-                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${reportData.consensusLevel === 'strong' ? 'text-google-green bg-google-green/10 border-google-green/20' :
+                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${reportData.consensusLevel === 'strong' ? 'text-novo-green bg-novo-green/10 border-novo-green/20' :
                                             reportData.consensusLevel === 'moderate' ? 'text-amber-600 bg-amber-50 border-amber-200' :
-                                                'text-google-red bg-google-red/10 border-google-red/20'
+                                                'text-novo-red bg-novo-red/10 border-novo-red/20'
                                             }`}>
                                             {reportData.consensusLevel === 'strong' ? '强共识' :
                                                 reportData.consensusLevel === 'moderate' ? '中共识' : '弱共识'}
@@ -498,7 +498,7 @@ export default function BizscanReport({ reportData }: BizscanReportProps) {
                                 {/* 证据冲突 */}
                                 {reportData.crossValidation.evidenceConflicts?.length > 0 && (
                                     <div className="space-y-1">
-                                        <h4 className="text-xs font-bold text-google-red">证据冲突</h4>
+                                        <h4 className="text-xs font-bold text-novo-red">证据冲突</h4>
                                         {reportData.crossValidation.evidenceConflicts.map((c: string, i: number) => (
                                             <p key={i} className="text-xs text-gray-500">• {c}</p>
                                         ))}
@@ -520,7 +520,7 @@ export default function BizscanReport({ reportData }: BizscanReportProps) {
                     {/* F. 市场洞察 */}
                     <AntigravityCard className="!p-6">
                         <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5 text-google-green" />
+                            <TrendingUp className="w-5 h-5 text-novo-green" />
                             市场洞察
                         </h3>
                         <div className="space-y-3">
@@ -565,7 +565,7 @@ export default function BizscanReport({ reportData }: BizscanReportProps) {
                             <div className="space-y-2 mb-4">
                                 {reportData.recommendations.map((rec, i) => (
                                     <div key={i} className="flex items-start gap-2 text-sm">
-                                        <ChevronRight className="w-4 h-4 text-google-green flex-shrink-0 mt-0.5" />
+                                        <ChevronRight className="w-4 h-4 text-novo-green flex-shrink-0 mt-0.5" />
                                         <span className="text-gray-700">{rec}</span>
                                     </div>
                                 ))}
@@ -575,7 +575,7 @@ export default function BizscanReport({ reportData }: BizscanReportProps) {
                         {/* 风险红旗 */}
                         {reportData.riskWarnings.length > 0 && (
                             <div className="mt-4 pt-4 border-t border-gray-100">
-                                <h4 className="text-xs font-bold text-google-red mb-2 flex items-center gap-1">
+                                <h4 className="text-xs font-bold text-novo-red mb-2 flex items-center gap-1">
                                     <AlertTriangle className="w-3.5 h-3.5" />
                                     风险提示
                                 </h4>
@@ -633,7 +633,7 @@ export default function BizscanReport({ reportData }: BizscanReportProps) {
                                     <span className="text-gray-400 font-bold block mb-1">行业标签</span>
                                     <div className="flex flex-wrap gap-1.5">
                                         {reportData.parsedIdea.industryTags.map((t, i) => (
-                                            <span key={i} className="px-2 py-0.5 bg-google-blue/5 border border-google-blue/10 rounded-full text-[10px] font-bold text-google-blue">
+                                            <span key={i} className="px-2 py-0.5 bg-novo-blue/5 border border-novo-blue/10 rounded-full text-[10px] font-bold text-novo-blue">
                                                 {t}
                                             </span>
                                         ))}

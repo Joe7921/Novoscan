@@ -21,7 +21,7 @@ export default function AuthCodeErrorPage() {
                 </p>
                 <Link
                     href="/"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-full font-bold hover:bg-google-blue transition-all duration-300"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-full font-bold hover:bg-novo-blue transition-all duration-300"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     返回首页

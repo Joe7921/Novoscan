@@ -4,7 +4,7 @@
  * 整合 KPI + Agent 水位 + 最近失败，一次调用掌握全局。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 const AGENT_NAMES = ['academicReviewer', 'industryAnalyst', 'competitorDetective', 'innovationEvaluator', 'arbitrator'] as const;
 const SHORT_NAMES: Record<string, string> = {
@@ -49,13 +49,13 @@ export async function getDashboardData(): Promise<DashboardResult> {
     const sevenDaysAgo = new Date(todayStart.getTime() - 6 * 86400000);
 
     const [totalRes, recent7Res, apiCallsRes, recentRecordsRes] = await Promise.all([
-        supabaseAdmin.from('search_history').select('*', { count: 'exact', head: true }),
-        supabaseAdmin.from('search_history').select('created_at, search_time_ms')
+        adminDb.from('search_history').select('*', { count: 'exact', head: true }),
+        adminDb.from('search_history').select('created_at, search_time_ms')
             .gte('created_at', sevenDaysAgo.toISOString()),
-        supabaseAdmin.from('api_call_logs').select('*')
+        adminDb.from('api_call_logs').select('*')
             .gte('called_at', sevenDaysAgo.toISOString())
             .limit(10000),
-        supabaseAdmin.from('search_history').select('query, model_provider, search_time_ms, result, created_at')
+        adminDb.from('search_history').select('query, model_provider, search_time_ms, result, created_at')
             .order('created_at', { ascending: false })
             .limit(100),
     ]);

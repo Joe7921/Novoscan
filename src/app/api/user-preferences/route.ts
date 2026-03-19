@@ -1,9 +1,8 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
 import { getTopInterests, getUserProfile, getRecentDomains } from '@/lib/services/user/userPreferenceService';
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 /**
  * GET /api/user-preferences
@@ -16,8 +15,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 export async function GET() {
     try {
         // 验证登录状态
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await serverDb.auth.getUser();
 
         if (!user) {
             return NextResponse.json(
@@ -68,8 +66,7 @@ const ALLOWED_FIELDS = ['display_name', 'preferred_language', 'preferred_model']
  */
 export async function PUT(request: NextRequest) {
     try {
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await serverDb.auth.getUser();
 
         if (!user) {
             return NextResponse.json(
@@ -95,8 +92,8 @@ export async function PUT(request: NextRequest) {
             );
         }
 
-        // 使用 supabaseAdmin 绕过 RLS 进行 upsert
-        const { error } = await supabaseAdmin
+        // 使用 adminDb 绕过 RLS 进行 upsert
+        const { error } = await adminDb
             .from('user_profiles')
             .upsert({
                 id: user.id,

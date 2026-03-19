@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Sparkles, Briefcase, UserCircle } from 'lucide-react';
+import { Sparkles, Briefcase, UserCircle, Wrench } from 'lucide-react';
 
 /**
  * 移动端底部导航栏组件。
@@ -30,6 +30,14 @@ const tabs: TabItem[] = [
         labelEn: 'Scan',
         color: 'text-blue-600 dark:text-blue-400',
         bgColor: 'bg-blue-50 dark:bg-blue-500/15',
+    },
+    {
+        href: '/studio',
+        icon: Wrench,
+        label: 'Studio',
+        labelEn: 'Studio',
+        color: 'text-purple-600 dark:text-purple-400',
+        bgColor: 'bg-purple-50 dark:bg-purple-500/15',
     },
     {
         href: '/bizscan',

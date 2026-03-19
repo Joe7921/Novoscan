@@ -1,0 +1,60 @@
+{
+  "id": "quick-academic",
+  "name": "快速学术扫描",
+  "nameEn": "Quick Academic Scan",
+  "version": "1.0.0",
+  "description": "仅学术审查 + 创新评估 → 仲裁 → 质量检查，跳过产业分析、竞品侦探和辩论，适合快速验证学术创新性",
+  "descriptionEn": "Academic review + innovation evaluation → arbitration → quality check. Skips industry, competitor, and debate for fast academic novelty validation.",
+  "icon": "📚",
+  "author": "Novoscan Team",
+  "isPreset": true,
+
+  "nodes": [
+    {
+      "id": "node-academic",
+      "type": "agent",
+      "agentId": "academic-reviewer",
+      "role": "standard",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 400, "y": 100 }
+    },
+    {
+      "id": "node-innovation",
+      "type": "agent",
+      "agentId": "innovation-evaluator",
+      "role": "cross",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 400, "y": 300 },
+      "comment": "交叉评估仅接收学术报告（产业和竞品将为空占位）"
+    },
+    {
+      "id": "node-arbitrator",
+      "type": "agent",
+      "agentId": "arbitrator",
+      "role": "arbitrator",
+      "timeout": 60000,
+      "fallbackStrategy": "default",
+      "position": { "x": 400, "y": 500 }
+    },
+    {
+      "id": "node-quality",
+      "type": "quality",
+      "label": "质量把关",
+      "icon": "🛡️",
+      "position": { "x": 400, "y": 700 }
+    }
+  ],
+
+  "edges": [
+    { "source": "node-academic", "target": "node-innovation" },
+    { "source": "node-innovation", "target": "node-arbitrator" },
+    { "source": "node-arbitrator", "target": "node-quality" }
+  ],
+
+  "config": {
+    "totalTimeout": 180000,
+    "circuitBreakerThreshold": 1,
+    "estimatedDuration": "1-2 分钟",
+    "estimatedDurationSec": 90
+  }
+}

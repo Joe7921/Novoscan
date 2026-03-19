@@ -7,7 +7,7 @@
  * 3. 与 NovoDNA 基因库联动，发现"技术原理相近但应用场景差异大"的创新邻居
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 import { generateQueryHash } from './innovationService';
 import type { CrossDomainBridge, KnowledgeGraphNode, KnowledgeGraphEdge } from '@/agents/types';
 
@@ -53,7 +53,7 @@ export async function storeCrossDomainBridges(
             knowledge_graph: knowledgeGraph || null,
         }));
 
-        const { error } = await supabaseAdmin
+        const { error } = await adminDb
             .from('cross_domain_bridges')
             .upsert(rows, { onConflict: 'query_hash,target_field' });
 
@@ -79,7 +79,7 @@ export async function findExistingBridges(
         if (!techPrincipleKeywords || techPrincipleKeywords.length === 0) return [];
 
         // 使用 OR 条件模糊匹配技术原理
-        let query = supabaseAdmin
+        let query = adminDb
             .from('cross_domain_bridges')
             .select('*')
             .order('novelty_potential', { ascending: false })
@@ -117,7 +117,7 @@ export async function findCrossDomainDNANeighbors(
     limit: number = 5
 ): Promise<Array<{ query: string; techSimilarity: number; scenarioDifference: number }>> {
     try {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await adminDb
             .from('innovation_dna')
             .select('query, tech_principle, app_scenario')
             .limit(200);
@@ -156,7 +156,7 @@ export async function buildGlobalCrossFieldGraph(
     limit: number = 50
 ): Promise<{ nodes: KnowledgeGraphNode[]; edges: KnowledgeGraphEdge[] }> {
     try {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await adminDb
             .from('cross_domain_bridges')
             .select('source_field, target_field, tech_principle, novelty_potential')
             .order('novelty_potential', { ascending: false })

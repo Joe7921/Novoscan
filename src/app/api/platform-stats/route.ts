@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 300; // ISR: 5 分钟重新生成
@@ -38,16 +38,16 @@ export async function GET() {
         // 并行查询三个统计值
         const [analysesRes, debatesRes, dnaRes] = await Promise.all([
             // 1. 深度分析总数
-            supabaseAdmin
+            adminDb
                 .from('search_history')
                 .select('*', { count: 'exact', head: true }),
             // 2. 辩论推演次数（debate_summary 非空的记录数）
-            supabaseAdmin
+            adminDb
                 .from('agent_experiences')
                 .select('*', { count: 'exact', head: true })
                 .neq('debate_summary', ''),
             // 3. 创新基因入库数
-            supabaseAdmin
+            adminDb
                 .from('innovation_dna')
                 .select('*', { count: 'exact', head: true }),
         ]);

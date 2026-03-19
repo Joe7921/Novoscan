@@ -1,0 +1,51 @@
+{
+  "id": "minimal",
+  "name": "最小管线",
+  "nameEn": "Minimal Pipeline",
+  "version": "1.0.0",
+  "description": "仅学术审查 → 仲裁 → 质量检查，最快速度出结果，适合快速预筛",
+  "descriptionEn": "Academic review → arbitration → quality check. Fastest possible result for quick pre-screening.",
+  "icon": "⚡",
+  "author": "Novoscan Team",
+  "isPreset": true,
+
+  "nodes": [
+    {
+      "id": "node-academic",
+      "type": "agent",
+      "agentId": "academic-reviewer",
+      "role": "standard",
+      "fallbackStrategy": "statistical",
+      "position": { "x": 400, "y": 100 }
+    },
+    {
+      "id": "node-arbitrator",
+      "type": "agent",
+      "agentId": "arbitrator",
+      "role": "arbitrator",
+      "timeout": 60000,
+      "fallbackStrategy": "default",
+      "position": { "x": 400, "y": 300 },
+      "comment": "仅接收学术审查报告，直接裁决"
+    },
+    {
+      "id": "node-quality",
+      "type": "quality",
+      "label": "质量把关",
+      "icon": "🛡️",
+      "position": { "x": 400, "y": 500 }
+    }
+  ],
+
+  "edges": [
+    { "source": "node-academic", "target": "node-arbitrator" },
+    { "source": "node-arbitrator", "target": "node-quality" }
+  ],
+
+  "config": {
+    "totalTimeout": 120000,
+    "circuitBreakerThreshold": 1,
+    "estimatedDuration": "30 秒 - 1 分钟",
+    "estimatedDurationSec": 45
+  }
+}

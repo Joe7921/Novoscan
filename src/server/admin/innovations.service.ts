@@ -4,7 +4,7 @@
  * 查询 innovations 表的热门关键词和领域分布。
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 /** 创新趋势条目 */
 export interface InnovationEntry {
@@ -30,7 +30,7 @@ export async function getInnovationTrends(options: {
 } = {}): Promise<InnovationTrendsResult> {
     const { top = 20, domain = null } = options;
 
-    let query = supabaseAdmin.from('innovations')
+    let query = adminDb.from('innovations')
         .select('keyword, search_count, novelty_score, domain_id, last_searched_at')
         .order('search_count', { ascending: false })
         .limit(top);

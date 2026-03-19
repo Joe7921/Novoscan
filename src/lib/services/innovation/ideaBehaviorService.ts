@@ -20,7 +20,7 @@
  *     - 忽略推荐 → I（独行）↑
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 
 // ==================== 行为信号类型 ====================
 
@@ -132,7 +132,7 @@ export async function recordBehaviorSignal(signal: BehaviorSignal): Promise<void
         if (delta.v === 0 && delta.d === 0 && delta.p === 0 && delta.s === 0) return;
 
         // 读取当前画像
-        const { data: profile, error: readError } = await supabaseAdmin
+        const { data: profile, error: readError } = await adminDb
             .from('user_idea_profile')
             .select('behavioral_v, behavioral_d, behavioral_p, behavioral_s, behavior_data_points, final_v, final_d, final_p, final_s, stated_v, stated_d, stated_p, stated_s, confidence')
             .eq('user_id', signal.userId)
@@ -179,7 +179,7 @@ export async function recordBehaviorSignal(signal: BehaviorSignal): Promise<void
         const divergenceUnlocked = dataPoints >= 20;
 
         // 更新数据库
-        const { error: updateError } = await supabaseAdmin
+        const { error: updateError } = await adminDb
             .from('user_idea_profile')
             .update({
                 behavioral_v: bv,

@@ -2,7 +2,7 @@ export const translations = {
   en: {
     howItWorks: "Docs",
     pricing: "免费使用",
-    login: "Log In",
+
     titleStart: "Is Your Research",
     titleEnd: "Novel?",
     subtitle: "Say goodbye to tedious traditional novelty searches. Let our AI reasoning cluster penetrate millions of academic and industry networks in seconds, providing deep reasoning across all scenarios to ensure your inspiration always stays at the technological forefront.",
@@ -21,7 +21,7 @@ export const translations = {
   zh: {
     howItWorks: "官方文档",
     pricing: "免费使用",
-    login: "登录",
+
     titleStart: "你的研究有",
     titleEnd: "创新性吗？",
     subtitle: "告别繁琐的传统查新。让 AI 推理集群在数秒内穿透百万级学术和产业网络，全场景深度推演，确保您的灵感始终处于科技前沿。",

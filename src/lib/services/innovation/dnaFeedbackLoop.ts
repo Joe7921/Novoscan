@@ -9,7 +9,7 @@
  *   4. evolutionaryFeedback  — 进化反馈：用搜索结果反向修正 DNA 精度
  */
 
-import { supabaseAdmin } from '@/lib/supabase';
+import { adminDb } from '@/lib/db/factory';
 import {
     DNAVector,
     DNA_DIMENSION_KEYS,
@@ -92,7 +92,7 @@ export async function preScanDNAInsight(query: string): Promise<DNAPreScanInsigh
 
     try {
         // 1. 从基因库拉取所有记录（小规模阶段直接全量，大规模后可用向量索引）
-        const { data: pool, error } = await supabaseAdmin
+        const { data: pool, error } = await adminDb
             .from('innovation_dna')
             .select('id, query, tech_principle, app_scenario, target_user, impl_path, biz_model')
             .limit(200);
@@ -265,7 +265,7 @@ export async function evolutionaryFeedback(
     // 更新基因库中该条目的进化元数据
     let evolutionGeneration = 1;
     try {
-        const { data: existing } = await supabaseAdmin
+        const { data: existing } = await adminDb
             .from('innovation_dna')
             .select('evolution_generation, search_novelty_score')
             .eq('query_hash', queryHash)
@@ -274,7 +274,7 @@ export async function evolutionaryFeedback(
         if (existing) {
             evolutionGeneration = (existing.evolution_generation || 0) + 1;
 
-            await supabaseAdmin
+            await adminDb
                 .from('innovation_dna')
                 .update({
                     search_novelty_score: searchNoveltyScore,

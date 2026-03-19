@@ -51,7 +51,7 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({ language, onSearch }) => 
         <AntigravityCard className="flex flex-col h-full bg-white/95 border border-gray-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.04)] p-6">
             <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
                 <h3 className="font-black text-2xl text-gray-900 flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-gray-50 text-google-blue">
+                    <div className="p-2 rounded-xl bg-gray-50 text-novo-blue">
                         <History className="w-6 h-6" />
                     </div>
                     {isZh ? '搜索历史' : 'Search History'}
@@ -59,7 +59,7 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({ language, onSearch }) => 
                 {records.length > 0 && (
                     <button
                         onClick={handleClear}
-                        className="text-xs font-bold text-gray-400 hover:text-google-red transition-colors flex items-center gap-1.5 bg-gray-50 hover:bg-google-red/10 px-3 py-1.5 rounded-full border border-transparent hover:border-google-red/20"
+                        className="text-xs font-bold text-gray-400 hover:text-novo-red transition-colors flex items-center gap-1.5 bg-gray-50 hover:bg-novo-red/10 px-3 py-1.5 rounded-full border border-transparent hover:border-novo-red/20"
                     >
                         <Trash2 className="w-3.5 h-3.5" />
                         {isZh ? '清空' : 'Clear'}
@@ -71,9 +71,9 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({ language, onSearch }) => 
                 {loading ? (
                     <div className="text-center py-12">
                         <div className="animate-pulse flex space-x-3 justify-center">
-                            <div className="h-3 w-3 bg-google-blue rounded-full"></div>
-                            <div className="h-3 w-3 bg-google-red rounded-full flex-[0_0_auto] delay-100"></div>
-                            <div className="h-3 w-3 bg-google-yellow rounded-full flex-[0_0_auto] delay-200"></div>
+                            <div className="h-3 w-3 bg-novo-blue rounded-full"></div>
+                            <div className="h-3 w-3 bg-novo-red rounded-full flex-[0_0_auto] delay-100"></div>
+                            <div className="h-3 w-3 bg-novo-yellow rounded-full flex-[0_0_auto] delay-200"></div>
                         </div>
                     </div>
                 ) : records.length === 0 ? (
@@ -115,11 +115,11 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({ language, onSearch }) => 
                         {records.map((record) => (
                             <div
                                 key={record.id}
-                                className="p-4 rounded-2xl bg-white/95 border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-google-blue/30 transition-all duration-300 cursor-pointer group/item"
+                                className="p-4 rounded-2xl bg-white/95 border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-novo-blue/30 transition-all duration-300 cursor-pointer group/item"
                                 onClick={() => onSearch?.(record.query)}
                             >
                                 <div className="flex items-start justify-between gap-3">
-                                    <p className="text-base text-gray-700 group-hover/item:text-google-blue transition-colors line-clamp-2 flex-1 font-bold tracking-wide">
+                                    <p className="text-base text-gray-700 group-hover/item:text-novo-blue transition-colors line-clamp-2 flex-1 font-bold tracking-wide">
                                         {record.query}
                                     </p>
                                     <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
@@ -127,9 +127,9 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({ language, onSearch }) => 
                                             {formatTime(record.timestamp)}
                                         </span>
                                         {record.credibility !== undefined && (
-                                            <span className={`text-[10px] px-2.5 py-1 rounded-full font-black border uppercase tracking-wider ${record.credibility > 75 ? 'bg-google-green/10 text-google-green border-google-green/20' :
-                                                record.credibility > 50 ? 'bg-google-yellow/20 text-yellow-700 border-google-yellow/30' :
-                                                    'bg-google-red/10 text-google-red border-google-red/20'
+                                            <span className={`text-[10px] px-2.5 py-1 rounded-full font-black border uppercase tracking-wider ${record.credibility > 75 ? 'bg-novo-green/10 text-novo-green border-novo-green/20' :
+                                                record.credibility > 50 ? 'bg-novo-yellow/20 text-yellow-700 border-novo-yellow/30' :
+                                                    'bg-novo-red/10 text-novo-red border-novo-red/20'
                                                 }`}>
                                                 {record.credibility}分
                                             </span>

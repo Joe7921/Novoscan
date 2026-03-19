@@ -13,9 +13,7 @@ export const dynamic = 'force-dynamic';
  */
 
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
-import { createClient } from '@/utils/supabase/server';
-
+import { adminDb } from '@/lib/db/factory';
 // ==================== 图谱数据结构 ====================
 
 interface GraphNode {
@@ -38,8 +36,7 @@ interface IndustryGraph {
 export async function GET(request: Request) {
     try {
         // 🔒 用户认证
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await serverDb.auth.getUser();
         if (!user) {
             return NextResponse.json(
                 { success: false, error: '请先登录' },
@@ -52,7 +49,7 @@ export async function GET(request: Request) {
         const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
 
         // 构建基础查询
-        let query = supabaseAdmin
+        let query = adminDb
             .from('case_library')
             .select('industry, tags, capabilities, technology_stack, source_type, maturity, quality_score');
 

@@ -11,7 +11,6 @@ export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
 import { ingestUserIdea } from '@/server/casevault/scheduler';
-import { createClient } from '@/utils/supabase/server';
 import { checkRateLimit } from '@/lib/security/apiSecurity';
 
 export async function POST(request: Request) {
@@ -21,8 +20,7 @@ export async function POST(request: Request) {
         if (rateLimitRes) return rateLimitRes;
 
         // 🔒 用户认证
-        const supabase = await createClient();
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user } } = await serverDb.auth.getUser();
         if (!user) {
             return NextResponse.json(
                 { success: false, error: '请先登录' },
