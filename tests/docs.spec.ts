@@ -17,8 +17,8 @@ test.describe('文档页', () => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/docs');
     await page.waitForLoadState('networkidle');
-    // 文档页侧边栏在 <aside> 元素中
-    const sidebar = page.locator('aside');
+    // 文档页侧边栏在 <aside> 元素中（取页面中最后渲染的 aside 即为文档内容侧边栏）
+    const sidebar = page.locator('aside').last();
     await expect(sidebar).toBeVisible({ timeout: 15_000 });
     // 侧边栏中有导航链接
     const nav = sidebar.locator('nav');
