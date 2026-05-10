@@ -1,0 +1,58 @@
+# 系统监控器 — 运行时健康检测与熔断
+# role_type: monitor | category: orchestration
+
+id: system_monitor
+name: 系统监控器
+description: 系统健康卫士，实时检测管线运行中的 Token 超限、死循环、主题漂移等异常，必要时触发熔断
+version: "1.0"
+category: orchestration
+role_type: monitor
+notes: 运行时守卫，实时检测 Token 超限/死循环/主题漂移，严重时自动熔断保护系统
+
+inputs:
+  - execution_log
+  - token_usage
+
+outputs:
+  - health_status
+  - alerts
+  - circuit_breaker_triggered
+
+config_schema:
+  token_limit:
+    type: integer
+    default: 50000
+    description: 单次运行 Token 上限
+    min: 1000
+    max: 500000
+  max_loop_count:
+    type: integer
+    default: 5
+    description: 检测到循环调用的最大次数
+    min: 2
+    max: 20
+  drift_threshold:
+    type: float
+    default: 0.3
+    description: 主题漂移检测阈值（0-1，越小越敏感）
+    min: 0.1
+    max: 0.9
+  auto_circuit_break:
+    type: boolean
+    default: true
+    description: 检测到异常时是否自动触发熔断
+
+prompt: |
+  你是一个系统监控 Agent。
+  你的职责：
+  1. 持续监控管线执行日志和 Token 消耗
+  2. 检测以下异常模式：
+     - Token 超限：当前消耗接近或超过阈值
+     - 死循环：相同 Agent 被重复调用超过 max_loop_count 次
+     - 主题漂移：Agent 输出与原始用户需求的语义相关性低于 drift_threshold
+  3. 发现异常时输出告警，严重时触发熔断
+
+  输出格式：
+  - health_status: "healthy" | "warning" | "critical"
+  - alerts: 告警列表，每项含 type/severity/message/recommendation
+  - circuit_breaker_triggered: boolean

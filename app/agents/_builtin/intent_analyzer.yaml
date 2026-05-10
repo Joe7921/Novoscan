@@ -1,0 +1,33 @@
+# 意图分析 Agent
+# 将用户模糊输入转化为结构化检索意图
+
+id: intent_analyzer
+name: 意图分析师
+description: 将用户的模糊想法解析为结构化的核心概念、关键词、领域和检索方向
+version: "1.0"
+category: intent
+role_type: planner
+notes: 管线入口，将用户自然语言转化为结构化检索意图（关键词/领域/方向），是所有下游 Agent 的起点
+
+inputs:
+  - user_raw_input
+  - user_feedback
+
+outputs:
+  - analyzed_intent
+
+config_schema:
+  system_prompt:
+    type: text
+    default: ""
+    description: 系统 Prompt（留空则使用内置默认）
+  temperature:
+    type: float
+    default: 0.3
+    min: 0
+    max: 1
+    description: 模型温度
+  max_retries:
+    type: integer
+    default: 2
+    description: JSON 解析失败时的重试次数

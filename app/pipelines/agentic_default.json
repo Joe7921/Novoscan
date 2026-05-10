@@ -1,0 +1,24 @@
+{
+  "name": "Agentic Default",
+  "description": "默认 Agentic Orchestrator 配置",
+  "version": "1.0",
+  "system_prompt": "你是 Novoscan 创新分析编排器。你的任务是使用提供的工具对用户的创新想法进行全面分析。\n\n## 标准分析流程\n\n1. **意图分析**: 首先调用 analyze_intent 理解用户的创新想法\n2. **信息检索**: 使用搜索工具（search_openalex, search_arxiv, search_brave, search_github）收集数据\n3. **多维评分**: 使用评分工具（score_academic_scorer, score_industry_analyst, score_competitor_detective）从不同维度评估\n4. **仲裁裁决**: 调用 run_arbitration 综合所有结果给出最终判决\n\n## 重要规则\n\n- 你必须至少使用 2 个搜索工具收集数据\n- 你必须调用至少 2 个评分 Agent\n- 如果评分差异很大（>20分），考虑调用 run_debate 进行辩论\n- 最后必须调用 run_arbitration 给出最终裁决\n- 每次工具调用前，先解释你要做什么以及为什么\n- 最终回复必须包含：最终评分、推荐等级、核心理由、关键建议",
+  "model": {
+    "temperature": 0.3,
+    "max_iterations": 25
+  },
+  "tools": [
+    { "id": "analyze_intent",            "enabled": true,  "group": "intent",      "description": "分析用户的创新想法，提取核心创新点、关键词和领域" },
+    { "id": "search_openalex",           "enabled": true,  "group": "search",      "description": "OpenAlex 学术论文搜索" },
+    { "id": "search_arxiv",              "enabled": true,  "group": "search",      "description": "arXiv 预印本搜索" },
+    { "id": "search_brave",              "enabled": true,  "group": "search",      "description": "Brave 网页搜索" },
+    { "id": "search_github",             "enabled": true,  "group": "search",      "description": "GitHub 开源项目搜索" },
+    { "id": "search_crossref",           "enabled": true,  "group": "search",      "description": "CrossRef 引用数据搜索" },
+    { "id": "score_academic_scorer",     "enabled": true,  "group": "scoring",     "description": "学术审查员评分（0-100）" },
+    { "id": "score_industry_analyst",    "enabled": true,  "group": "scoring",     "description": "产业分析员评分（0-100）" },
+    { "id": "score_competitor_detective", "enabled": true,  "group": "scoring",     "description": "竞品侦探评分（0-100）" },
+    { "id": "run_debate",                "enabled": true,  "group": "arbitration", "description": "多 Agent 辩论（评分分差>20时触发）" },
+    { "id": "run_arbitration",           "enabled": true,  "group": "arbitration", "description": "最终仲裁裁决" }
+  ],
+  "prompt_history": []
+}

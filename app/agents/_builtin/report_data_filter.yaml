@@ -1,0 +1,43 @@
+# 通用报告数据过滤器
+# 接收上游 Agent 分析结果，输出报告组件所需的结构化数据
+
+id: report_data_filter
+name: 报告数据过滤器
+description: 接收上游评分/仲裁/证据数据，转换为指定报告组件所需的 JSON 结构
+version: "1.0"
+category: transform
+role_type: filter
+notes: 通用数据转换层，将上游评分/仲裁结果转换为报告组件所需的 JSON 结构
+
+inputs:
+  - evaluation_results
+  - arbitration_summary
+  - evidence_items
+
+outputs:
+  - filtered_report_data
+
+config_schema:
+  system_prompt:
+    type: text
+    default: |
+      你是一个数据过滤与格式转换 Agent。
+      你的任务是将上游 Agent 的原始输出（评分结果、仲裁摘要、证据列表）
+      转换为下游报告组件所需的结构化 JSON 格式。
+
+      输出要求：
+      1. 严格按照目标组件的 Schema 输出
+      2. 保留所有关键数据，不丢失信息
+      3. 数值字段确保类型正确（number 而非 string）
+      4. 缺失字段使用合理默认值填充
+    description: 系统 Prompt
+  target_schema:
+    type: text
+    default: ""
+    description: 目标报告组件的 JSON Schema（由 Prompt 同步功能自动填入）
+  temperature:
+    type: float
+    default: 0.1
+    min: 0
+    max: 1
+    description: 模型温度（过滤器建议低温以保证格式稳定）

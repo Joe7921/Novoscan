@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novoscan Next — 下一阶段产品迭代策略</title>
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --B:#4285F4; --R:#EA4335; --Y:#FBBC05; --G:#34A853; --P:#7C3AED;
+    --BL:#E8F0FE; --RL:#FCE8E6; --YL:#FEF7E0; --GL:#E6F4EA; --PL:#F3E8FF;
+    --bg:#FAFBFD; --sf:#FFFFFF; --t1:#1A1A2E; --t2:#5F6368; --t3:#9AA0A6;
+    --bd:#E8EAED; --r:12px; --rs:8px;
+  }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",Arial,sans-serif; background:var(--bg); color:var(--t1); line-height:1.72; font-size:14.5px; -webkit-font-smoothing:antialiased; }
+  @media print {
+    body{background:#fff;font-size:12px;line-height:1.55}
+    .hero{min-height:auto!important;padding:32px 0 24px!important;overflow:visible!important}
+    .hero h1{font-size:26px!important}
+    .hero .sub{font-size:14px!important}
+    .container{max-width:100%!important;padding:0 16px!important}
+    section{padding:20px 0!important}
+    .card,.sc{box-shadow:none!important;border:1px solid #e8eaed!important}
+    .page-break{page-break-before:always}
+    .pf,.ba,.cg,.cg2,.cg3,.fl,.ct,.hl,.card,.sc,.stats,.bl,.fi{page-break-inside:avoid}
+    .st{font-size:20px!important}
+    .sd{font-size:12px!important;margin-bottom:16px!important}
+    .hl{padding:18px!important;margin-bottom:18px!important}
+    .hl h3{font-size:14px!important}
+    .hl p,.hl ul li{font-size:11px!important}
+    .ba{gap:8px!important}
+    .bl{padding:14px!important}
+    .cg{gap:8px!important}
+    .card{padding:14px!important}
+  }
+  @page { size:A4; margin:16mm 12mm; }
+  .container { max-width:780px; margin:0 auto; padding:0 24px; }
+
+  /* Hero */
+  .hero { background:linear-gradient(135deg,#FAFBFD 0%,var(--PL) 50%,#F5F0FF 100%); padding:56px 0 40px; text-align:center; position:relative; overflow:visible; }
+  .hero::before { content:''; position:absolute; top:-80px; right:-80px; width:260px; height:260px; border-radius:50%; background:radial-gradient(circle,rgba(124,58,237,0.06) 0%,transparent 70%); }
+  .hero::after  { content:''; position:absolute; bottom:-60px; left:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,rgba(66,133,244,0.05) 0%,transparent 70%); }
+  .badge { display:inline-flex; align-items:center; gap:6px; background:var(--sf); border:1px solid var(--bd); border-radius:999px; padding:5px 16px; font-size:11px; font-weight:700; color:var(--P); letter-spacing:.5px; text-transform:uppercase; margin-bottom:18px; }
+  .badge .dot { width:6px; height:6px; border-radius:50%; background:var(--G); }
+  .hero h1 { font-size:30px; font-weight:800; letter-spacing:-.5px; margin-bottom:10px; }
+  .hero h1 span { background:linear-gradient(135deg,var(--P),#9F67FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero .sub { font-size:15px; color:var(--t2); max-width:620px; margin:0 auto 8px; }
+  .hero .sub2 { font-size:12px; color:var(--t3); max-width:560px; margin:0 auto 20px; }
+  .hero-colors { display:flex; justify-content:center; gap:8px; }
+  .hero-colors div { width:36px; height:4px; border-radius:2px; }
+
+  /* Sections */
+  section { padding:44px 0; }
+  .sl { display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
+  .sl .bar { width:20px; height:2px; border-radius:1px; }
+  .st { font-size:24px; font-weight:800; letter-spacing:-.3px; margin-bottom:4px; }
+  .sd { font-size:14px; color:var(--t2); margin-bottom:28px; max-width:640px; }
+  .divider { height:1px; background:linear-gradient(90deg,transparent,var(--bd) 20%,var(--bd) 80%,transparent); margin:6px 0; }
+
+  /* Stat Row */
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:36px; }
+  .sc { text-align:center; background:var(--sf); border:1px solid var(--bd); border-radius:var(--r); padding:20px 10px; }
+  .sc .n { font-size:30px; font-weight:800; letter-spacing:-1px; line-height:1; margin-bottom:3px; }
+  .sc .l { font-size:11px; font-weight:600; color:var(--t3); text-transform:uppercase; letter-spacing:.4px; }
+
+  /* Cards */
+  .cg { display:grid; gap:14px; }
+  .cg3 { grid-template-columns:repeat(3,1fr); }
+  .cg2 { grid-template-columns:repeat(2,1fr); }
+  .card { background:var(--sf); border:1px solid var(--bd); border-radius:var(--r); padding:22px; box-shadow:0 1px 3px rgba(0,0,0,.03); }
+  .card .ci { width:38px; height:38px; border-radius:var(--rs); display:flex; align-items:center; justify-content:center; font-size:19px; margin-bottom:12px; }
+  .card h3 { font-size:14px; font-weight:700; margin-bottom:4px; }
+  .card p { font-size:12.5px; color:var(--t2); line-height:1.6; }
+
+  /* Pipeline Flow */
+  .pf { background:var(--sf); border:1px solid var(--bd); border-radius:var(--r); padding:20px 16px; margin-bottom:32px; overflow-x:auto; page-break-inside:avoid; }
+  .pf .row { display:flex; align-items:center; justify-content:center; gap:0; flex-wrap:nowrap; }
+  .fn { display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 8px; border-radius:var(--rs); min-width:60px; text-align:center; border:1px solid; flex-shrink:0; }
+  .fn .fi { font-size:15px; }
+  .fn .ft { font-size:9px; font-weight:700; white-space:nowrap; }
+  .fa { font-size:15px; color:var(--t3); margin:0 3px; flex-shrink:0; }
+
+  /* Highlight Section */
+  .hl { border-radius:var(--r); padding:24px; margin-bottom:24px; page-break-inside:avoid; }
+  .hl h3 { font-size:16px; font-weight:800; margin-bottom:5px; }
+  .hl p  { font-size:13px; line-height:1.65; }
+  .hl ul { list-style:none; font-size:13px; padding:0; margin-top:10px; }
+  .hl ul li { padding:4px 0; display:flex; align-items:flex-start; gap:8px; }
+  .hl ul li::before { content:'✓'; font-weight:700; font-size:11px; width:18px; height:18px; display:flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0; margin-top:1px; }
+
+  .hl-b { background:var(--BL); border:1px solid rgba(66,133,244,.12); }
+  .hl-b h3,.hl-b li { color:#1A56DB; }
+  .hl-b p { color:#3367D6; }
+  .hl-b ul li::before { background:rgba(66,133,244,.12); color:var(--B); }
+
+  .hl-p { background:var(--PL); border:1px solid rgba(124,58,237,.12); }
+  .hl-p h3,.hl-p li { color:#5B21B6; }
+  .hl-p p { color:#6D28D9; }
+  .hl-p ul li::before { background:rgba(124,58,237,.12); color:var(--P); }
+
+  .hl-g { background:var(--GL); border:1px solid rgba(52,168,83,.12); }
+  .hl-g h3,.hl-g li { color:#137333; }
+  .hl-g p { color:#1E8E3E; }
+  .hl-g ul li::before { background:rgba(52,168,83,.12); color:var(--G); }
+
+  .hl-y { background:var(--YL); border:1px solid rgba(251,188,5,.15); }
+  .hl-y h3,.hl-y li { color:#A36B00; }
+  .hl-y p { color:#B07800; }
+  .hl-y ul li::before { background:rgba(251,188,5,.15); color:#D69E02; }
+
+  .hl-r { background:var(--RL); border:1px solid rgba(234,67,53,.12); }
+  .hl-r h3,.hl-r li { color:#C5221F; }
+  .hl-r p { color:#D93025; }
+  .hl-r ul li::before { background:rgba(234,67,53,.12); color:var(--R); }
+
+  /* Block Architecture */
+  .ba { display:flex; gap:12px; margin-bottom:28px; page-break-inside:avoid; }
+  .bl { flex:1; border-radius:var(--r); padding:22px; border:1px solid; text-align:center; }
+  .bl .lt { display:inline-block; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:1px; padding:2px 10px; border-radius:999px; margin-bottom:8px; }
+  .bl h4 { font-size:15px; font-weight:800; margin-bottom:3px; }
+  .bl p { font-size:11.5px; line-height:1.5; }
+  .bl ul { list-style:none; margin-top:8px; font-size:11.5px; text-align:left; padding:0; }
+  .bl ul li { padding:2px 0; display:flex; align-items:center; gap:5px; }
+  .bl ul li::before { content:''; width:4px; height:4px; border-radius:50%; flex-shrink:0; }
+  .layer-b { background:var(--BL); border-color:rgba(66,133,244,.15); }
+  .layer-b .lt { background:rgba(66,133,244,.12); color:var(--B); }
+  .layer-b h4,.layer-b p { color:#1A56DB; }
+  .layer-b ul li { color:#3367D6; }
+  .layer-b ul li::before { background:var(--B); }
+  .layer-g { background:var(--GL); border-color:rgba(52,168,83,.15); }
+  .layer-g .lt { background:rgba(52,168,83,.12); color:var(--G); }
+  .layer-g h4,.layer-g p { color:#137333; }
+  .layer-g ul li { color:#1E8E3E; }
+  .layer-g ul li::before { background:var(--G); }
+  .layer-y { background:var(--YL); border-color:rgba(251,188,5,.15); }
+  .layer-y .lt { background:rgba(251,188,5,.15); color:#D69E02; }
+  .layer-y h4,.layer-y p { color:#A36B00; }
+  .layer-y ul li { color:#B07800; }
+  .layer-y ul li::before { background:var(--Y); }
+  .layer-p { background:var(--PL); border-color:rgba(124,58,237,.15); }
+  .layer-p .lt { background:rgba(124,58,237,.12); color:var(--P); }
+  .layer-p h4,.layer-p p { color:#5B21B6; }
+  .layer-p ul li { color:#6D28D9; }
+  .layer-p ul li::before { background:var(--P); }
+  .layer-r { background:var(--RL); border-color:rgba(234,67,53,.15); }
+  .layer-r .lt { background:rgba(234,67,53,.12); color:var(--R); }
+  .layer-r h4,.layer-r p { color:#C5221F; }
+  .layer-r ul li { color:#D93025; }
+  .layer-r ul li::before { background:var(--R); }
+
+  /* Comparison Table */
+  .ct { width:100%; border-collapse:separate; border-spacing:0; background:var(--sf); border:1px solid var(--bd); border-radius:var(--r); overflow:hidden; margin-bottom:32px; page-break-inside:avoid; }
+  .ct thead th { background:var(--BL); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--B); padding:10px 16px; text-align:left; border-bottom:1px solid rgba(66,133,244,.12); }
+  .ct tbody td { padding:10px 16px; font-size:13px; border-bottom:1px solid var(--bd); color:var(--t2); }
+  .ct tbody tr:last-child td { border-bottom:none; }
+  .ct tbody td:first-child { font-weight:600; color:var(--t1); white-space:nowrap; }
+  .ct .tag { display:inline-block; font-size:10px; font-weight:600; padding:2px 9px; border-radius:999px; }
+  .ct .novo-row td { background:rgba(124,58,237,.03); }
+  .ct .novo-row td:first-child { color:var(--P); }
+
+  /* Feature List Compact */
+  .fl { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:28px; }
+  .fi { display:flex; align-items:flex-start; gap:10px; background:var(--sf); border:1px solid var(--bd); border-radius:var(--rs); padding:14px; }
+  .fi .fii { width:30px; height:30px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+  .fi h4 { font-size:12.5px; font-weight:700; margin-bottom:1px; }
+  .fi p { font-size:11.5px; color:var(--t3); line-height:1.5; }
+
+  /* Footer */
+  .footer { text-align:center; padding:28px 0; border-top:1px solid var(--bd); margin-top:16px; }
+  .footer p { font-size:11px; color:var(--t3); }
+  .footer .dots { display:flex; justify-content:center; gap:6px; margin-bottom:8px; }
+  .footer .dots span { width:7px; height:7px; border-radius:50%; }
+
+  /* Helpers */
+  .pill-sm { display:inline-block; font-size:10px; font-weight:600; padding:2px 10px; border-radius:999px; }
+  .center { text-align:center; }
+  .mb0 { margin-bottom:0; }
+  .mt-sm { margin-top:10px; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="badge"><span class="dot"></span>Iteration Strategy · 2026</div>
+    <h1><span>Novoscan</span> Next</h1>
+    <p class="sub">下一阶段产品迭代策略<br>放大核心竞争壁垒，补齐关键短板，引入全新增长引擎</p>
+    <p class="sub2">9 项策略 · 4 级优先级 · 护城河 + 补短板 + 新能力</p>
+    <div class="hero-colors">
+      <div style="background:var(--P);"></div>
+      <div style="background:var(--B);"></div>
+      <div style="background:var(--G);"></div>
+      <div style="background:var(--Y);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- KEY NUMBERS -->
+<section>
+  <div class="container">
+    <div class="stats">
+      <div class="sc"><div class="n" style="color:var(--P);">9</div><div class="l">策略总数</div></div>
+      <div class="sc"><div class="n" style="color:var(--R);">3</div><div class="l">护城河策略</div></div>
+      <div class="sc"><div class="n" style="color:var(--Y);">4</div><div class="l">补短板策略</div></div>
+      <div class="sc"><div class="n" style="color:var(--G);">2</div><div class="l">新能力引入</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- #1 — 竞争格局定位 -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--P);"><span class="bar" style="background:var(--P);"></span> Competitive Landscape</div>
+    <h2 class="st">竞争格局定位</h2>
+    <p class="sd">不做通用 AI 平台，专注"让 AI 评估创新"的垂直赛道——差异化定位是我们最大的竞争优势</p>
+
+    <table class="ct">
+      <thead><tr><th>项目</th><th>定位</th><th>核心差异</th><th>对抗辩论</th><th>结构化仲裁</th></tr></thead>
+      <tbody>
+        <tr><td>Dify</td><td>通用 AI 应用平台</td><td>覆盖广但无深度评估能力</td><td><span class="tag" style="background:var(--RL);color:var(--R);">✗</span></td><td><span class="tag" style="background:var(--RL);color:var(--R);">✗</span></td></tr>
+        <tr><td>LangFlow</td><td>可视化编排工具</td><td>纯工具层，无业务场景</td><td><span class="tag" style="background:var(--RL);color:var(--R);">✗</span></td><td><span class="tag" style="background:var(--RL);color:var(--R);">✗</span></td></tr>
+        <tr><td>CrewAI</td><td>多角色协作框架</td><td>通用协作，无评估体系</td><td><span class="tag" style="background:var(--YL);color:#D69E02;">弱</span></td><td><span class="tag" style="background:var(--RL);color:var(--R);">✗</span></td></tr>
+        <tr><td>AutoGen</td><td>多角色对话框架</td><td>自由对话，无流程管控</td><td><span class="tag" style="background:var(--YL);color:#D69E02;">弱</span></td><td><span class="tag" style="background:var(--RL);color:var(--R);">✗</span></td></tr>
+        <tr class="novo-row"><td>Novoscan</td><td>创新评估专用引擎</td><td><strong>唯一内置多角色对抗辩论 + 仲裁 + 质量把关</strong></td><td><span class="tag" style="background:var(--GL);color:var(--G);">✓ 完整</span></td><td><span class="tag" style="background:var(--GL);color:var(--G);">✓ 完整</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- #2 — 放大优势：三个护城河 -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--B);"><span class="bar" style="background:var(--B);"></span> Moat Strategy</div>
+    <h2 class="st">放大优势 — 三个护城河</h2>
+    <p class="sd">将已有独特能力抽离、标准化、品牌化，形成开源生态护城河</p>
+
+    <div class="ba">
+      <div class="bl layer-b">
+        <span class="lt">策略 A</span>
+        <h4>辩论引擎开放化</h4>
+        <p>独立产品 · 行业标准</p>
+        <ul>
+          <li>将核心辩论能力抽离为可独立使用的产品</li>
+          <li>定义标准化辩论流程：命题 → 正反方对抗 → 裁判 → 结论</li>
+          <li>开放自定义角色和裁判规则，降低使用门槛</li>
+          <li>发布对比数据：多角色辩论 vs 单角色评分准确率提升</li>
+        </ul>
+      </div>
+      <div class="bl layer-g">
+        <span class="lt">策略 B</span>
+        <h4>积木生态市场</h4>
+        <p>评估领域的“应用商店”</p>
+        <ul>
+          <li>建立积木市场，用户可发布和下载评估模块</li>
+          <li>定义统一互操作标准，保证生态兼容性</li>
+          <li>首批提供 5-8 个行业模板，降低上手门槛</li>
+          <li>社区评价 + 质量评分机制，确保内容质量</li>
+        </ul>
+      </div>
+      <div class="bl layer-p">
+        <span class="lt">策略 C</span>
+        <h4>模型兼容层品牌化</h4>
+        <p>多模型适配器 · 引流利器</p>
+        <ul>
+          <li>将模型兼容能力抽离为可独立使用的产品</li>
+          <li>发布 20+ 主流模型兼容性测试报告</li>
+          <li>通过开源社区推广，将用户引流到主产品</li>
+          <li>解决行业普遍痛点：不同 AI 模型输出格式不统一</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="center">
+      <span style="display:inline-block;background:var(--sf);border:1px solid var(--bd);border-radius:999px;padding:5px 18px;font-size:11px;color:var(--t2);font-weight:600;">
+        核心逻辑：把独有能力抽离为独立工具 → 吸引非 Novoscan 用户 → 引流回主项目
+      </span>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- #3 — 弥补劣势：四个补短板 -->
+<section class="page-break">
+  <div class="container">
+    <div class="sl" style="color:var(--R);"><span class="bar" style="background:var(--R);"></span> Gap Closing</div>
+    <h2 class="st">弥补劣势 — 四个补短板</h2>
+    <p class="sd">针对用户最关心的数据接入、评分稳定性、使用成本和结果可信度四大短板逐一击破</p>
+
+    <div class="cg cg2" style="margin-bottom:16px;">
+      <div class="hl hl-b mb0">
+        <span class="pill-sm" style="background:rgba(66,133,244,.12);color:var(--B);">策略 D</span>
+        <h3 class="mt-sm">引入本地知识库</h3>
+        <p>现有短板：仅支持外部网络搜索，企业私有文档无法接入。</p>
+        <ul>
+          <li>新增本地文档检索能力，支持主流知识库对接</li>
+          <li>与现有网络搜索并行工作，无破坏性升级</li>
+          <li>支持"私有文档 + 网络搜索"混合模式</li>
+          <li>开放社区贡献新的数据源对接</li>
+        </ul>
+      </div>
+      <div class="hl hl-r mb0">
+        <span class="pill-sm" style="background:rgba(234,67,53,.12);color:var(--R);">策略 E</span>
+        <h3 class="mt-sm">评分稳定性与可重复性</h3>
+        <p>现有短板：AI 打分存在波动，同一输入两次运行结果可能不同，影响用户信任。</p>
+        <ul>
+          <li>引入多次评分统计校准机制，剔除异常值</li>
+          <li>提供"快速模式"和"精确模式"两档，平衡速度与精度</li>
+          <li>发布评分一致性对比数据，让用户眉见提升效果</li>
+          <li>目标：让评估结果"可信赖、可复现"</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cg cg2">
+      <div class="hl hl-y mb0">
+        <span class="pill-sm" style="background:rgba(251,188,5,.15);color:#D69E02;">策略 F</span>
+        <h3 class="mt-sm">智能缓存与成本控制</h3>
+        <p>现有短板：无缓存机制，重复查询仍需全量调用 AI，测试阶段成本高。</p>
+        <ul>
+          <li>引入两级智能缓存，相同查询直接返回已有结果</li>
+          <li>缓存有效期可配置，平衡新鲜度与成本</li>
+          <li>控制台展示"本次运行节省的调用次数"，成本可视化</li>
+          <li>大幅降低测试和日常使用的 AI 调用成本</li>
+        </ul>
+      </div>
+      <div class="hl hl-g mb0">
+        <span class="pill-sm" style="background:rgba(52,168,83,.12);color:var(--G);">策略 G</span>
+        <h3 class="mt-sm">质量把关升级为"断路器"</h3>
+        <p>现有短板：质量检查只记录问题不阻断流程，严重问题时报告仍会生成。</p>
+        <ul>
+          <li>增加问题严重等级分类：提示 / 警告 / 严重</li>
+          <li>严重问题自动阻断流程，通知人工介入处理</li>
+          <li>红/黄/绿信号灯可视化面板，一眼看清评估状态</li>
+          <li>目标：让评估结果"可信赖"而非"跑完不管对不对"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- #4 — 引入新能力 -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--G);"><span class="bar" style="background:var(--G);"></span> New Capabilities</div>
+    <h2 class="st">引入新能力 — 两个前沿策略</h2>
+    <p class="sd">从“一个产品”升级为“一种可集成的能力”，从“结果导向”做到“全过程透明”</p>
+
+    <div class="cg cg2">
+      <div class="hl hl-p mb0">
+        <span class="pill-sm" style="background:rgba(124,58,237,.12);color:var(--P);">策略 H</span>
+        <h3 class="mt-sm">评估即服务（EaaS）</h3>
+        <p>将 Novoscan 的评估能力包装为标准接口，任何系统都可以一键调用。</p>
+        <ul>
+          <li>标准接口：输入创新方案 → 输出结构化评估报告</li>
+          <li>评估完成自动通知调用方，支持异步工作流</li>
+          <li>提供官方开发包，降低集成成本</li>
+          <li>生态集成：Notion、Slack、GitHub 等主流工具对接</li>
+          <li>从"一个产品"升级为"一种可被集成的能力"</li>
+        </ul>
+      </div>
+      <div class="hl hl-b mb0">
+        <span class="pill-sm" style="background:rgba(66,133,244,.12);color:var(--B);">策略 I</span>
+        <h3 class="mt-sm">评估过程全链路追溯</h3>
+        <p>完整记录每次评估的全过程，支持回放、对比和审计。</p>
+        <ul>
+          <li>记录每个环节的输入、输出、耗时和资源消耗</li>
+          <li>支持主流可视化追踪工具对接</li>
+          <li>支持两次评估结果的差异对比分析</li>
+          <li>可开放数据集供学术研究与行业合作</li>
+          <li>竞品都是"黑盒"，Novoscan 全过程透明可追溯</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- #5 — 执行路线图 -->
+<section class="page-break">
+  <div class="container">
+    <div class="sl" style="color:var(--B);"><span class="bar" style="background:var(--B);"></span> Roadmap</div>
+    <h2 class="st">执行优先级路线图</h2>
+    <p class="sd">从 P0 到 P3 分四阶段落地，先建核心差异化，再扩展生态与平台能力</p>
+
+    <div class="pf">
+      <div class="row">
+        <div class="fn" style="background:var(--RL);border-color:rgba(234,67,53,.15);"><span class="fi">🔥</span><span class="ft" style="color:var(--R);">P0 · 立即</span></div>
+        <span class="fa">→</span>
+        <div class="fn" style="background:var(--YL);border-color:rgba(251,188,5,.15);"><span class="fi">⚡</span><span class="ft" style="color:#D69E02;">P1 · 短期</span></div>
+        <span class="fa">→</span>
+        <div class="fn" style="background:var(--BL);border-color:rgba(66,133,244,.15);"><span class="fi">📈</span><span class="ft" style="color:var(--B);">P2 · 中期</span></div>
+        <span class="fa">→</span>
+        <div class="fn" style="background:var(--GL);border-color:rgba(52,168,83,.15);"><span class="fi">🚀</span><span class="ft" style="color:var(--G);">P3 · 长期</span></div>
+      </div>
+    </div>
+
+    <div class="cg cg2" style="margin-bottom:16px;">
+      <div class="hl hl-r mb0">
+        <h3>🔥 P0 — 立即执行（3-4 周）</h3>
+        <p>核心差异化 + 最大信任痛点，优先级最高。</p>
+        <ul>
+          <li><strong>策略 A — 辩论引擎开放化：</strong>核心能力独立产品化，对外发布（2-3 周）</li>
+          <li><strong>策略 E — 评分稳定性：</strong>引入多次校准机制 + 发布对比数据（1-2 周）</li>
+        </ul>
+      </div>
+      <div class="hl hl-y mb0">
+        <h3>⚡ P1 — 短期跟进（2-3 周）</h3>
+        <p>投入小见效快，快速提升用户体验。</p>
+        <ul>
+          <li><strong>策略 C — 模型兼容层品牌化：</strong>独立产品发布推广（1 周）</li>
+          <li><strong>策略 G — 质量把关断路器：</strong>严重问题自动阻断（3-5 天）</li>
+          <li><strong>策略 F — 智能缓存：</strong>降低重复调用成本（1 周）</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cg cg2">
+      <div class="hl hl-b mb0">
+        <h3>📈 P2 — 中期建设（4-6 周）</h3>
+        <p>企业场景刚需 + 生态基础设施。</p>
+        <ul>
+          <li><strong>策略 D — 本地知识库：</strong>企业私有文档检索能力（3-4 周）</li>
+          <li><strong>策略 B — 积木生态市场：</strong>标准定义 + 分发平台（4-6 周）</li>
+        </ul>
+      </div>
+      <div class="hl hl-g mb0">
+        <h3>🚀 P3 — 长期布局（4-6 周）</h3>
+        <p>产品形态升级，需先稳定核心后推进。</p>
+        <ul>
+          <li><strong>策略 H — 评估即服务：</strong>标准接口 + 生态集成（4-6 周）</li>
+          <li><strong>策略 I — 全链路追溯：</strong>过程透明 + 差异对比（3-4 周）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- #6 — 优先级矩阵 -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--Y);"><span class="bar" style="background:var(--Y);"></span> Priority Matrix</div>
+    <h2 class="st">策略优先级矩阵</h2>
+    <p class="sd">9 项策略按差异化价值、市场影响力和实施成本综合排序</p>
+
+    <table class="ct">
+      <thead><tr><th style="width:8%;">优先级</th><th style="width:22%;">策略</th><th>核心理由</th><th style="width:14%;">预估工期</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag" style="background:var(--RL);color:var(--R);">P0</span></td><td>A — 辩论引擎开放化</td><td>核心差异化能力，竞品完全没有，独立产品化后可快速扩大影响力</td><td>2-3 周</td></tr>
+        <tr><td><span class="tag" style="background:var(--RL);color:var(--R);">P0</span></td><td>E — 评分稳定性</td><td>解决 AI 评分最大信任痛点，所有同类方案的共性短板</td><td>1-2 周</td></tr>
+        <tr><td><span class="tag" style="background:var(--YL);color:#D69E02;">P1</span></td><td>C — 模型兼容层品牌化</td><td>投入极小，解决普遍痛点，引流利器</td><td>1 周</td></tr>
+        <tr><td><span class="tag" style="background:var(--YL);color:#D69E02;">P1</span></td><td>G — 质量把关断路器</td><td>提升评估可信度，改动量极小</td><td>3-5 天</td></tr>
+        <tr><td><span class="tag" style="background:var(--YL);color:#D69E02;">P1</span></td><td>F — 智能缓存</td><td>降低使用成本，提升用户体验</td><td>1 周</td></tr>
+        <tr><td><span class="tag" style="background:var(--BL);color:var(--B);">P2</span></td><td>D — 本地知识库</td><td>企业私有文档接入刚需，工作量较大但市场需求明确</td><td>3-4 周</td></tr>
+        <tr><td><span class="tag" style="background:var(--BL);color:var(--B);">P2</span></td><td>B — 积木生态市场</td><td>生态飞轮核心，需社区达到一定规模后才有意义</td><td>4-6 周</td></tr>
+        <tr><td><span class="tag" style="background:var(--GL);color:var(--G);">P3</span></td><td>H — 评估即服务</td><td>产品形态升级为平台级能力，依赖核心稳定</td><td>4-6 周</td></tr>
+        <tr><td><span class="tag" style="background:var(--GL);color:var(--G);">P3</span></td><td>I — 全链路追溯</td><td>长期差异化 + 学术合作价值，依赖基础设施完善</td><td>3-4 周</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- #7 — 总结 -->
+<section>
+  <div class="container" style="text-align:center;padding:32px 24px;">
+    <div class="sl" style="color:var(--P);justify-content:center;"><span class="bar" style="background:var(--P);"></span> Summary</div>
+    <h2 class="st" style="margin-bottom:20px;">一句话总结</h2>
+
+    <div style="display:inline-block;background:linear-gradient(135deg,var(--PL),var(--BL));border:1px solid rgba(124,58,237,.12);border-radius:var(--r);padding:28px 36px;max-width:640px;">
+      <p style="font-size:16px;font-weight:700;color:#5B21B6;line-height:1.7;margin-bottom:0;">
+        "把对抗辩论引擎做成行业标准，<br>
+        把评分可靠性做到行业最高，<br>
+        把积木生态做成评估领域的应用商店。"
+      </p>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="ba" style="justify-content:center;margin-bottom:0;">
+        <div style="text-align:center;padding:12px 20px;">
+          <div style="font-size:24px;margin-bottom:4px;">⚔️</div>
+          <div style="font-size:11px;font-weight:700;color:var(--B);">辩论引擎</div>
+          <div style="font-size:10px;color:var(--t3);">行业标准</div>
+        </div>
+        <div style="font-size:20px;color:var(--t3);display:flex;align-items:center;">+</div>
+        <div style="text-align:center;padding:12px 20px;">
+          <div style="font-size:24px;margin-bottom:4px;">📊</div>
+          <div style="font-size:11px;font-weight:700;color:var(--R);">评分稳定性</div>
+          <div style="font-size:10px;color:var(--t3);">行业最高</div>
+        </div>
+        <div style="font-size:20px;color:var(--t3);display:flex;align-items:center;">+</div>
+        <div style="text-align:center;padding:12px 20px;">
+          <div style="font-size:24px;margin-bottom:4px;">🧩</div>
+          <div style="font-size:11px;font-weight:700;color:var(--G);">积木生态</div>
+          <div style="font-size:10px;color:var(--t3);">应用商店</div>
+        </div>
+        <div style="font-size:20px;color:var(--t3);display:flex;align-items:center;">→</div>
+        <div style="text-align:center;padding:12px 20px;">
+          <div style="font-size:24px;margin-bottom:4px;">🏆</div>
+          <div style="font-size:11px;font-weight:700;color:var(--P);">差异化壁垒</div>
+          <div style="font-size:10px;color:var(--t3);">不可复制</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="container">
+    <div class="dots">
+      <span style="background:var(--P);"></span>
+      <span style="background:var(--B);"></span>
+      <span style="background:var(--G);"></span>
+      <span style="background:var(--Y);"></span>
+    </div>
+    <p><strong>Novoscan Next</strong> · 下一阶段产品迭代策略</p>
+    <p style="margin-top:3px;">Antigravity Projects &copy; 2026</p>
+  </div>
+</div>
+
+</body>
+</html>

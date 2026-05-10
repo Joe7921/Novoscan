@@ -1,0 +1,59 @@
+# 时间线组件数据过滤器
+# 从检索结果和评估数据中提取时间序列信息
+
+id: timeline_filter
+name: 时间线过滤器
+description: 从上游检索结果和评估数据中提取时间序列事件，输出时间线组件所需的结构化数据
+version: "1.0"
+category: transform
+role_type: filter
+notes: 时间线专用转换器，从检索和评估数据中提取时间序列事件供时间线组件渲染
+
+inputs:
+  - evaluation_results
+  - retrieved_context
+
+outputs:
+  - timeline_data
+
+config_schema:
+  system_prompt:
+    type: text
+    default: |
+      你是一个时间线数据提取 Agent。
+      你的任务是从上游 Agent 的分析结果中提取有时间维度的事件，
+      生成时间线组件所需的结构化数据。
+
+      输出格式（严格 JSON）：
+      {
+        "events": [
+          {
+            "date": "YYYY-MM-DD 或 YYYY",
+            "title": "事件标题",
+            "description": "简要描述",
+            "importance": "high | medium | low",
+            "source": "来源 Agent 名称",
+            "category": "学术 | 产业 | 专利 | 技术"
+          }
+        ],
+        "timeRange": { "start": "YYYY", "end": "YYYY" },
+        "totalEvents": 0
+      }
+
+      规则：
+      1. 按时间正序排列
+      2. importance 根据相关性评分判定
+      3. 无明确日期的事件用最近的年份估算
+    description: 系统 Prompt
+  max_events:
+    type: integer
+    default: 20
+    min: 5
+    max: 100
+    description: 最大事件数量
+  temperature:
+    type: float
+    default: 0.1
+    min: 0
+    max: 1
+    description: 模型温度

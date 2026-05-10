@@ -1,0 +1,9 @@
+id: search_crossref
+name: CrossRef 文献检索
+description: 搜索 CrossRef 文献数据库，返回学术文献元数据（标题、DOI、引用数、出版商）。补充 OpenAlex 的学术搜索。
+type: local
+entry: "app.tools.search:search_crossref"
+tags: [academic, literature, doi]
+detection_types: [academic, auto]
+config:
+  max_results: { type: integer, default: 10 }

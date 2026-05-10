@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================
+    NOVOSCAN OPEN-CORE DESIGN TOKEN
+    移植自主站 Novo Design Token System
+   ========================================= */
+
+:root {
+  --novo-brand-primary: #4285F4;
+  --novo-brand-secondary: #7C3AED;
+  --novo-brand-red: #EA4335;
+  --novo-brand-yellow: #FBBC05;
+  --novo-brand-green: #34A853;
+
+  --novo-bg-base: #ffffff;
+  --novo-bg-surface: #f9fafb;
+  --novo-bg-elevated: #ffffff;
+  --novo-bg-overlay: rgba(0, 0, 0, 0.5);
+  --novo-bg-hover: #f3f4f6;
+  --novo-bg-active: #e5e7eb;
+  --novo-bg-input: #ffffff;
+
+  --novo-text-primary: #111827;
+  --novo-text-secondary: #6b7280;
+  --novo-text-muted: #9ca3af;
+  --novo-text-disabled: #d1d5db;
+  --novo-text-inverse: #ffffff;
+
+  --novo-border-default: #e5e7eb;
+  --novo-border-strong: #d1d5db;
+  --novo-border-focus: #4285F4;
+
+  --novo-accent-primary: #4285F4;
+  --novo-accent-primary-hover: #3b78e0;
+  --novo-accent-primary-light: rgba(66, 133, 244, 0.1);
+  --novo-accent-success: #34A853;
+  --novo-accent-success-light: rgba(52, 168, 83, 0.1);
+  --novo-accent-warning: #FBBC05;
+  --novo-accent-warning-light: rgba(251, 188, 5, 0.1);
+  --novo-accent-danger: #EA4335;
+  --novo-accent-danger-light: rgba(234, 67, 53, 0.1);
+  --novo-accent-info: #8B5CF6;
+  --novo-accent-info-light: rgba(139, 92, 246, 0.1);
+
+  --novo-shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --novo-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --novo-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+  --novo-shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+
+  --novo-radius-sm: 6px;
+  --novo-radius-md: 10px;
+  --novo-radius-lg: 16px;
+  --novo-radius-xl: 24px;
+  --novo-radius-full: 9999px;
+
+  --novo-font-sans: 'Outfit', system-ui, sans-serif;
+  --novo-font-mono: 'JetBrains Mono', monospace;
+
+  --novo-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --novo-transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --novo-sidebar-width: 220px;
+  --novo-sidebar-bg: #ffffff;
+  --novo-sidebar-border: #e5e7eb;
+  --novo-sidebar-text: #6b7280;
+  --novo-sidebar-text-active: #111827;
+  --novo-sidebar-item-hover: #f3f4f6;
+  --novo-sidebar-item-active: rgba(66, 133, 244, 0.08);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--novo-text-primary);
+  background: var(--novo-bg-surface);
+  font-family: var(--novo-font-sans);
+  overflow-x: hidden;
+}
+
+/* 工具类 */
+@layer utilities {
+  .novo-card {
+    background: var(--novo-bg-elevated);
+    border: 1px solid var(--novo-border-default);
+    border-radius: var(--novo-radius-lg);
+    box-shadow: var(--novo-shadow-sm);
+    transition: all var(--novo-transition-normal);
+  }
+  .novo-card:hover {
+    box-shadow: var(--novo-shadow-md);
+  }
+
+  .novo-input {
+    background: var(--novo-bg-input);
+    border: 1px solid var(--novo-border-default);
+    border-radius: var(--novo-radius-md);
+    color: var(--novo-text-primary);
+    transition: border-color var(--novo-transition-fast), box-shadow var(--novo-transition-fast);
+  }
+  .novo-input:focus {
+    border-color: var(--novo-border-focus);
+    box-shadow: 0 0 0 3px var(--novo-accent-primary-light);
+    outline: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.gradient-text-brand {
+  background: linear-gradient(to right, var(--novo-accent-primary), var(--novo-accent-info));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s cubic-bezier(0.22, 0.68, 0.35, 1.0) both;
+}
+
+/* ── Studio Agent: ThinkingIndicator 脉冲 ── */
+@keyframes thinking-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.9); }
+}
+.thinking-pulse {
+  animation: thinking-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes thinking-dot-bounce {
+  0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-3px); }
+}
+.thinking-dot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--novo-accent-primary);
+  animation: thinking-dot-bounce 1.2s ease-in-out infinite;
+}
+
+/* ── Studio Agent: Timeline 节点圆点 ── */
+@keyframes timeline-dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(66, 133, 244, 0); }
+}
+.timeline-dot-running {
+  animation: timeline-dot-pulse 1.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; animation: none !important; }
+}

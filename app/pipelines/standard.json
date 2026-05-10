@@ -1,0 +1,72 @@
+{
+  "name": "标准分析管线",
+  "version": "1.0",
+  "description": "Novoscan-Open-Core 默认分析管线 — 意图确认 → 检索 → 评分 → 辩论(条件) → 仲裁 → 质量门 → 报告",
+  "nodes": [
+    {
+      "id": "intent_analyzer",
+      "type": "agent",
+      "agent_id": "intent_analyzer",
+      "description": "意图分析 — 解析用户输入，提取核心创新点"
+    },
+    {
+      "id": "human_check",
+      "type": "interaction",
+      "interaction_id": "hitl_confirm",
+      "description": "人工确认 — interrupt_before 实现 HITL 循环"
+    },
+    {
+      "id": "retrieval",
+      "type": "agent",
+      "agent_id": "react_retriever",
+      "description": "智能检索 — ReAct 多工具检索"
+    },
+    {
+      "id": "scoring",
+      "type": "interaction",
+      "interaction_id": "parallel_eval",
+      "description": "并行评分 — 从 Registry 动态加载所有 scoring Agent"
+    },
+    {
+      "id": "debate",
+      "type": "interaction",
+      "interaction_id": "adversarial_debate",
+      "description": "多轮辩论 — 分差 > 20 时触发",
+      "config": {
+        "trigger_threshold": 20,
+        "max_rounds": 3
+      }
+    },
+    {
+      "id": "arbitration",
+      "type": "agent",
+      "agent_id": "arbitration",
+      "description": "仲裁裁决 — 整合专家报告做最终判定"
+    },
+    {
+      "id": "quality_gate",
+      "type": "logic",
+      "description": "质量门 — 7 点纯逻辑检查，无 LLM 调用"
+    },
+    {
+      "id": "report_assembly",
+      "type": "report",
+      "report_id": "innovation_radar",
+      "description": "报告组装 — 按 YAML 模板生成结构化报告"
+    }
+  ],
+  "edges": [
+    {"from": "START", "to": "intent_analyzer"},
+    {"from": "intent_analyzer", "to": "human_check"},
+    {"from": "human_check", "to": "retrieval", "condition": "confirmed"},
+    {"from": "human_check", "to": "intent_analyzer", "condition": "revise"},
+    {"from": "retrieval", "to": "scoring"},
+    {"from": "scoring", "to": "debate", "condition": "score_gap > 20"},
+    {"from": "scoring", "to": "arbitration", "condition": "score_gap <= 20"},
+    {"from": "debate", "to": "arbitration"},
+    {"from": "arbitration", "to": "quality_gate"},
+    {"from": "quality_gate", "to": "report_assembly"},
+    {"from": "report_assembly", "to": "END"}
+  ],
+  "interrupt_before": ["human_check"]
+}

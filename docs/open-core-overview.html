@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novoscan Open-Core — 产品特色与竞争力概览</title>
+<style>
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --B:#4285F4; --R:#EA4335; --Y:#FBBC05; --G:#34A853; --P:#7C3AED;
+    --BL:#E8F0FE; --RL:#FCE8E6; --YL:#FEF7E0; --GL:#E6F4EA; --PL:#F3E8FF;
+    --bg:#FAFBFD; --sf:#FFFFFF; --t1:#1A1A2E; --t2:#5F6368; --t3:#9AA0A6;
+    --bd:#E8EAED; --r:12px; --rs:8px;
+  }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",Arial,sans-serif; background:var(--bg); color:var(--t1); line-height:1.72; font-size:14.5px; -webkit-font-smoothing:antialiased; }
+  @media print {
+    body{background:#fff;font-size:12px;line-height:1.55}
+    .hero{min-height:auto!important;padding:32px 0 24px!important;overflow:visible!important}
+    .hero h1{font-size:26px!important}
+    .hero .sub{font-size:14px!important}
+    .container{max-width:100%!important;padding:0 16px!important}
+    section{padding:20px 0!important}
+    .card,.sc{box-shadow:none!important;border:1px solid #e8eaed!important}
+    .page-break{page-break-before:always}
+    .studio-vis,.pf,.ba,.cg,.cg2,.cg3,.fl,.ct,.hl,.card,.sc,.stats,.dual-mode,.bl,.fi{page-break-inside:avoid}
+    .sv-body{min-height:auto!important}
+    .sv-canvas{padding:10px!important;gap:4px!important}
+    .sv-node{padding:4px 10px!important;font-size:9px!important}
+    .sv-edge{height:8px!important}
+    .sv-ai .ai-msg{font-size:7px!important;padding:3px 6px!important}
+    .st{font-size:20px!important}
+    .sd{font-size:12px!important;margin-bottom:16px!important}
+    .hl{padding:18px!important;margin-bottom:18px!important}
+    .hl h3{font-size:14px!important}
+    .hl p,.hl ul li{font-size:11px!important}
+    .ba{gap:8px!important}
+    .bl{padding:14px!important}
+    .cg{gap:8px!important}
+    .card{padding:14px!important}
+  }
+  @page { size:A4; margin:16mm 12mm; }
+  .container { max-width:780px; margin:0 auto; padding:0 24px; }
+
+  /* ═══ Hero ═══ */
+  .hero { background:linear-gradient(135deg,#FAFBFD 0%,var(--BL) 50%,#F0F4FF 100%); padding:56px 0 40px; text-align:center; position:relative; overflow:visible; }
+  .hero::before { content:''; position:absolute; top:-80px; right:-80px; width:260px; height:260px; border-radius:50%; background:radial-gradient(circle,rgba(66,133,244,0.06) 0%,transparent 70%); }
+  .hero::after  { content:''; position:absolute; bottom:-60px; left:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,rgba(52,168,83,0.05) 0%,transparent 70%); }
+  .badge { display:inline-flex; align-items:center; gap:6px; background:var(--sf); border:1px solid var(--bd); border-radius:999px; padding:5px 16px; font-size:11px; font-weight:700; color:var(--B); letter-spacing:.5px; text-transform:uppercase; margin-bottom:18px; }
+  .badge .dot { width:6px; height:6px; border-radius:50%; background:var(--G); }
+  .hero h1 { font-size:30px; font-weight:800; letter-spacing:-.5px; margin-bottom:10px; }
+  .hero h1 span { background:linear-gradient(135deg,var(--B),#5E97F6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .hero .sub { font-size:15px; color:var(--t2); max-width:620px; margin:0 auto 8px; }
+  .hero .sub2 { font-size:12px; color:var(--t3); max-width:560px; margin:0 auto 20px; }
+  .hero-colors { display:flex; justify-content:center; gap:8px; }
+  .hero-colors div { width:36px; height:4px; border-radius:2px; }
+
+  /* ═══ Sections ═══ */
+  section { padding:44px 0; }
+  .sl { display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:6px; }
+  .sl .bar { width:20px; height:2px; border-radius:1px; }
+  .st { font-size:24px; font-weight:800; letter-spacing:-.3px; margin-bottom:4px; }
+  .sd { font-size:14px; color:var(--t2); margin-bottom:28px; max-width:640px; }
+  .divider { height:1px; background:linear-gradient(90deg,transparent,var(--bd) 20%,var(--bd) 80%,transparent); margin:6px 0; }
+
+  /* ═══ Stat Row ═══ */
+  .stats { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:36px; }
+  .sc { text-align:center; background:var(--sf); border:1px solid var(--bd); border-radius:var(--r); padding:20px 10px; }
+  .sc .n { font-size:30px; font-weight:800; letter-spacing:-1px; line-height:1; margin-bottom:3px; }
+  .sc .l { font-size:11px; font-weight:600; color:var(--t3); text-transform:uppercase; letter-spacing:.4px; }
+
+  /* ═══ Cards ═══ */
+  .cg { display:grid; gap:14px; }
+  .cg3 { grid-template-columns:repeat(3,1fr); }
+  .cg2 { grid-template-columns:repeat(2,1fr); }
+  .card { background:var(--sf); border:1px solid var(--bd); border-radius:var(--r); padding:22px; box-shadow:0 1px 3px rgba(0,0,0,.03); }
+  .card .ci { width:38px; height:38px; border-radius:var(--rs); display:flex; align-items:center; justify-content:center; font-size:19px; margin-bottom:12px; }
+  .card h3 { font-size:14px; font-weight:700; margin-bottom:4px; }
+  .card p { font-size:12.5px; color:var(--t2); line-height:1.6; }
+
+  /* ═══ Pipeline Flow ═══ */
+  .pf { background:var(--sf); border:1px solid var(--bd); border-radius:var(--r); padding:20px 16px; margin-bottom:32px; overflow-x:auto; page-break-inside:avoid; }
+  .pf .row { display:flex; align-items:center; justify-content:center; gap:0; min-width:auto; flex-wrap:nowrap; }
+  .fn { display:flex; flex-direction:column; align-items:center; gap:2px; padding:6px 8px; border-radius:var(--rs); min-width:60px; text-align:center; border:1px solid; flex-shrink:0; }
+  .fn .fi { font-size:15px; }
+  .fn .ft { font-size:9px; font-weight:700; white-space:nowrap; }
+  .fa { font-size:15px; color:var(--t3); margin:0 3px; flex-shrink:0; }
+
+  /* ═══ Highlight Section (Studio) ═══ */
+  .hl { border-radius:var(--r); padding:24px; margin-bottom:24px; page-break-inside:avoid; }
+  .hl h3 { font-size:16px; font-weight:800; margin-bottom:5px; }
+  .hl p  { font-size:13px; line-height:1.65; }
+  .hl ul { list-style:none; font-size:13px; padding:0; margin-top:10px; }
+  .hl ul li { padding:4px 0; display:flex; align-items:flex-start; gap:8px; }
+  .hl ul li::before { content:'✓'; font-weight:700; font-size:11px; width:18px; height:18px; display:flex; align-items:center; justify-content:center; border-radius:50%; flex-shrink:0; margin-top:1px; }
+
+  .hl-b { background:var(--BL); border:1px solid rgba(66,133,244,.12); }
+  .hl-b h3,.hl-b li { color:#1A56DB; }
+  .hl-b p { color:#3367D6; }
+  .hl-b ul li::before { background:rgba(66,133,244,.12); color:var(--B); }
+
+  .hl-p { background:var(--PL); border:1px solid rgba(124,58,237,.12); }
+  .hl-p h3,.hl-p li { color:#5B21B6; }
+  .hl-p p { color:#6D28D9; }
+  .hl-p ul li::before { background:rgba(124,58,237,.12); color:var(--P); }
+
+  .hl-g { background:var(--GL); border:1px solid rgba(52,168,83,.12); }
+  .hl-g h3,.hl-g li { color:#137333; }
+  .hl-g p { color:#1E8E3E; }
+  .hl-g ul li::before { background:rgba(52,168,83,.12); color:var(--G); }
+
+  .hl-y { background:var(--YL); border:1px solid rgba(251,188,5,.15); }
+  .hl-y h3,.hl-y li { color:#A36B00; }
+  .hl-y p { color:#B07800; }
+  .hl-y ul li::before { background:rgba(251,188,5,.15); color:#D69E02; }
+
+  .hl-r { background:var(--RL); border:1px solid rgba(234,67,53,.12); }
+  .hl-r h3,.hl-r li { color:#C5221F; }
+  .hl-r p { color:#D93025; }
+  .hl-r ul li::before { background:rgba(234,67,53,.12); color:var(--R); }
+
+  /* ═══ Block Architecture ═══ */
+  .ba { display:flex; gap:12px; margin-bottom:28px; page-break-inside:avoid; }
+  .bl { flex:1; border-radius:var(--r); padding:22px; border:1px solid; text-align:center; }
+  .bl .lt { display:inline-block; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:1px; padding:2px 10px; border-radius:999px; margin-bottom:8px; }
+  .bl h4 { font-size:15px; font-weight:800; margin-bottom:3px; }
+  .bl p { font-size:11.5px; line-height:1.5; }
+  .bl ul { list-style:none; margin-top:8px; font-size:11.5px; text-align:left; padding:0; }
+  .bl ul li { padding:2px 0; display:flex; align-items:center; gap:5px; }
+  .bl ul li::before { content:''; width:4px; height:4px; border-radius:50%; flex-shrink:0; }
+  .layer-b { background:var(--BL); border-color:rgba(66,133,244,.15); }
+  .layer-b .lt { background:rgba(66,133,244,.12); color:var(--B); }
+  .layer-b h4,.layer-b p { color:#1A56DB; }
+  .layer-b ul li { color:#3367D6; }
+  .layer-b ul li::before { background:var(--B); }
+  .layer-g { background:var(--GL); border-color:rgba(52,168,83,.15); }
+  .layer-g .lt { background:rgba(52,168,83,.12); color:var(--G); }
+  .layer-g h4,.layer-g p { color:#137333; }
+  .layer-g ul li { color:#1E8E3E; }
+  .layer-g ul li::before { background:var(--G); }
+  .layer-y { background:var(--YL); border-color:rgba(251,188,5,.15); }
+  .layer-y .lt { background:rgba(251,188,5,.15); color:#D69E02; }
+  .layer-y h4,.layer-y p { color:#A36B00; }
+  .layer-y ul li { color:#B07800; }
+  .layer-y ul li::before { background:var(--Y); }
+
+  /* ═══ Studio Layout Visual ═══ */
+  .studio-vis { background:var(--sf); border:1px solid var(--bd); border-radius:var(--r); overflow:hidden; margin-bottom:28px; page-break-inside:avoid; }
+  .sv-bar { display:flex; align-items:center; gap:8px; padding:10px 16px; border-bottom:1px solid var(--bd); background:#F8F9FA; }
+  .sv-bar .pill { display:flex; background:#ECEDF0; border-radius:6px; padding:2px; }
+  .sv-bar .pill span { padding:3px 12px; border-radius:4px; font-size:10px; font-weight:700; }
+  .sv-bar .pill .act { background:var(--sf); box-shadow:0 1px 2px rgba(0,0,0,.06); }
+  .sv-body { display:flex; min-height:160px; }
+  .sv-side { width:130px; border-right:1px solid var(--bd); padding:8px; background:#FBFBFC; }
+  .sv-side .sg { margin-bottom:8px; }
+  .sv-side .sg-t { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px; }
+  .sv-side .si { display:flex; align-items:center; gap:4px; padding:3px 6px; border-radius:4px; font-size:9px; background:var(--sf); border:1px solid var(--bd); margin-bottom:3px; cursor:default; }
+  .sv-side .si .grip { color:#ccc; font-size:10px; }
+  .sv-canvas { flex:1; background:repeating-linear-gradient(90deg,transparent,transparent 14px,#f0f0f0 14px,#f0f0f0 15px),repeating-linear-gradient(0deg,transparent,transparent 14px,#f0f0f0 14px,#f0f0f0 15px); padding:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; position:relative; }
+  .sv-node { display:flex; align-items:center; gap:5px; padding:5px 12px; border-radius:8px; font-size:9.5px; font-weight:600; border:1.5px solid; min-width:110px; background:var(--sf); }
+  .sv-node .ni { width:20px; height:20px; border-radius:5px; display:flex; align-items:center; justify-content:center; font-size:10px; }
+  .sv-edge { width:2px; height:8px; border-radius:1px; background:#ccc; }
+  .sv-ai { width:150px; border-left:1px solid var(--bd); padding:8px; background:#FBFBFC; display:flex; flex-direction:column; overflow:hidden; }
+  .sv-ai .ai-t { font-size:9px; font-weight:700; color:var(--B); margin-bottom:6px; display:flex; align-items:center; gap:4px; }
+  .sv-ai .ai-msg { font-size:8px; padding:4px 7px; border-radius:6px; margin-bottom:3px; line-height:1.35; word-break:break-all; overflow-wrap:break-word; }
+  .sv-ai .ai-qc { display:flex; flex-wrap:wrap; gap:2px; margin-top:auto; }
+  .sv-ai .ai-qc span { font-size:7px; padding:2px 6px; border-radius:4px; background:var(--sf); border:1px solid var(--bd); color:var(--t2); }
+  .sv-runner { border-top:1px solid var(--bd); padding:6px 12px; display:flex; align-items:center; gap:6px; background:#FBFBFC; }
+  .sv-runner .ri { flex:1; padding:3px 8px; border-radius:4px; font-size:9px; background:var(--sf); border:1px solid var(--bd); color:var(--t3); }
+  .sv-runner .rb { padding:3px 10px; border-radius:4px; font-size:9px; font-weight:700; color:#fff; border:none; }
+  .sv-status { display:flex; gap:12px; padding:4px 16px; border-top:1px solid var(--bd); font-size:8px; color:var(--t3); background:#FBFBFC; }
+
+  /* ═══ Comparison Table ═══ */
+  .ct { width:100%; border-collapse:separate; border-spacing:0; background:var(--sf); border:1px solid var(--bd); border-radius:var(--r); overflow:hidden; margin-bottom:32px; page-break-inside:avoid; }
+  .ct thead th { background:var(--BL); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--B); padding:10px 16px; text-align:left; border-bottom:1px solid rgba(66,133,244,.12); }
+  .ct tbody td { padding:10px 16px; font-size:13px; border-bottom:1px solid var(--bd); color:var(--t2); }
+  .ct tbody tr:last-child td { border-bottom:none; }
+  .ct tbody td:first-child { font-weight:600; color:var(--t1); white-space:nowrap; }
+  .ct .tag { display:inline-block; font-size:10px; font-weight:600; padding:2px 9px; border-radius:999px; }
+
+  /* ═══ Feature List Compact ═══ */
+  .fl { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:28px; }
+  .fi { display:flex; align-items:flex-start; gap:10px; background:var(--sf); border:1px solid var(--bd); border-radius:var(--rs); padding:14px; }
+  .fi .fii { width:30px; height:30px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+  .fi h4 { font-size:12.5px; font-weight:700; margin-bottom:1px; }
+  .fi p { font-size:11.5px; color:var(--t3); line-height:1.5; }
+
+  /* ═══ Footer ═══ */
+  .footer { text-align:center; padding:28px 0; border-top:1px solid var(--bd); margin-top:16px; }
+  .footer p { font-size:11px; color:var(--t3); }
+  .footer .dots { display:flex; justify-content:center; gap:6px; margin-bottom:8px; }
+  .footer .dots span { width:7px; height:7px; border-radius:50%; }
+
+  /* ═══ Inline Helpers ═══ */
+  .pill-sm { display:inline-block; font-size:10px; font-weight:600; padding:2px 10px; border-radius:999px; }
+  .center { text-align:center; }
+  .mb0 { margin-bottom:0; }
+  .mt-sm { margin-top:10px; }
+  .gap-sm { gap:10px; }
+
+  /* ═══ Plain-language Intro ═══ */
+  .plain-intro { max-width:720px; margin:0 auto; padding:28px 32px; background:var(--sf); border:1px solid var(--bd); border-radius:var(--r); box-shadow:0 2px 8px rgba(0,0,0,.04); position:relative; margin-top:-24px; z-index:1; }
+  .plain-intro .pi-tag { display:inline-block; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--B); background:var(--BL); padding:3px 12px; border-radius:999px; margin-bottom:14px; }
+  .plain-intro h3 { font-size:16px; font-weight:800; color:var(--t1); margin-bottom:10px; }
+  .plain-intro p { font-size:13.5px; color:var(--t2); line-height:1.85; margin-bottom:0; }
+  .plain-intro p + p { margin-top:10px; }
+  .plain-intro .pi-highlight { color:var(--B); font-weight:700; }
+  @media print {
+    .plain-intro{margin-top:-16px!important;padding:18px 20px!important;box-shadow:none!important;border:1px solid #e8eaed!important;page-break-inside:avoid}
+    .plain-intro h3{font-size:14px!important}
+    .plain-intro p{font-size:11px!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="container">
+    <div class="badge"><span class="dot"></span>Open-Source · Apache 2.0</div>
+    <h1><span>Novoscan</span> Open-Core</h1>
+    <p class="sub">完全开源的创新性检测引擎，Dify 同款 Studio + Agentic Workflow<br>三级积木自定义框架，真正适配各行各业的创新与商业价值评估</p>
+    <p class="sub2">多源检索 → 多专家评分 → 对抗辩论 → 终裁报告 &nbsp;|&nbsp; 简单部署 · 一键贡献 · 插件市场互联</p>
+    <div class="hero-colors">
+      <div style="background:var(--B);"></div>
+      <div style="background:var(--R);"></div>
+      <div style="background:var(--Y);"></div>
+      <div style="background:var(--G);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PLAIN-LANGUAGE INTRO
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="plain-intro">
+  <span class="pi-tag">30 秒读懂 Novoscan</span>
+  <h3>简单来说，Novoscan 是做什么的？</h3>
+  <p>
+    想象一下：你有一个创新想法（比如一款新产品、一项新技术、一个新商业模式），你想知道<span class="pi-highlight">这个想法到底靠不靠谱、值不值得投入</span>。
+    传统做法是找几个专家开会讨论，但专家贵、时间长、意见主观。
+  </p>
+  <p>
+    Novoscan 做的事情就是：<span class="pi-highlight">用 AI 代替专家团</span>来评估你的创新方案。
+    它会自动派出多个 AI "专家"——有的从学术角度看、有的从市场角度看、有的专找竞品对比。
+    然后这些 AI 专家还会像真人开会一样<span class="pi-highlight">互相辩论、互相挑战</span>，最后由一个"仲裁官"综合所有意见，给出一份结构化的评估报告。
+  </p>
+  <p>
+    跟市面上其他 AI 工具的区别在于：别的工具让一个 AI 直接给你打分（容易片面），
+    而 Novoscan <span class="pi-highlight">让多个 AI 先吵一架再打分</span>——通过对抗和辩论，结论更全面、更可信。
+    下面的内容会详细展示这套系统是怎么运作的。
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     KEY NUMBERS
+     ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="stats">
+      <div class="sc"><div class="n" style="color:var(--B);">2</div><div class="l">Studio 模式</div></div>
+      <div class="sc"><div class="n" style="color:var(--G);">3</div><div class="l">级插件框架</div></div>
+      <div class="sc"><div class="n" style="color:var(--R);">6</div><div class="l">内置 Agent</div></div>
+      <div class="sc"><div class="n" style="color:var(--Y);">5</div><div class="l">检索数据源</div></div>
+      <div class="sc"><div class="n" style="color:var(--P);">10</div><div class="l">类角色体系</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     #1 — Studio 可视化工作流设计（Dify 同款）
+     ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--B);"><span class="bar" style="background:var(--B);"></span> Core Feature 01</div>
+    <h2 class="st">Studio 可视化工作流设计</h2>
+    <p class="sd">提供 Dify 同款的 Studio 模式，拖拽积木即可编排完整分析管线——无需编写一行代码</p>
+
+    <!-- Studio 布局示意图 -->
+    <div class="studio-vis">
+      <!-- 顶部工具栏 -->
+      <div class="sv-bar">
+        <span style="font-size:11px;font-weight:700;color:var(--t1);">📂 standard</span>
+        <div class="pill">
+          <span class="act" style="color:#2563EB;">⚙ Standard</span>
+          <span style="color:var(--t3);">⚡ Agentic</span>
+        </div>
+        <span style="flex:1;"></span>
+        <span style="font-size:9px;color:#0D9488;font-weight:600;">🪄 同步 Prompt</span>
+        <span style="font-size:9px;color:var(--t2);font-weight:600;">🤖 设计器</span>
+        <span style="font-size:9px;color:var(--t2);font-weight:600;">📐 布局</span>
+        <span style="font-size:9px;color:var(--t2);font-weight:600;">⬇ 导出</span>
+        <span style="font-size:9px;padding:3px 10px;border-radius:4px;background:var(--B);color:#fff;font-weight:700;">💾 保存</span>
+      </div>
+      <div class="sv-body">
+        <!-- 左: 积木侧边栏 -->
+        <div class="sv-side">
+          <div style="font-size:9px;margin-bottom:6px;padding:3px 6px;border-radius:4px;background:var(--sf);border:1px solid var(--bd);color:var(--t3);">🔍 搜索积木...</div>
+          <div class="sg">
+            <div class="sg-t" style="color:#2563EB;">▾ Agent</div>
+            <div class="si"><span class="grip">⠿</span> 意图分析器</div>
+            <div class="si"><span class="grip">⠿</span> ReAct 检索器</div>
+            <div class="si"><span class="grip">⠿</span> 学术审查员</div>
+            <div class="si"><span class="grip">⠿</span> 产业分析员</div>
+            <div class="si"><span class="grip">⠿</span> 竞品侦探</div>
+          </div>
+          <div class="sg">
+            <div class="sg-t" style="color:#EA580C;">▾ 交互模式</div>
+            <div class="si"><span class="grip">⠿</span> 对抗辩论</div>
+          </div>
+          <div class="sg">
+            <div class="sg-t" style="color:#16A34A;">▾ 报告插件</div>
+            <div class="si"><span class="grip">⠿</span> 创新雷达</div>
+          </div>
+        </div>
+        <!-- 中: 画布 + Runner -->
+        <div style="flex:1;display:flex;flex-direction:column;">
+          <div class="sv-canvas">
+            <div class="sv-node" style="border-color:#6B7280;"><div class="ni" style="background:#F3F4F6;">▶</div> START</div>
+            <div class="sv-edge"></div>
+            <div class="sv-node" style="border-color:rgba(37,99,235,.3);"><div class="ni" style="background:rgba(37,99,235,.08);">🧠</div> 意图分析</div>
+            <div class="sv-edge"></div>
+            <div class="sv-node" style="border-color:rgba(37,99,235,.3);"><div class="ni" style="background:rgba(37,99,235,.08);">🔍</div> ReAct 检索</div>
+            <div class="sv-edge"></div>
+            <div class="sv-node" style="border-color:rgba(234,88,12,.3);"><div class="ni" style="background:rgba(234,88,12,.08);">⚔️</div> 并行评分 → 辩论</div>
+            <div class="sv-edge"></div>
+            <div class="sv-node" style="border-color:rgba(22,163,74,.3);"><div class="ni" style="background:rgba(22,163,74,.08);">📋</div> 报告输出</div>
+            <div class="sv-edge"></div>
+            <div class="sv-node" style="border-color:#6B7280;"><div class="ni" style="background:#F3F4F6;">🏁</div> END</div>
+          </div>
+          <!-- Runner -->
+          <div class="sv-runner">
+            <span style="font-size:9px;font-weight:600;color:var(--t2);">▸ 调试运行</span>
+            <div class="ri">输入测试 query...</div>
+            <button class="rb" style="background:var(--B);">▶ 运行</button>
+          </div>
+        </div>
+        <!-- 右: AI 助手 -->
+        <div class="sv-ai">
+          <div class="ai-t">🤖 设计助手 <span style="font-size:7px;padding:1px 6px;border-radius:99px;background:rgba(37,99,235,.08);color:var(--B);">Standard</span></div>
+          <div class="ai-msg" style="background:var(--BL);color:#1A56DB;">你好！用自然语言描述想要的管线，我来帮你生成。</div>
+          <div class="ai-msg" style="background:var(--B);color:#fff;align-self:flex-end;">评估技术创新可行性</div>
+          <div class="ai-msg" style="background:var(--BL);color:#1A56DB;">建议：意图分析→学术检索→三维评分→仲裁</div>
+          <div class="ai-qc">
+            <span>创建评分 Agent</span>
+            <span>管线优化建议</span>
+            <span>导出为模板</span>
+          </div>
+        </div>
+      </div>
+      <!-- 状态栏 -->
+      <div class="sv-status">
+        <span>标准管线 (standard.json)</span>
+        <span>7 节点</span>
+        <span>8 边</span>
+        <span style="margin-left:auto;color:var(--G);">● 已保存</span>
+      </div>
+    </div>
+
+    <!-- Studio 功能详解 -->
+    <div class="cg cg3">
+      <div class="card">
+        <div class="ci" style="background:var(--BL);">🎨</div>
+        <h3>React Flow 可视化画布</h3>
+        <p>拖拽积木到画布自动生成节点，支持 snap-to-grid 对齐、自动连线、Dagre 自动布局、MiniMap 导航</p>
+      </div>
+      <div class="card">
+        <div class="ci" style="background:var(--GL);">⚙️</div>
+        <h3>节点配置抽屉</h3>
+        <p>点击任意节点展开配置面板，根据 config_schema 自动渲染表单，支持条件边编辑和输入输出字段预览</p>
+      </div>
+      <div class="card">
+        <div class="ci" style="background:var(--PL);">🤖</div>
+        <h3>AI 设计助手常驻面板</h3>
+        <p>自然语言描述需求即可设计管线——创建 Agent、优化拓扑、导出模板，支持快捷命令一键操作</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     #2 — Agentic Workflow Studio
+     ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--P);"><span class="bar" style="background:var(--P);"></span> Core Feature 02</div>
+    <h2 class="st">Agentic Workflow 智能体工作流</h2>
+    <p class="sd">业界独特的双 Studio 模式——Standard 编译工作流 + Agentic 智能体工作流，一键切换</p>
+
+    <div class="cg cg2">
+      <div class="hl hl-b">
+        <span class="pill-sm" style="background:rgba(66,133,244,.12);color:var(--B);">Standard Mode</span>
+        <h3 class="mt-sm">编译工作流 Studio</h3>
+        <p>Dify 同款——可视化拖拽设计固定拓扑管线，Pipeline JSON 通过编译器编译为 LangGraph StateGraph</p>
+        <ul>
+          <li>确定性执行路径，节点顺序预定义</li>
+          <li>支持条件边（评分分差触发辩论）</li>
+          <li>interrupt_before 实现 HITL 人工审核</li>
+          <li>管线保存/加载/导出 JSON</li>
+          <li>适合生产环境稳定部署</li>
+        </ul>
+      </div>
+      <div class="hl hl-p">
+        <span class="pill-sm" style="background:rgba(124,58,237,.12);color:var(--P);">Agentic Mode</span>
+        <h3 class="mt-sm">智能体工作流 Studio</h3>
+        <p>超级 ReAct Agent 将全部积木暴露为 Tool，LLM 自主决定调用顺序和次数</p>
+        <ul>
+          <li>LLM 自主编排工具链，动态决策</li>
+          <li>Agentic 调优助手——ReAct 策略调优、工具链诊断、Token 预估</li>
+          <li>画布内实时试运行，节点状态动态标记</li>
+          <li>max_iterations 安全防护</li>
+          <li>适合探索性研究与复杂场景</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="center" style="margin-top:8px;">
+      <span style="display:inline-block;background:var(--sf);border:1px solid var(--bd);border-radius:999px;padding:5px 18px;font-size:11px;color:var(--t2);font-weight:600;">
+        同一套三层积木，两种运行方式无缝切换——兼顾可控性与灵活性
+      </span>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     #3 — 三级插件自定义框架
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="page-break">
+  <div class="container">
+    <div class="sl" style="color:var(--G);"><span class="bar" style="background:var(--G);"></span> Core Feature 03</div>
+    <h2 class="st">三级插件自定义框架</h2>
+    <p class="sd">从管线到 Agent 到 Tools 到报告，全链路积木化——YAML 声明、零代码扩展、热插拔注册</p>
+
+    <div class="ba">
+      <div class="bl layer-b">
+        <span class="lt">Layer 1 · Agent</span>
+        <h4>AgentBlock</h4>
+        <p>AI 角色积木 · 六层十类</p>
+        <ul>
+          <li>学术审查员 (evaluator)</li>
+          <li>产业分析员 (evaluator)</li>
+          <li>竞品侦探 (evaluator)</li>
+          <li>意图分析器 (planner)</li>
+          <li>ReAct 检索器 (executor)</li>
+          <li>自定义 Agent...</li>
+        </ul>
+      </div>
+      <div class="bl layer-g">
+        <span class="lt">Layer 2 · 交互</span>
+        <h4>InteractionBlock</h4>
+        <p>多Agent协作模式</p>
+        <ul>
+          <li>对抗辩论 (K.O. 机制)</li>
+          <li>并行评估 (Map-Reduce)</li>
+          <li>头脑风暴 (可扩展)</li>
+          <li>轮流投票 (可扩展)</li>
+          <li>自定义交互模式...</li>
+        </ul>
+      </div>
+      <div class="bl layer-y">
+        <span class="lt">Layer 3 · 报告</span>
+        <h4>ReportBlock</h4>
+        <p>报告插件 · 可视化组件</p>
+        <ul>
+          <li>雷达图 (radar)</li>
+          <li>条形图 / 表格 (bar/table)</li>
+          <li>Markdown 卡片</li>
+          <li>LLM 生成摘要</li>
+          <li>自定义报告模板...</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- YAML 驱动说明 -->
+    <div class="hl hl-g">
+      <h3>YAML 驱动 · 零代码开发</h3>
+      <p>所有积木通过 YAML 声明——只需填写 id、name、inputs、outputs、config_schema，即可创建全新 Agent</p>
+      <ul>
+        <li><strong>Agent：</strong>YAML 定义角色 Prompt、输入输出字段、温度等参数，自动注册到 BlockRegistry</li>
+        <li><strong>Tool：</strong>YAML 声明 local / http / mcp 三种类型工具，支持 CRUD + 导入导出</li>
+        <li><strong>Pipeline：</strong>JSON 定义管线拓扑，通过 PipelineCompiler 编译为可执行 LangGraph 图</li>
+        <li><strong>Report：</strong>YAML 声明报告 sections + 可视化组件类型，自动组装结构化输出</li>
+        <li><strong>双重接口：</strong>每个 AgentBlock 同时是 Graph Node + LangChain Tool，一套逻辑两种调用方式</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     #4 — Studio Agent 设计器
+     ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--R);"><span class="bar" style="background:var(--R);"></span> Core Feature 04</div>
+    <h2 class="st">Studio Agent 设计器</h2>
+    <p class="sd">GUI 化的 Agent 创作工具——六层十类角色选择、config_schema 动态编辑、YAML 预览导出</p>
+
+    <div class="cg cg3">
+      <div class="card">
+        <div class="ci" style="background:var(--RL);">🎭</div>
+        <h3>六层十类角色体系</h3>
+        <p>Orchestrator · Monitor · Planner · Executor · Evaluator · Critic · Synthesizer · Gatekeeper · Reporter · Custom</p>
+      </div>
+      <div class="card">
+        <div class="ci" style="background:var(--BL);">📝</div>
+        <h3>可视化配置编辑</h3>
+        <p>基础信息、inputs/outputs 列表、config_schema 动态增删字段，实时 YAML 预览与导出</p>
+      </div>
+      <div class="card">
+        <div class="ci" style="background:var(--PL);">🔗</div>
+        <h3>Agent-as-Tool 双重接口</h3>
+        <p>设计器实时预览 Agent 作为 Graph Node 和 LangChain Tool 的双重接口签名</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     #5 — 自然语言开发工作流
+     ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--P);"><span class="bar" style="background:var(--P);"></span> Core Feature 05</div>
+    <h2 class="st">自然语言开发工作流</h2>
+    <p class="sd">对话式 AI 助手常驻 Studio 右侧，用自然语言描述需求即可生成管线和积木配置</p>
+
+    <div class="cg cg2">
+      <div class="hl hl-b mb0">
+        <span class="pill-sm" style="background:rgba(66,133,244,.12);color:var(--B);">Standard 设计助手</span>
+        <h3 class="mt-sm">管线设计 · 积木创建</h3>
+        <p>自然语言描述即可获得管线设计建议</p>
+        <ul>
+          <li>"帮我创建一个新的评分 Agent，评估技术可行性"</li>
+          <li>"在当前管线中添加一个学术搜索节点"</li>
+          <li>"分析当前管线拓扑，给出优化建议"</li>
+          <li>"根据报告组件同步全体 Agent Prompt"</li>
+          <li>"将当前管线导出为可复用模板"</li>
+        </ul>
+      </div>
+      <div class="hl hl-p mb0">
+        <span class="pill-sm" style="background:rgba(124,58,237,.12);color:var(--P);">Agentic 调优助手</span>
+        <h3 class="mt-sm">策略调优 · 诊断分析</h3>
+        <p>专为 Agentic 模式设计的深度调优助手</p>
+        <ul>
+          <li>"分析 ReAct 检索策略，给出调优方案"</li>
+          <li>"诊断 Agent 工具调用链路，检测瓶颈"</li>
+          <li>"为管线配置多轮迭代和自动反思机制"</li>
+          <li>"预估当前管线单次运行的 Token 消耗"</li>
+          <li>"分析各 Agent 输出格式是否兼容"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     #6 — 行业适配能力
+     ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--Y);"><span class="bar" style="background:var(--Y);"></span> Core Feature 06</div>
+    <h2 class="st">真正的各行各业适配</h2>
+    <p class="sd">三级自定义框架让任何行业、任何身份的人群都能定制属于自己的创新评估方案</p>
+
+    <div class="cg cg3">
+      <div class="card">
+        <div class="ci" style="background:var(--BL);">🎓</div>
+        <h3>学术科研</h3>
+        <p>自定义学术审查 Agent，接入 OpenAlex / arXiv / CrossRef，评估论文创新性与引用价值</p>
+      </div>
+      <div class="card">
+        <div class="ci" style="background:var(--GL);">🏭</div>
+        <h3>产业创新</h3>
+        <p>自定义产业分析 Agent，接入 Brave / GitHub，评估技术可行性与商业落地潜力</p>
+      </div>
+      <div class="card">
+        <div class="ci" style="background:var(--YL);">💼</div>
+        <h3>投资评估</h3>
+        <p>自定义竞品侦探 Agent，从市场竞争格局、技术壁垒、商业模式维度综合评估</p>
+      </div>
+      <div class="card">
+        <div class="ci" style="background:var(--RL);">🔬</div>
+        <h3>专利评审</h3>
+        <p>定制专利新颖性检测管线，组合学术检索 + 专利数据库 + 多维评分</p>
+      </div>
+      <div class="card">
+        <div class="ci" style="background:var(--PL);">🎨</div>
+        <h3>创意产业</h3>
+        <p>设计创意差异化评估 Agent，辩论机制从多角度验证创意独特性</p>
+      </div>
+      <div class="card">
+        <div class="ci" style="background:var(--BL);">🏥</div>
+        <h3>医疗健康</h3>
+        <p>自定义临床创新评估管线，接入医学文献数据源，评估研究方案创新点</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     #7 — 完整功能清单
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="page-break">
+  <div class="container">
+    <div class="sl" style="color:var(--B);"><span class="bar" style="background:var(--B);"></span> Full Features</div>
+    <h2 class="st">完整功能清单</h2>
+    <p class="sd">覆盖检索、评分、辩论、报告、管理、设计全链路</p>
+
+    <div class="fl">
+      <div class="fi"><div class="fii" style="background:var(--BL);">🧠</div><div><h4>意图分析 + HITL</h4><p>LLM 结构化解析 + interrupt_before 人工确认/修正循环</p></div></div>
+      <div class="fi"><div class="fii" style="background:var(--GL);">🔍</div><div><h4>5 源信息检索</h4><p>OpenAlex · arXiv · Brave · GitHub · CrossRef</p></div></div>
+      <div class="fi"><div class="fii" style="background:var(--YL);">📊</div><div><h4>并行多维评分</h4><p>学术 / 产业 / 竞品三维 Map-Reduce 架构</p></div></div>
+      <div class="fi"><div class="fii" style="background:var(--RL);">⚔️</div><div><h4>对抗辩论 + K.O.</h4><p>评分分差 > 20 触发，连胜 2 轮 K.O. 自动终止</p></div></div>
+      <div class="fi"><div class="fii" style="background:var(--BL);">📋</div><div><h4>结构化报告输出</h4><p>YAML 模板驱动，雷达图 / 表格 / Markdown 可视化</p></div></div>
+      <div class="fi"><div class="fii" style="background:var(--GL);">✅</div><div><h4>质量门控</h4><p>报告输出前自动质量检查，确保分析完整性</p></div></div>
+      <div class="fi"><div class="fii" style="background:var(--PL);">🎨</div><div><h4>Studio 可视化画布</h4><p>React Flow + Dagre 布局 + 积木拖拽 + MiniMap</p></div></div>
+      <div class="fi"><div class="fii" style="background:var(--RL);">🤖</div><div><h4>Agent 设计器</h4><p>六层十类角色 · config 动态编辑 · YAML 预览导出</p></div></div>
+      <div class="fi"><div class="fii" style="background:var(--YL);">🔧</div><div><h4>三级 CRUD + 导入导出</h4><p>Pipeline / Block / Tool 全部支持增删改查 + YAML 导入导出</p></div></div>
+      <div class="fi"><div class="fii" style="background:var(--BL);">📡</div><div><h4>SSE 实时流式推送</h4><p>execution_logs 逐阶段推送执行状态，画布节点实时标记</p></div></div>
+      <div class="fi"><div class="fii" style="background:var(--PL);">💬</div><div><h4>自然语言设计助手</h4><p>对话式 AI 助手常驻 Studio，快捷命令 + 自由对话</p></div></div>
+      <div class="fi"><div class="fii" style="background:var(--GL);">🪄</div><div><h4>Prompt 同步</h4><p>根据报告组件一键同步全体 Agent Prompt 输出格式</p></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     #8 — 核心竞争力
+     ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--G);"><span class="bar" style="background:var(--G);"></span> Advantages</div>
+    <h2 class="st">核心竞争力总结</h2>
+    <p class="sd">架构、产品、生态三个维度的差异化优势</p>
+
+    <div class="cg cg2" style="margin-bottom:16px;">
+      <!-- 开源 + 许可 -->
+      <div class="hl hl-g mb0">
+        <h3>🔓 完全开源 · Apache 2.0</h3>
+        <p>Apache 2.0 协议，支持完全自定义版本的 Novoscan。简单部署、下载安装即可使用，零门槛上手。</p>
+        <ul>
+          <li>完整源码开放，企业可自由二次开发</li>
+          <li>简单部署——uv sync + uvicorn 一条命令启动</li>
+          <li>支持 Docker 容器化部署</li>
+        </ul>
+      </div>
+      <!-- 模型无关 -->
+      <div class="hl hl-b mb0">
+        <h3>🔌 模型无关 · 通用协议</h3>
+        <p>统一 OpenAI-Compatible 协议，严禁硬编码——一套代码适配所有主流模型。</p>
+        <ul>
+          <li>DeepSeek / MiniMax / Moonshot / 本地 Ollama 无缝切换</li>
+          <li>主/备模型三级降级容错</li>
+          <li>仅需修改 .env 即可切换模型</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cg cg2" style="margin-bottom:16px;">
+      <!-- Studio -->
+      <div class="hl hl-p mb0">
+        <h3>🎨 双 Studio 模式 · 自然语言开发</h3>
+        <p>Dify 同款 Standard Studio + 独创 Agentic Studio，对话式 AI 助手自然语言设计工作流。</p>
+        <ul>
+          <li>可视化拖拽设计管线，非开发者也能上手</li>
+          <li>Agentic 调优——ReAct 策略、Token 预估、工具链诊断</li>
+          <li>画布内实时试运行，节点状态动态标记</li>
+        </ul>
+      </div>
+      <!-- 插件市场 -->
+      <div class="hl hl-y mb0">
+        <h3>🏪 插件市场 · 一键贡献</h3>
+        <p>与云端版插件市场深度互联，用户开发的高价值内容可以被很好地内化和共享。</p>
+        <ul>
+          <li>一键贡献——将本地 Agent / Tool / Pipeline 上传市场</li>
+          <li>从社区导入高质量管线模板</li>
+          <li>自开发积木与云端版双向同步</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cg cg2">
+      <!-- 三级框架 -->
+      <div class="hl hl-r mb0">
+        <h3>🧩 三级插件 · 积木化自定义</h3>
+        <p>管线 → Agent → Tool → 报告，全链路积木化，真正做到各行各业自定义适配。</p>
+        <ul>
+          <li>YAML 零代码创建任意积木</li>
+          <li>_builtin + _custom 双目录热插拔</li>
+          <li>六层十类角色体系覆盖完整 AI 工作流</li>
+        </ul>
+      </div>
+      <!-- 辩论引擎 -->
+      <div class="hl hl-b mb0">
+        <h3>⚔️ 多Agent辩论 · 对抗验证</h3>
+        <p>独创的 LangGraph 子图辩论引擎，正反方对抗 + 主持人裁判 + K.O. 机制。</p>
+        <ul>
+          <li>评分分差 > 20 自动触发辩论</li>
+          <li>每个 Agent 独立 LLM 调用，真对抗</li>
+          <li>连胜 2 轮 K.O. 终止，保证效率</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container"><div class="divider"></div></div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     #9 — 技术栈
+     ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--B);"><span class="bar" style="background:var(--B);"></span> Tech Stack</div>
+    <h2 class="st">技术栈</h2>
+    <p class="sd">全栈 Python + TypeScript，现代工具链</p>
+
+    <table class="ct">
+      <thead><tr><th style="width:28%;">组件</th><th>技术选型</th><th style="width:16%;">分类</th></tr></thead>
+      <tbody>
+        <tr><td>图编排引擎</td><td>LangGraph ≥ 0.4</td><td><span class="tag" style="background:var(--BL);color:var(--B);">核心</span></td></tr>
+        <tr><td>模型接口</td><td>LangChain OpenAI-Compatible（通用协议）</td><td><span class="tag" style="background:var(--BL);color:var(--B);">核心</span></td></tr>
+        <tr><td>后端框架</td><td>FastAPI ≥ 0.115</td><td><span class="tag" style="background:var(--GL);color:var(--G);">后端</span></td></tr>
+        <tr><td>状态持久化</td><td>SQLite（开发）/ PostgreSQL（生产）</td><td><span class="tag" style="background:var(--GL);color:var(--G);">后端</span></td></tr>
+        <tr><td>Studio 画布</td><td>React Flow + Dagre + Zustand</td><td><span class="tag" style="background:var(--YL);color:#D69E02;">前端</span></td></tr>
+        <tr><td>前端框架</td><td>React + TypeScript + Vite</td><td><span class="tag" style="background:var(--YL);color:#D69E02;">前端</span></td></tr>
+        <tr><td>配置管理</td><td>pydantic-settings（.env 自动注入）</td><td><span class="tag" style="background:var(--RL);color:var(--R);">工程</span></td></tr>
+        <tr><td>包管理</td><td>uv（Python 3.12+）</td><td><span class="tag" style="background:var(--RL);color:var(--R);">工程</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     #10 — 标准管线拓扑
+     ═══════════════════════════════════════════════════════════════ -->
+<section>
+  <div class="container">
+    <div class="sl" style="color:var(--B);"><span class="bar" style="background:var(--B);"></span> Pipeline</div>
+    <h2 class="st">标准管线拓扑</h2>
+    <p class="sd">7 阶段全自动分析管线，内含人工审核环节和条件辩论分支</p>
+
+    <div class="pf">
+      <div class="row">
+        <div class="fn" style="background:var(--BL);border-color:rgba(66,133,244,.15);"><span class="fi">💡</span><span class="ft" style="color:var(--B);">用户输入</span></div>
+        <span class="fa">→</span>
+        <div class="fn" style="background:var(--BL);border-color:rgba(66,133,244,.15);"><span class="fi">🧠</span><span class="ft" style="color:var(--B);">意图分析</span></div>
+        <span class="fa">⇄</span>
+        <div class="fn" style="background:var(--GL);border-color:rgba(52,168,83,.15);"><span class="fi">👤</span><span class="ft" style="color:var(--G);">人工确认</span></div>
+        <span class="fa">→</span>
+        <div class="fn" style="background:var(--BL);border-color:rgba(66,133,244,.15);"><span class="fi">🔍</span><span class="ft" style="color:var(--B);">ReAct检索</span></div>
+        <span class="fa">→</span>
+        <div class="fn" style="background:var(--YL);border-color:rgba(251,188,5,.15);"><span class="fi">📊</span><span class="ft" style="color:#D69E02;">并行评分</span></div>
+        <span class="fa">→</span>
+        <div class="fn" style="background:var(--RL);border-color:rgba(234,67,53,.15);"><span class="fi">⚔️</span><span class="ft" style="color:var(--R);">辩论</span></div>
+        <span class="fa">→</span>
+        <div class="fn" style="background:var(--GL);border-color:rgba(52,168,83,.15);"><span class="fi">⚖️</span><span class="ft" style="color:var(--G);">仲裁</span></div>
+        <span class="fa">→</span>
+        <div class="fn" style="background:var(--BL);border-color:rgba(66,133,244,.15);"><span class="fi">📋</span><span class="ft" style="color:var(--B);">报告输出</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="footer">
+  <div class="container">
+    <div class="dots">
+      <span style="background:var(--B);"></span>
+      <span style="background:var(--R);"></span>
+      <span style="background:var(--Y);"></span>
+      <span style="background:var(--G);"></span>
+    </div>
+    <p><strong>Novoscan Open-Core</strong> · v0.1.0 · Apache 2.0 License</p>
+    <p style="margin-top:3px;">Antigravity Projects &copy; 2026</p>
+  </div>
+</div>
+
+</body>
+</html>

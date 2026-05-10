@@ -1,0 +1,29 @@
+# 产业分析员 Agent
+# McKinsey/a16z 投资顾问视角，专注市场格局分析
+
+id: industry_analyst
+name: 产业分析员
+description: 从产业检索数据中判断市场格局和商业化前景
+version: "1.0"
+category: scoring
+role_type: evaluator
+notes: 市场维度评估，以投资顾问视角分析市场规模、竞争格局和商业化前景
+
+inputs:
+  - user_raw_input
+  - retrieved_context
+  - analyzed_intent
+
+outputs:
+  - evaluation_result
+
+config_schema:
+  temperature:
+    type: float
+    default: 0.3
+  prompt_builder:
+    type: text
+    default: "app.prompts.scoring:build_industry_prompt"
+  system_prompt:
+    type: text
+    default: "app.prompts.scoring:INDUSTRY_SYSTEM_PROMPT"

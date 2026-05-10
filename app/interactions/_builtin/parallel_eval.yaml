@@ -1,0 +1,35 @@
+# 并行评估交互模式
+# 多 Agent 独立并行执行，汇总评分后计算分差
+
+id: parallel_eval
+name: 并行评估
+description: 多个评分 Agent 独立并行执行，汇总结果后自动计算分差 score_gap，触发后续辩论或直接仲裁
+version: "1.0"
+category: interaction
+notes: 与 scoring_node 中 asyncio.gather 并行逻辑对应的声明式定义；Registry 自动发现所有 category=scoring 的 Agent 并行执行
+
+inputs:
+  - retrieved_context
+  - analyzed_intent
+  - detection_type
+
+outputs:
+  - evaluation_results
+  - score_gap
+
+roles:
+  evaluators: "2..n"
+
+config:
+  parallel:
+    type: boolean
+    default: true
+    description: 是否并行执行（false 则按注册顺序串行）
+  score_gap_threshold:
+    type: float
+    default: 20
+    description: 分差超过此值则建议触发辩论
+  auto_discover:
+    type: boolean
+    default: true
+    description: 自动从 Registry 发现所有 category=scoring 的 Agent

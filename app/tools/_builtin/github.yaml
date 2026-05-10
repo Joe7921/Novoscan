@@ -1,0 +1,9 @@
+id: search_github
+name: GitHub 仓库搜索
+description: 搜索 GitHub 仓库，返回开源项目名称、Star 数、语言、描述。适用于了解开源生态和竞品技术栈。
+type: local
+entry: "app.tools.search:search_github"
+tags: [code, opensource, competitor, technical]
+detection_types: [industrial, skill, auto]
+config:
+  max_results: { type: integer, default: 10 }

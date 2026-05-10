@@ -1,0 +1,48 @@
+# 证据面板 — 积木化报告插件
+# 支持多维度证据展示、相关性推理、关联网络、HITL 标记、论文引用生成
+
+id: evidence-panel
+name: 证据面板
+type: report
+category: core
+version: "1.0"
+description: 支持多维度证据展示、相关性推理、关联网络、HITL 标记、论文引用生成
+notes: 证据展示面板，支持按维度/来源/立场筛选，可展开推理链、生成论文引用、用户 HITL 标记
+
+inputs:
+  - search_results
+  - scoring_results
+
+outputs:
+  - evidence_summary
+  - citation_paragraph
+
+requires:
+  - academic_scorer
+  - industry_analyst
+  - competitor_detective
+
+features:
+  filtering:
+    - dimension      # 按评分维度筛选
+    - source_type    # 按来源类型筛选
+    - stance         # 按立场筛选
+  sorting:
+    - relevance_score
+    - year
+    - stance
+  interactions:
+    - expand_detail          # 点击展开完整推理 + 原文片段
+    - open_source_url        # 点击跳转原始来源
+    - related_evidence_graph # 证据间关联展示
+    - user_mark_hitl         # 用户标记有用/无用/存疑
+    - generate_citation      # 一键生成论文引用段落
+
+layout:
+  inline:
+    position: agent_card
+    max_items: 3
+    description: 每个 AgentCard 旁显示 Top-3 证据
+  standalone:
+    position: report_bottom
+    description: 报告底部完整证据专区，含筛选/排序/关联网络

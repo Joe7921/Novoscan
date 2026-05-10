@@ -1,0 +1,30 @@
+# ReAct 智能检索 Agent
+# 使用工具注册表中按 detection_type 过滤后的工具自主检索
+
+id: react_retriever
+name: ReAct 智能检索
+description: 基于 ReAct 思维链的自适应检索 Agent，自主决定搜什么、用哪个工具、信息是否够用
+version: "1.0"
+category: retrieval
+role_type: executor
+notes: 核心检索引擎，基于 ReAct 思维链自主选择工具、判断信息是否充分，支持多轮迭代搜索
+
+inputs:
+  - analyzed_intent
+  - detection_type
+
+outputs:
+  - retrieved_context
+  - search_history
+
+config_schema:
+  max_iterations:
+    type: integer
+    default: 10
+    description: ReAct 最大迭代轮次
+  temperature:
+    type: float
+    default: 0.1
+    min: 0
+    max: 1
+    description: 模型温度（检索任务低温更稳定）

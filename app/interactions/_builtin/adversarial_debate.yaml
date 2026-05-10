@@ -1,0 +1,37 @@
+# 对抗辩论交互模式
+# 分歧超过阈值时，多 Agent 轮流辩论
+
+id: adversarial_debate
+name: 对抗辩论
+description: 分歧超过阈值时多 Agent 对抗辩论，Moderator 控场
+version: "1.0"
+category: interaction
+notes: 多 Agent 对抗辩论，分歧超过阈值时触发，Moderator 控场，支持 K.O. 提前终止
+
+inputs:
+  - evaluation_results
+  - score_gap
+
+outputs:
+  - debate_history
+  - debate_round
+  - final_score
+  - final_judgment
+
+roles:
+  moderator: 1
+  debaters: "2..n"
+
+config:
+  trigger_threshold:
+    type: float
+    default: 20
+    description: 分差超过此值触发辩论
+  max_rounds:
+    type: integer
+    default: 3
+    description: 最大辩论轮次
+  ko_enabled:
+    type: boolean
+    default: true
+    description: 是否启用 K.O. 提前终止机制

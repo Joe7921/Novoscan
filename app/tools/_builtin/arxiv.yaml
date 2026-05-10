@@ -1,0 +1,9 @@
+id: search_arxiv
+name: arXiv 预印本检索
+description: 搜索 arXiv 预印本数据库，返回最新学术预印本论文。适用于了解前沿研究方向和最新技术突破。
+type: local
+entry: "app.tools.search:search_arxiv"
+tags: [academic, preprint, frontier]
+detection_types: [academic, auto]
+config:
+  max_results: { type: integer, default: 10 }

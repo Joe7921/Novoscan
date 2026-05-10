@@ -1,0 +1,9 @@
+id: search_brave
+name: Brave 网页搜索
+description: 使用 Brave Search 搜索网页，返回标题、URL、摘要。适用于了解产业动态、竞品信息、市场趋势。
+type: local
+entry: "app.tools.search:search_brave"
+tags: [web, industry, news, competitor]
+detection_types: [industrial, skill, auto]
+config:
+  max_results: { type: integer, default: 10 }

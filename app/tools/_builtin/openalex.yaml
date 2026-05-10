@@ -1,0 +1,9 @@
+id: search_openalex
+name: OpenAlex 学术检索
+description: 搜索 OpenAlex 学术数据库，返回论文标题、年份、引用数、期刊、作者。适用于了解学术研究基础。
+type: local
+entry: "app.tools.search:search_openalex"
+tags: [academic, literature, citation]
+detection_types: [academic, auto]
+config:
+  max_results: { type: integer, default: 15 }

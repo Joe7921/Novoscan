@@ -1,0 +1,52 @@
+# 管线编排器 — 顶层任务分解与委派
+# role_type: orchestrator | category: orchestration
+
+id: pipeline_orchestrator
+name: 管线编排器
+description: 顶层决策者，接收用户目标后分解为子任务图，按依赖顺序委派给下游专业 Agent，不直接执行分析
+version: "1.0"
+category: orchestration
+role_type: orchestrator
+notes: 顶层编排器，将用户目标分解为子任务 DAG 并按依赖顺序委派给下游 Agent，自身不执行分析
+
+inputs:
+  - user_raw_input
+  - available_agents
+
+outputs:
+  - task_graph
+  - execution_plan
+  - delegation_log
+
+config_schema:
+  max_subtasks:
+    type: integer
+    default: 10
+    description: 最大子任务数量
+    min: 1
+    max: 50
+  parallel_enabled:
+    type: boolean
+    default: true
+    description: 是否允许并行委派
+  priority_strategy:
+    type: select
+    default: dependency_first
+    description: 子任务优先级策略
+    options:
+      - dependency_first
+      - breadth_first
+      - critical_path
+
+prompt: |
+  你是一个全局管线编排 Agent。
+  你的职责：
+  1. 分析用户的原始需求，提取核心目标
+  2. 将目标分解为可执行的子任务图（DAG）
+  3. 根据可用 Agent 列表，为每个子任务选择最合适的执行者
+  4. 输出结构化的执行计划，包含任务依赖、优先级和预期输出格式
+
+  注意：
+  - 你不直接执行任何分析任务，只负责规划和委派
+  - 如果某个子任务没有合适的 Agent，标记为 "需要人工介入"
+  - 输出 JSON 格式的 task_graph 和 execution_plan

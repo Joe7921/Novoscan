@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novoscan-Open-Core 战略演示</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Antigravity 设计系统：浅色调/高通透玻璃拟态/GoogleBlue点缀 */
+        :root {
+            --bg-color: #f4f7f9;
+            --text-main: #111827; /* 深灰近黑 */
+            --text-muted: #4b5563; /* 中灰 */
+            --accent-primary: #4285F4; /* Google Blue */
+            --accent-secondary: #0F9D58; /* Green */
+            --accent-tertiary: #F4B400; /* Amber */
+            --accent-quaternary: #DB4437; /* Red */
+            
+            --glass-bg: rgba(255, 255, 255, 0.85); /* 高亮度毛玻璃 */
+            --glass-border: rgba(255, 255, 255, 1);
+            --shadow-soft: 0 20px 50px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 15px 35px rgba(66, 133, 244, 0.18); /* shadow-google-blue/18 */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .presentation-container {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+        }
+        .presentation-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .slide {
+            height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        /* 浅色调柔和色块排布 */
+        .background-blobs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: float 20s infinite alternate;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: #dbeafe; /* Light blue */
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 600px;
+            height: 600px;
+            background: #f3e8ff; /* Light purple */
+            bottom: -200px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(80px, 80px) scale(1.1); }
+        }
+
+        /* 清爽的白色玻璃板 */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 4rem;
+            width: 100%;
+            max-width: 1200px;
+            z-index: 10;
+            box-shadow: var(--shadow-soft);
+            transform: translateY(60px);
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* 排版样式 */
+        h1, h2, h3 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            /* 深色硬朗渐变，突出冲击力 */
+            background: linear-gradient(135deg, #111827 0%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.2rem;
+        }
+
+        h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 1.2rem;
+        }
+
+        p.subtitle {
+            font-size: 1.4rem;
+            color: var(--text-muted);
+            margin-bottom: 3.5rem;
+            font-weight: 400;
+        }
+
+        /* 浅色模式的高亮独立组件网格 */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-box {
+            background: #ffffff;
+            border: 1px solid #f3f4f6;
+            border-radius: 16px;
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: default;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .feature-box:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feature-box h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-box p {
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        /* 标签栏 - 浅色实心与高光 */
+        .badges {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: #eff6ff; /* 浅蓝底色 */
+            color: var(--accent-primary);
+            padding: 0.6rem 1.8rem;
+            border-radius: 100px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border: 1px solid #bfdbfe;
+            transition: all 0.3s;
+        }
+        
+        .badge:hover {
+            background: var(--accent-primary);
+            color: #ffffff;
+            border-color: var(--accent-primary);
+            box-shadow: 0 4px 14px rgba(66, 133, 244, 0.3);
+        }
+
+        /* 浅色侧边导航指示器 */
+        .pagination {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #d1d5db;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot:hover {
+            background: #9ca3af;
+        }
+
+        .dot.active {
+            background: var(--accent-primary);
+            transform: scale(1.4);
+            box-shadow: 0 0 10px rgba(66, 133, 244, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.8rem; }
+            h2 { font-size: 2.2rem; }
+            .glass-card { padding: 2rem; }
+            .pagination { display: none; }
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pagination">
+        <div class="dot active" data-index="0" title="Slide 1: 定位"></div>
+        <div class="dot" data-index="1" title="Slide 2: 优势"></div>
+        <div class="dot" data-index="2" title="Slide 3: 场景"></div>
+    </div>
+
+    <!-- 容器 -->
+    <div class="presentation-container" id="container">
+        
+        <!-- == Slide 1 == -->
+        <section class="slide">
+            <div class="background-blobs">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2" style="background: #e0e7ff;"></div>
+            </div>
+            <div class="glass-card visible">
+                <h1>Novoscan-Open-Core</h1>
+                <p class="subtitle">极简极速的 <strong>AI 多智能体创新检测引擎</strong></p>
+                <div class="grid-layout">
+                    <div class="feature-box">
+                        <h3 style="color: var(--accent-primary);">多源检索</h3>
+                        <p>基于 ReAct 机制自动调度外接海量学术与工业数据，脱离单一 LLM 幻觉局限。</p>
+                    </div>
+                    <div class="feature-box">
+                        <h3 style="color: var(--accent-secondary);">多专家评分</h3>
+                        <p>告别单薄问答。引入多领域视角的 Agent，对项目执行背靠背地全景平行审阅打分。</p>
+                    </div>
+                    <div class="feature-box">
+                        <h3 style="color: var(--accent-quaternary);">对抗辩论</h3>
+                        <p>首发红蓝智能体防线体系。疯狂互相挑刺破局逻辑，把创新伪水的项目硬生生“挤干”。</p>
+                    </div>
+                </div>
+                <div class="badges">
+                    <span class="badge"># Python 3.12+</span>
+                    <span class="badge"># LangGraph</span>
+                    <span class="badge"># FastAPI</span>
+                    <span class="badge"># React 18</span>
+                    <span class="badge"># MIT 协议开源</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- == Slide 2 == -->
+        <section class="slide">
+            <div class="background-blobs">
+                <div class="blob blob-1" style="background: #ccfbf1; right: 0; left: auto; top: -10%;"></div>
+                <div class="blob blob-2" style="background: #dbeafe; top: auto; bottom: 0; left: -10%;"></div>
+            </div>
+            <div class="glass-card">
+                <h2>极客狂喜：沉浸式的技术张力</h2>
+                <p class="subtitle">流线型的平权体验，彻底摒弃多余部署门槛</p>
+                
+                <div class="grid-layout" style="margin-top: 3rem;">
+                    <div class="feature-box" style="border-top: 4px solid var(--accent-primary);">
+                        <h3 style="color: var(--text-main);">🚀 30秒无痛拉起</h3>
+                        <p>告别繁琐依赖报错！借由 <code>make quickstart</code> 或 Docker Compose，半分钟即可于本地拉起优雅向导界面与引擎。</p>
+                    </div>
+                    <div class="feature-box" style="border-top: 4px solid var(--accent-tertiary);">
+                        <h3 style="color: var(--text-main);">🧠 模型平权法则</h3>
+                        <p>直接对云产商硬连线，完全兼容 OpenAI 协议栈。使用高性价比 DeepSeek，或局域网私有 Ollama，统统随心连通。</p>
+                    </div>
+                    <div class="feature-box" style="border-top: 4px solid var(--accent-secondary);">
+                        <h3 style="color: var(--text-main);">👁️ 黑盒全景透明</h3>
+                        <p>全域贯通服务端 SSE 流控。不论是多节点调用、推理辩论还是检索挂载，一切计算都如神经元跳动般实时展现在屏幕上。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- == Slide 3 == -->
+        <section class="slide">
+            <div class="background-blobs">
+                <div class="blob blob-1" style="background: #fce7f3; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; opacity: 0.6"></div>
+                <div class="blob blob-2" style="background: #fef3c7; right: 10%; top: 60%;"></div>
+            </div>
+            <div class="glass-card">
+                <h2>三大维度的赋能与重塑</h2>
+                <p class="subtitle">化繁为简，将顶层框架强力下沉到个人与机构终端</p>
+
+                <div class="grid-layout">
+                    <div class="feature-box" style="border-left: 5px solid var(--accent-quaternary);">
+                        <h3 style="color: var(--text-main);">💼 独创者的低频顾问</h3>
+                        <p>对于独立创客，它是零延时专属孵化参谋。喂入初步点子，立刻获取历经多重博弈对抗后极度尖锐严苛的项目可行性报告。</p>
+                    </div>
+                    <div class="feature-box" style="border-left: 5px solid var(--accent-tertiary);">
+                        <h3 style="color: var(--text-main);">🏢 投资机构的风控闸板</h3>
+                        <p>可私有化部署的本地审查枢纽。面对海量 BP 时，系统自动压榨出各个项目的理念水分，几何级提升团队前期过会效率与信噪比。</p>
+                    </div>
+                    <div class="feature-box" style="border-left: 5px solid var(--accent-primary);">
+                        <h3 style="color: var(--text-main);">💻 架构师的解剖模板</h3>
+                        <p>一份教科书标准的 LangGraph 高阶范例源码。松耦合微服务设计确保您可以快速拔插二开数据检索件，自由嫁接企业域的专家级 Agent。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Scroll & Nav Animations JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('container');
+            const slides = document.querySelectorAll('.slide');
+            const glassCards = document.querySelectorAll('.glass-card');
+            const dots = document.querySelectorAll('.dot');
+
+            container.addEventListener('scroll', () => {
+                let currentIndex = 0;
+                let minDistance = Infinity;
+
+                slides.forEach((slide, index) => {
+                    const rect = slide.getBoundingClientRect();
+                    const distance = Math.abs(rect.top);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        currentIndex = index;
+                    }
+                    if (rect.top < window.innerHeight * 0.75 && rect.bottom > window.innerHeight * 0.25) {
+                        glassCards[index].classList.add('visible');
+                    }
+                });
+
+                dots.forEach(dot => dot.classList.remove('active'));
+                if(dots[currentIndex]) {
+                    dots[currentIndex].classList.add('active');
+                }
+            });
+
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    const targetSlide = slides[index];
+                    container.scrollTo({
+                        top: targetSlide.offsetTop,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            setTimeout(() => {
+                if(glassCards[0]) glassCards[0].classList.add('visible');
+            }, 100);
+        });
+    </script>
+</body>
+</html>

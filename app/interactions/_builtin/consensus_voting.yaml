@@ -1,0 +1,44 @@
+# 共识投票交互模式
+# 多 Agent 独立打分后加权平均，分歧小时跳过辩论
+
+id: consensus_voting
+name: 共识投票
+description: 多 Agent 各自独立评分后进行加权平均，分歧在阈值内直接出结果，超出阈值可升级为辩论
+version: "1.0"
+category: interaction
+notes: 轻量级共识机制，多 Agent 独立打分后加权平均，分歧小时快速出结果，超阈值可升级为辩论
+
+inputs:
+  - evaluation_results
+  - agent_scores
+
+outputs:
+  - weighted_score
+  - consensus_reached
+  - vote_breakdown
+  - escalation_needed
+
+roles:
+  voters: "2..n"
+
+config:
+  consensus_threshold:
+    type: float
+    default: 10
+    description: 分差在此值内视为达成共识（百分制）
+  weight_strategy:
+    type: select
+    default: equal
+    description: 投票权重策略
+    options:
+      - equal
+      - confidence_based
+      - expertise_based
+  escalation_target:
+    type: text
+    default: adversarial_debate
+    description: 未达成共识时升级到的交互模式
+  min_voters:
+    type: integer
+    default: 2
+    description: 最少参与投票的 Agent 数

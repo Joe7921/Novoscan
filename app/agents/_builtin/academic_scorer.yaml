@@ -1,0 +1,35 @@
+# 学术审查员 Agent
+# 从学术研究的角度评估创新性
+
+id: academic_scorer
+name: 学术审查员
+description: 从学术研究的角度评估创新性，关注技术突破和学术贡献
+version: "1.0"
+category: scoring
+role_type: evaluator
+notes: 评分维度之一，以 Nature/Science 审稿标准评估技术突破程度和学术贡献，输出 0-100 分
+
+inputs:
+  - retrieved_context
+  - analyzed_intent
+
+outputs:
+  - evaluation_results
+
+config_schema:
+  prompt:
+    type: text
+    default: |
+      你是一位资深学术审查员，专精技术创新评估。
+      你需要从以下维度评估这个创意的创新性：
+      1. 技术新颖性：是否提出了新的方法论或技术路径？
+      2. 学术贡献：在相关领域的学术价值如何？
+      3. 可行性：从技术角度看实现难度如何？
+      4. 引用支撑：是否有充分的学术文献支持或否定？
+    description: 学术审查员的系统 Prompt
+  temperature:
+    type: float
+    default: 0.3
+    min: 0
+    max: 1
+    description: 模型温度

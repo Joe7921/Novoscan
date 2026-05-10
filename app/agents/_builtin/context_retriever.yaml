@@ -1,0 +1,50 @@
+# 上下文检索器 — 从已有数据中精准提取相关段落
+# role_type: retriever | category: retrieval
+
+id: context_retriever
+name: 上下文检索器
+description: 从已有的检索结果和历史上下文中，提取与当前问题最相关的段落和证据片段
+version: "1.0"
+category: retrieval
+role_type: retriever
+notes: 二次检索精筛，从已有检索结果中按相关性评分提取最相关段落，附带来源引用
+
+inputs:
+  - retrieved_context
+  - current_query
+
+outputs:
+  - relevant_passages
+  - relevance_scores
+  - source_citations
+
+config_schema:
+  top_k:
+    type: integer
+    default: 10
+    description: 返回最相关的前 K 个段落
+    min: 1
+    max: 50
+  min_relevance:
+    type: float
+    default: 0.5
+    description: 最低相关性分数阈值
+    min: 0.0
+    max: 1.0
+  dedup_enabled:
+    type: boolean
+    default: true
+    description: 是否对近似重复段落去重
+
+prompt: |
+  你是一个上下文检索 Agent。
+  你的职责：
+  1. 接收已有的检索结果和当前查询问题
+  2. 对每个文本段落评估与查询的相关性（0-1 分）
+  3. 返回相关性最高的 top_k 个段落，附带来源引用
+  4. 如果启用去重，合并语义高度相似的段落
+
+  输出格式：
+  - relevant_passages: 段落列表，每项含 text/source/relevance_score
+  - relevance_scores: 所有段落的分数汇总
+  - source_citations: 引用来源列表

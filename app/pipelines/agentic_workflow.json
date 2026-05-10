@@ -1,0 +1,183 @@
+{
+  "version": "0.1",
+  "kind": "agentic_workflow",
+  "workflow": {
+    "id": "agentic.default",
+    "name": "Agentic Workflow",
+    "entry_node": "agentic.orchestrator",
+    "nodes": [
+      {
+        "id": "workflow.entry",
+        "type": "stage",
+        "name": "Workflow Entry",
+        "config": {}
+      },
+      {
+        "id": "agentic.orchestrator",
+        "type": "agent",
+        "name": "Agentic Orchestrator",
+        "config": {
+          "strategy": "react",
+          "prompt_source": "agentic_config.system_prompt"
+        }
+      },
+      {
+        "id": "workflow.complete",
+        "type": "terminal",
+        "name": "Workflow Complete",
+        "config": {}
+      }
+    ],
+    "edges": [
+      {
+        "from": "workflow.entry",
+        "to": "agentic.orchestrator"
+      },
+      {
+        "from": "agentic.orchestrator",
+        "to": "workflow.complete"
+      }
+    ],
+    "budgets": {
+      "max_steps": 25,
+      "max_tool_calls": 25
+    }
+  },
+  "interrupt_before": [],
+  "interrupt_after": [],
+  "resume_actions": [
+    {
+      "id": "approve_and_continue",
+      "label": "ÃÂÃÂ§ÃÂÃÂ»ÃÂÃÂ§ÃÂÃÂ§ÃÂÃÂ»ÃÂÃÂ­ÃÂÃÂ¦ÃÂÃÂÃÂÃÂ§ÃÂÃÂ¨ÃÂÃÂ¡ÃÂÃÂ",
+      "description": "ÃÂÃÂ§ÃÂÃÂ¡ÃÂÃÂ®ÃÂÃÂ¨ÃÂÃÂ®ÃÂÃÂ¤ÃÂÃÂ¥ÃÂÃÂ½ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ¹ÃÂÃÂ¥ÃÂÃÂ¹ÃÂÃÂ¶ÃÂÃÂ§ÃÂÃÂ»ÃÂÃÂ§ÃÂÃÂ§ÃÂÃÂ»ÃÂÃÂ­ÃÂÃÂ¦ÃÂÃÂÃÂÃÂ§ÃÂÃÂ¨ÃÂÃÂ¡ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ"
+    },
+    {
+      "id": "revise_inputs",
+      "label": "ÃÂÃÂ¤ÃÂÃÂ¿ÃÂÃÂ®ÃÂÃÂ¦ÃÂÃÂ­ÃÂÃÂ£ÃÂÃÂ¨ÃÂÃÂ¾ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂ©ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¯ÃÂÃÂ",
+      "description": "ÃÂÃÂ¤ÃÂÃÂ¿ÃÂÃÂ®ÃÂÃÂ¦ÃÂÃÂÃÂÃÂ¹ÃÂÃÂ¨ÃÂÃÂ¾ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ¦ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¡ÃÂÃÂ¥ÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¯ÃÂÃÂ´ÃÂÃÂ¦ÃÂÃÂÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂ©ÃÂÃÂÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂ°ÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¯ÃÂÃÂ¥ÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¦ÃÂÃÂÃÂÃÂ¬ÃÂÃÂ¦ÃÂÃÂ¬ÃÂÃÂ¡ÃÂÃÂ¨ÃÂÃÂ¿ÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¡ÃÂÃÂÃÂÃÂ£ÃÂÃÂÃÂÃÂ"
+    },
+    {
+      "id": "abort",
+      "label": "ÃÂÃÂ§ÃÂÃÂ»ÃÂÃÂÃÂÃÂ¦ÃÂÃÂ­ÃÂÃÂ¢ÃÂÃÂ¨ÃÂÃÂ¿ÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¡ÃÂÃÂ",
+      "description": "ÃÂÃÂ§ÃÂÃÂ»ÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂÃÂÃÂ¦ÃÂÃÂÃÂÃÂ¬ÃÂÃÂ¦ÃÂÃÂ¬ÃÂÃÂ¡ÃÂÃÂ¨ÃÂÃÂ¿ÃÂÃÂÃÂÃÂ¨ÃÂÃÂ¡ÃÂÃÂÃÂÃÂ¥ÃÂÃÂ¹ÃÂÃÂ¶ÃÂÃÂ¤ÃÂÃÂ¿ÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂÃÂÃÂ¥ÃÂÃÂ½ÃÂÃÂÃÂÃÂ¥ÃÂÃÂÃÂÃÂÃÂÃÂ¥ÃÂÃÂ¿ÃÂÃÂ«ÃÂÃÂ§ÃÂÃÂÃÂÃÂ§ÃÂÃÂ£ÃÂÃÂÃÂÃÂ"
+    }
+  ],
+  "human_input_schema": {
+    "fields": [
+      {
+        "id": "revised_user_input",
+        "type": "string",
+        "required": false
+      },
+      {
+        "id": "feedback",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "state_contracts": {
+    "required_inputs": [
+      "user_raw_input"
+    ],
+    "persisted_outputs": [
+      "messages",
+      "final_output",
+      "tool_calls"
+    ],
+    "runtime_fields": [
+      "thread_id",
+      "status",
+      "pause_target",
+      "resume_actions",
+      "tool_policy"
+    ]
+  },
+  "runtime_events": {
+    "emitted": [
+      "stream_start",
+      "tool_call_start",
+      "tool_call_done",
+      "agent_thinking",
+      "hitl_interrupt",
+      "stream_complete",
+      "stream_end"
+    ],
+    "persisted": [
+      "created",
+      "paused",
+      "resumed",
+      "completed",
+      "aborted",
+      "error"
+    ]
+  },
+  "tool_policy": {
+    "mode": "allowlist",
+    "tools": [
+      "analyze_intent",
+      "search_openalex",
+      "search_arxiv",
+      "search_brave",
+      "search_github",
+      "search_crossref",
+      "score_academic_scorer",
+      "score_industry_analyst",
+      "score_competitor_detective",
+      "run_debate",
+      "run_arbitration"
+    ],
+    "denied_tools": [],
+    "budgets": [
+      {
+        "tool": "analyze_intent",
+        "max_calls": 25
+      },
+      {
+        "tool": "search_openalex",
+        "max_calls": 25
+      },
+      {
+        "tool": "search_arxiv",
+        "max_calls": 25
+      },
+      {
+        "tool": "search_brave",
+        "max_calls": 25
+      },
+      {
+        "tool": "search_github",
+        "max_calls": 25
+      },
+      {
+        "tool": "search_crossref",
+        "max_calls": 25
+      },
+      {
+        "tool": "score_academic_scorer",
+        "max_calls": 25
+      },
+      {
+        "tool": "score_industry_analyst",
+        "max_calls": 25
+      },
+      {
+        "tool": "score_competitor_detective",
+        "max_calls": 25
+      },
+      {
+        "tool": "run_debate",
+        "max_calls": 25
+      },
+      {
+        "tool": "run_arbitration",
+        "max_calls": 25
+      }
+    ]
+  },
+  "fallback_policy": {
+    "on_pause_timeout": "wait",
+    "on_resume_abort": "abort",
+    "on_tool_policy_violation": "deny"
+  }
+}

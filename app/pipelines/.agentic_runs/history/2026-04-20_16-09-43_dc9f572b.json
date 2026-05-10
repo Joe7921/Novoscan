@@ -1,0 +1,20 @@
+{
+  "run_id": "dc9f572b-a70a-4988-80f8-60d0f6ce7230",
+  "timestamp": "2026-04-20T16:09:43Z",
+  "user_input": "测试输入",
+  "tool_calls": [
+    {
+      "tool_name": "analyze_intent",
+      "args_summary": "{'user_input': '测试输入'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    }
+  ],
+  "total_duration_ms": 21132,
+  "total_tokens": 0,
+  "final_score": null,
+  "status": "completed",
+  "tool_count": 1,
+  "enabled_tools_count": 1
+}

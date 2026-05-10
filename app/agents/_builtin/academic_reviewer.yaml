@@ -1,0 +1,29 @@
+# 学术审查员 Agent
+# Nature/Science 审稿人视角，专注学术空白分析
+
+id: academic_reviewer
+name: 学术审查员
+description: 从学术检索数据中判断技术方向的学术成熟度和研究空白
+version: "1.0"
+category: scoring
+role_type: critic
+notes: 批判性审查，以学术审稿人视角挑战评分结论，发现研究空白和隐含假设
+
+inputs:
+  - user_raw_input
+  - retrieved_context
+  - analyzed_intent
+
+outputs:
+  - evaluation_result
+
+config_schema:
+  temperature:
+    type: float
+    default: 0.3
+  prompt_builder:
+    type: text
+    default: "app.prompts.scoring:build_academic_prompt"
+  system_prompt:
+    type: text
+    default: "app.prompts.scoring:ACADEMIC_SYSTEM_PROMPT"

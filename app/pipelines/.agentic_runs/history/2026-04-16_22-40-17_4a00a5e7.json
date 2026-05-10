@@ -1,0 +1,55 @@
+{
+  "run_id": "4a00a5e7-7877-41ed-a96c-4fcd32c4c479",
+  "timestamp": "2026-04-16T22:40:17Z",
+  "user_input": "测试输入",
+  "tool_calls": [
+    {
+      "tool_name": "analyze_intent",
+      "args_summary": "{'user_input': '测试输入'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_openalex",
+      "args_summary": "{'query': 'innovation technology artificial intelligence'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_brave",
+      "args_summary": "{'query': 'innovation trends technology 2024'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "score_academic_scorer",
+      "args_summary": "{'context': '测试案例 - 输入无有效创新想法', 'core_idea': '测试输入'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "score_industry_analyst",
+      "args_summary": "{'context': '测试案例 - 输入无有效创新想法', 'core_idea': '测试输入'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "run_arbitration",
+      "args_summary": "{'agent_results_summary': '学术审查员评分: 0分（置信度：低）- 输入为测试占位符，无有效创新点描述，缺少学术文献数据支撑，无法进行技术成熟度、论文覆盖度等维度评估。产业分析员评分: 5分（置信度：低）- 输入内容无效，无法进行市场验证度、竞争烈度、商业化可行性等产业维度分析。两者均判定为降级场景（is_fallback: true）。', 'topic': '测试输入",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    }
+  ],
+  "total_duration_ms": 71294,
+  "total_tokens": 0,
+  "final_score": 0.0,
+  "status": "completed",
+  "tool_count": 6,
+  "enabled_tools_count": 6
+}

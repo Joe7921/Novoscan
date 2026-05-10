@@ -1,0 +1,63 @@
+# 对比矩阵报告 — 多方案/多维度对比
+# 适用于竞品对比、技术路线选择、方案评估等场景
+
+id: comparison_matrix
+name: 对比矩阵报告
+description: 多方案/多维度的结构化对比报告，包含对比表格、雷达对比图和 AI 综合结论
+version: "1.0"
+category: report
+notes: 多方案对比报告，含对比表格 + 雷达叠加图 + 优劣分析 + AI 推荐结论，适用于竞品对比/技术选型
+
+requires:
+  - academic_scorer
+  - industry_analyst
+  - competitor_detective
+
+sections:
+  - id: overview_summary
+    type: llm_generated
+    layout:
+      width: full
+    prompt: "基于以下多个 Agent 的分析数据，生成 150 字的对比概要，说明各方案的核心差异和推荐方向。"
+
+  - id: comparison_table
+    type: table
+    layout:
+      width: full
+    columns:
+      - 维度
+      - 方案A
+      - 方案B
+      - 差异说明
+    source: "all_agents.comparison_data"
+    style:
+      highlight_green: "winner == true"
+      highlight_red: "risk == 'high'"
+
+  - id: radar_comparison
+    type: radar
+    layout:
+      width: full
+      height: 400
+    dimensions:
+      - key: academic
+        label: 学术创新
+        source: "academic_scorer.score"
+      - key: industry
+        label: 市场潜力
+        source: "industry_analyst.score"
+      - key: compete
+        label: 竞争优势
+        source: "competitor_detective.score"
+
+  - id: strength_weakness
+    type: markdown_card
+    layout:
+      width: half
+    source: "all_agents.strengths_weaknesses"
+
+  - id: recommendation
+    type: llm_generated
+    layout:
+      width: half
+    prompt: "基于以上对比数据，给出明确的推荐结论和行动建议，不超过 200 字。"

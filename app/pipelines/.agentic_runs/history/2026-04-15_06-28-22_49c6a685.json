@@ -1,0 +1,118 @@
+{
+  "run_id": "49c6a685-b1ca-42a3-b13d-344eeab6a5dd",
+  "timestamp": "2026-04-15T06:28:22Z",
+  "user_input": "OpenCore Studio pause verification",
+  "tool_calls": [
+    {
+      "tool_name": "analyze_intent",
+      "args_summary": "{'user_input': 'OpenCore Studio pause verification'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_openalex",
+      "args_summary": "{'query': 'OpenCore bootloader security verification macOS'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_brave",
+      "args_summary": "{'query': 'OpenCore pause verification feature documentation'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_github",
+      "args_summary": "{'query': 'OpenCore BootloaderConfig pause verification'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_arxiv",
+      "args_summary": "{'query': 'bootloader verification bypass security macOS'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_arxiv",
+      "args_summary": "{'query': 'bootloader security verification bypass'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_github",
+      "args_summary": "{'query': 'acidanthera OpenCore'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_brave",
+      "args_summary": "{'query': 'OpenCore bootloader pause verification SIP bypass tutorial'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_crossref",
+      "args_summary": "{'query': 'OpenCore bootloader macOS security verification'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_github",
+      "args_summary": "{'query': 'OpenCoreVault verify security boot'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "search_openalex",
+      "args_summary": "{'query': 'macOS boot security System Integrity Protection'}",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "score_academic_scorer",
+      "args_summary": "{'context': 'OpenCore is a bootloader for macOS/hackintosh developed by Acidanthera. The pause verification feature relates to temporarily suspending security checks during boot process for debugging ",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "score_industry_analyst",
+      "args_summary": "{'context': 'OpenCore is maintained by Acidanthera and is the leading open-source bootloader for Hackintosh. Industry context includes the Hackintosh community (Dortania guides), enterprise Mac manage",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "score_competitor_detective",
+      "args_summary": "{'context': \"Competing solutions include Clover bootloader (legacy), and Apple's native boot security. GitHub shows 19+ OpenCore-related repositories including Ryzen-Hackintosh (1155 stars). Security ",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    },
+    {
+      "tool_name": "run_arbitration",
+      "args_summary": "{'agent_results_summary': '**学术审查员**: 评分 50 (低置信度) - 工具调用异常，使用降级结果。提供基础分析但缺乏完整数据支撑。\\n\\n**产业分析员**: 评分 50 (低置信度) - 工具调用异常，使用降级结果。分析未完成。\\n\\n**竞品侦探**: 评分 72 (中等置信度) - 完整分析报告，基于以下发现：\\n- 直接竞品仅Clover bootloa",
+      "duration_ms": 0,
+      "status": "completed",
+      "result_summary": ""
+    }
+  ],
+  "total_duration_ms": 210077,
+  "total_tokens": 0,
+  "final_score": 63.0,
+  "status": "completed",
+  "tool_count": 15,
+  "enabled_tools_count": 15
+}

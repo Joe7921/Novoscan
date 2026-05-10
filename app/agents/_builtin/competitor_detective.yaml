@@ -1,0 +1,29 @@
+# 竞品侦探 Agent
+# Google Ventures / 红杉资本竞争情报分析师视角
+
+id: competitor_detective
+name: 竞品侦探
+description: 从公开数据中识别竞争格局、拆解竞品、发现差异化突破口
+version: "1.0"
+category: scoring
+role_type: evaluator
+notes: 竞争情报分析，识别竞品格局和差异化机会，为商业可行性评估提供关键数据
+
+inputs:
+  - user_raw_input
+  - retrieved_context
+  - analyzed_intent
+
+outputs:
+  - evaluation_result
+
+config_schema:
+  temperature:
+    type: float
+    default: 0.3
+  prompt_builder:
+    type: text
+    default: "app.prompts.scoring:build_competitor_prompt"
+  system_prompt:
+    type: text
+    default: "app.prompts.scoring:COMPETITOR_SYSTEM_PROMPT"

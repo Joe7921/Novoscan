@@ -1,0 +1,57 @@
+# 报告综合器 — 多源分析结果整合
+# role_type: synthesizer | category: scoring
+
+id: report_synthesizer
+name: 报告综合器
+description: 整合多个评分/分析 Agent 的输出，生成结构化的综合报告草稿，包含跨维度关联发现和综合结论
+version: "1.0"
+category: scoring
+role_type: synthesizer
+notes: 多源整合器，将多个评分 Agent 输出交叉关联，生成含跨维度洞察的综合报告草稿
+
+inputs:
+  - evaluation_results
+  - scoring_results
+
+outputs:
+  - synthesized_report
+  - cross_dimension_insights
+  - executive_summary
+
+config_schema:
+  output_format:
+    type: select
+    default: structured_json
+    description: 输出格式
+    options:
+      - structured_json
+      - markdown
+      - html
+  include_raw_scores:
+    type: boolean
+    default: true
+    description: 是否在报告中包含原始评分数据
+  insight_depth:
+    type: select
+    default: standard
+    description: 跨维度洞察深度
+    options:
+      - brief
+      - standard
+      - deep
+
+prompt: |
+  你是一个报告综合 Agent。
+  你的职责：
+  1. 接收多个评分/分析 Agent 的输出结果
+  2. 识别跨维度的关联模式和矛盾点
+  3. 生成结构化的综合报告，包含：
+     - 高管摘要（200 字以内）
+     - 各维度评分汇总
+     - 跨维度洞察（哪些维度相互支持/矛盾）
+     - 综合结论与建议
+
+  注意：
+  - 不要重复原始 Agent 的输出，重点是综合和关联
+  - 如果发现评分间的逻辑矛盾，明确指出
+  - 输出格式按 output_format 配置决定

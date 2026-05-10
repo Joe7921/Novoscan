@@ -1,0 +1,62 @@
+# 创新雷达报告模板
+# 六维雷达图 + 综合评分 + 风险警示
+
+id: innovation_radar
+name: 创新雷达报告
+description: 默认报告模板，包含多维雷达图和综合分析
+version: "1.0"
+category: report
+notes: 默认报告模板，含六维雷达图 + 柱状对比 + 风险表格 + AI 高管摘要，适用于创新评估场景
+
+requires:
+  - academic_scorer
+  - industry_analyst
+  - competitor_detective
+
+sections:
+  - id: executive_summary
+    type: llm_generated
+    layout:
+      width: full
+    prompt: "根据以下 Agent 分析报告，生成 200 字的高管摘要，重点突出创新亮点和主要风险。"
+
+  - id: radar_chart
+    type: radar
+    layout:
+      width: full
+      height: 400
+    dimensions:
+      - key: academic
+        label: 学术创新
+        source: "academic_scorer.score"
+      - key: industry
+        label: 市场验证
+        source: "industry_analyst.score"
+      - key: compete
+        label: 竞争态势
+        source: "competitor_detective.score"
+
+  - id: score_comparison
+    type: bar_chart
+    layout:
+      width: half
+    source: "all_agents.scores"
+
+  - id: risk_flags
+    type: table
+    layout:
+      width: full
+    columns:
+      - 风险项
+      - 严重度
+      - 来源Agent
+      - 建议
+    source: "all_agents.red_flags"
+    style:
+      highlight_red: "severity == 'high'"
+
+  - id: detailed_analysis
+    type: markdown_card
+    layout:
+      width: full
+    source: "arbitration.reasoning"
