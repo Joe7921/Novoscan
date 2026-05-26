@@ -78,6 +78,12 @@ export interface ModelConfigResponse {
     model_name: string
   }
   has_fallback: boolean
+  tools?: {
+    brave_api_key: string
+    github_token: string
+    openalex_email: string
+    crossref_email: string
+  }
 }
 
 export interface ModelConfigUpdate {
@@ -90,6 +96,10 @@ export interface ModelConfigUpdate {
   fallback_api_key?: string
   fallback_base_url?: string
   fallback_model_name?: string
+  brave_api_key?: string
+  github_token?: string
+  openalex_email?: string
+  crossref_email?: string
 }
 
 export async function fetchModelConfig(): Promise<ModelConfigResponse> {

@@ -84,11 +84,11 @@ class TestScoringOrchestrator:
         mock_reg = MagicMock()
         mock_reg.list_all.return_value = [
             BlockMeta(id="academic_reviewer", name="学术审查员", category="scoring",
-                      config_schema={"temperature": {"default": 0.3}}),
+                      config_schema={"temperature": {"default": 0.3}}).model_dump(),
             BlockMeta(id="industry_analyst", name="产业分析员", category="scoring",
-                      config_schema={"temperature": {"default": 0.3}}),
+                      config_schema={"temperature": {"default": 0.3}}).model_dump(),
             BlockMeta(id="competitor_detective", name="竞品侦探", category="scoring",
-                      config_schema={"temperature": {"default": 0.3}}),
+                      config_schema={"temperature": {"default": 0.3}}).model_dump(),
         ]
         mock_registry.return_value = mock_reg
 
@@ -147,7 +147,7 @@ class TestScoringOrchestrator:
         mock_reg = MagicMock()
         mock_reg.list_all.return_value = [
             BlockMeta(id=f"agent_{i}", name=f"Agent {i}", category="scoring",
-                      config_schema={"temperature": {"default": 0.3}})
+                      config_schema={"temperature": {"default": 0.3}}).model_dump()
             for i in range(3)
         ]
         mock_registry.return_value = mock_reg
