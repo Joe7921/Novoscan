@@ -165,6 +165,12 @@ class ModelConfigPayload(BaseModel):
     fallback_base_url: str | None = None
     fallback_model_name: str | None = None
 
+    # 检索工具
+    brave_api_key: str | None = None
+    github_token: str | None = None
+    openalex_email: str | None = None
+    crossref_email: str | None = None
+
 
 @app.get("/api/v1/config/model")
 async def get_model_config():
@@ -189,40 +195,81 @@ async def get_model_config():
             "model_name": settings.fallback_model_name or "",
         },
         "has_fallback": bool(settings.fallback_api_key and settings.fallback_base_url),
+        "tools": {
+            "brave_api_key": mask(settings.brave_api_key),
+            "github_token": mask(settings.github_token),
+            "openalex_email": settings.openalex_email,
+            "crossref_email": settings.crossref_email,
+        }
     }
 
 
 @app.put("/api/v1/config/model")
 async def update_model_config(payload: ModelConfigPayload):
-    """运行时热切换模型配置（不重启服务）"""
+    """运行时热切换模型配置（不重启服务）并持久化到 .env"""
+    from app.env_utils import update_env_file
     updated = []
+    env_updates = {}
     if payload.model_provider is not None:
         settings.model_provider = payload.model_provider
+        env_updates["MODEL_PROVIDER"] = payload.model_provider
         updated.append("model_provider")
     if payload.llm_api_key is not None:
         settings.llm_api_key = payload.llm_api_key
+        env_updates["LLM_API_KEY"] = payload.llm_api_key
         updated.append("llm_api_key")
     if payload.llm_base_url is not None:
         settings.llm_base_url = payload.llm_base_url
+        env_updates["LLM_BASE_URL"] = payload.llm_base_url
         updated.append("llm_base_url")
     if payload.llm_model_name is not None:
         settings.llm_model_name = payload.llm_model_name
+        env_updates["LLM_MODEL_NAME"] = payload.llm_model_name
         updated.append("llm_model_name")
     if payload.llm_temperature is not None:
         settings.llm_temperature = payload.llm_temperature
+        env_updates["LLM_TEMPERATURE"] = str(payload.llm_temperature)
         updated.append("llm_temperature")
     if payload.llm_supports_structured_output is not None:
         settings.llm_supports_structured_output = payload.llm_supports_structured_output
+        env_updates["LLM_SUPPORTS_STRUCTURED_OUTPUT"] = str(payload.llm_supports_structured_output).lower()
         updated.append("llm_supports_structured_output")
     if payload.fallback_api_key is not None:
         settings.fallback_api_key = payload.fallback_api_key
+        env_updates["FALLBACK_API_KEY"] = payload.fallback_api_key
         updated.append("fallback_api_key")
     if payload.fallback_base_url is not None:
         settings.fallback_base_url = payload.fallback_base_url
+        env_updates["FALLBACK_BASE_URL"] = payload.fallback_base_url
         updated.append("fallback_base_url")
     if payload.fallback_model_name is not None:
         settings.fallback_model_name = payload.fallback_model_name
+        env_updates["FALLBACK_MODEL_NAME"] = payload.fallback_model_name
         updated.append("fallback_model_name")
+
+    # 工具配置更新
+    if payload.brave_api_key is not None:
+        settings.brave_api_key = payload.brave_api_key
+        env_updates["BRAVE_API_KEY"] = payload.brave_api_key
+        updated.append("brave_api_key")
+    if payload.github_token is not None:
+        settings.github_token = payload.github_token
+        env_updates["GITHUB_TOKEN"] = payload.github_token
+        updated.append("github_token")
+    if payload.openalex_email is not None:
+        settings.openalex_email = payload.openalex_email
+        env_updates["OPENALEX_EMAIL"] = payload.openalex_email
+        updated.append("openalex_email")
+    if payload.crossref_email is not None:
+        settings.crossref_email = payload.crossref_email
+        env_updates["CROSSREF_EMAIL"] = payload.crossref_email
+        updated.append("crossref_email")
+
+    if env_updates:
+        try:
+            update_env_file(env_updates)
+        except Exception as e:
+            logger.error(f"Failed to write to .env file: {e}")
 
     # 验证主模型可用性
     primary_ok = False
